@@ -1,0 +1,36 @@
+module adder {
+    in  a   : Signal<u32>
+    in  b   : Signal<u32>
+    out sum : Signal<u32>
+
+    sum = a + b
+}
+
+@schedule adder {
+    bitwidth  : { data:32 }
+    pipeline  : 1 stage
+    storage   : none
+    interface : a, b, sum = Signal
+    reset     : async_low
+    clock     : 100 MHz, domain = single
+    resource  : none
+    latency   : 1 cycle
+}
+
+design adder_top {
+    dut : adder
+}
+
+run adder_check of adder_top {
+    stim : {
+        a, b = {
+                     0,          0,
+                     1,          2,
+                   100,        200,
+            2147483647, 2147483647,  // 2^31-1 + 2^31-1 = 2^32-2
+            4294967295,          1,  // 回绕：2^32-1 + 1 → 0
+        }
+    }
+    until : end of stim
+    show  : { a, b, sum }
+}

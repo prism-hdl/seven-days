@@ -1,0 +1,843 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 1 集：从一颗加法器开始 · 七日创造 · 第一日</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&family=Noto+Serif+SC:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #0f1420;
+  --ink-2: #1c2333;
+  --ink-3: #4a5468;
+  --mute: #8892a6;
+  --line: #e5e8ef;
+  --paper: #ffffff;
+  --cream: #fbf9f4;
+  --prism: #5b4bff;
+  --prism-2: #a678ff;
+  --prism-3: #ff8a4c;
+  --ok: #12a060;
+  --warn: #d84a4a;
+  --code-bg: #10131c;
+  --code-fg: #d6d9e0;
+  --radius: 10px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Inter', 'Noto Serif SC', -apple-system, sans-serif;
+  color: var(--ink);
+  background: var(--paper);
+  line-height: 1.65;
+  font-size: 17px;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ---------- Hero ---------- */
+.hero {
+  position: relative;
+  padding: 96px 24px 88px;
+  background: linear-gradient(135deg, #0a0e1e 0%, #2a1e5c 50%, #5b4bff 100%);
+  color: #fff;
+  overflow: hidden;
+}
+.hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(circle at 20% 30%, rgba(166,120,255,.35) 0%, transparent 40%),
+    radial-gradient(circle at 80% 70%, rgba(255,138,76,.18) 0%, transparent 45%);
+  pointer-events: none;
+}
+.hero-inner {
+  max-width: 900px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 2;
+}
+.hero-eyebrow {
+  display: inline-block;
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: rgba(255,255,255,.1);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255,255,255,.18);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  letter-spacing: .06em;
+  margin-bottom: 24px;
+}
+.hero h1 {
+  font-family: 'Noto Serif SC', serif;
+  font-weight: 700;
+  font-size: clamp(38px, 6vw, 60px);
+  line-height: 1.15;
+  margin-bottom: 20px;
+  letter-spacing: -0.01em;
+}
+.hero h1 span {
+  display: inline-block;
+  padding: 0 12px;
+  background: linear-gradient(120deg, var(--prism-2), var(--prism-3));
+  border-radius: 8px;
+  font-size: .82em;
+}
+.hero .subtitle {
+  font-size: 19px;
+  font-weight: 300;
+  color: rgba(255,255,255,.85);
+  margin-bottom: 40px;
+  max-width: 640px;
+  line-height: 1.7;
+}
+.hero-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.hero-tag {
+  padding: 6px 12px;
+  background: rgba(255,255,255,.08);
+  border: 1px solid rgba(255,255,255,.15);
+  border-radius: 6px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+}
+
+/* Adder diagram in hero */
+.hero-figure {
+  margin-top: 56px;
+  padding: 32px 24px;
+  background: rgba(255,255,255,.04);
+  border: 1px solid rgba(255,255,255,.1);
+  border-radius: 16px;
+  backdrop-filter: blur(10px);
+}
+.hero-figure svg { width: 100%; max-width: 480px; height: auto; display: block; margin: 0 auto; }
+.hero-figure figcaption {
+  text-align: center;
+  margin-top: 12px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: rgba(255,255,255,.6);
+  letter-spacing: .04em;
+}
+
+/* ---------- Content ---------- */
+main {
+  max-width: 780px;
+  margin: 0 auto;
+  padding: 80px 24px 120px;
+}
+
+section {
+  margin-bottom: 72px;
+}
+
+h2 {
+  font-family: 'Noto Serif SC', serif;
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--ink);
+  margin-bottom: 20px;
+  padding-top: 8px;
+  position: relative;
+}
+h2::before {
+  content: '';
+  display: inline-block;
+  width: 32px;
+  height: 3px;
+  background: linear-gradient(90deg, var(--prism), var(--prism-2));
+  border-radius: 2px;
+  vertical-align: middle;
+  margin-right: 12px;
+  transform: translateY(-6px);
+}
+
+h3 {
+  font-size: 20px;
+  font-weight: 600;
+  margin: 32px 0 12px;
+  color: var(--ink-2);
+}
+h4 {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 20px 0 8px;
+  color: var(--ink-2);
+}
+
+p {
+  margin-bottom: 16px;
+  color: var(--ink-2);
+}
+p code, li code {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .93em;
+  padding: 2px 6px;
+  background: var(--cream);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  color: var(--prism);
+  font-weight: 500;
+}
+strong { color: var(--ink); font-weight: 600; }
+ul, ol { margin: 0 0 20px 24px; color: var(--ink-2); }
+li { margin-bottom: 8px; }
+
+/* Callouts */
+.callout {
+  padding: 18px 22px;
+  background: var(--cream);
+  border-left: 3px solid var(--prism);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  margin: 24px 0;
+  font-size: 15.5px;
+}
+.callout-warn { border-left-color: var(--prism-3); background: #fff5ec; }
+.callout-title {
+  font-weight: 600;
+  color: var(--ink);
+  margin-bottom: 6px;
+  display: block;
+}
+
+/* Code blocks */
+.code {
+  margin: 22px 0;
+  background: var(--code-bg);
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: 0 4px 24px rgba(15,20,32,.08);
+  border: 1px solid #1c1f2e;
+}
+.code-header {
+  padding: 10px 16px;
+  background: #0a0d15;
+  border-bottom: 1px solid #1c1f2e;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.code-lang {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: .1em;
+  color: var(--prism-2);
+  text-transform: uppercase;
+  font-weight: 600;
+}
+.code-file {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: var(--mute);
+}
+.code pre {
+  padding: 20px 22px;
+  overflow-x: auto;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13.5px;
+  line-height: 1.65;
+  color: var(--code-fg);
+}
+.code pre::-webkit-scrollbar { height: 8px; }
+.code pre::-webkit-scrollbar-thumb { background: #2d3142; border-radius: 4px; }
+
+/* Prism-ish syntax tokens */
+.tk-kw  { color: #c57bff; font-weight: 500; }
+.tk-typ { color: #4ad6b4; }
+.tk-id  { color: #d6d9e0; }
+.tk-op  { color: #ff8a4c; }
+.tk-num { color: #79b8ff; }
+.tk-str { color: #ffd479; }
+.tk-com { color: #6c7488; font-style: italic; }
+.tk-ann { color: #ff79c6; }
+.tk-key { color: #ffd479; }
+
+/* Terminal output */
+.term {
+  margin: 22px 0;
+  background: #060810;
+  border-radius: var(--radius);
+  overflow: hidden;
+  border: 1px solid #1c1f2e;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  line-height: 1.7;
+}
+.term-header {
+  padding: 8px 14px;
+  background: #10131c;
+  border-bottom: 1px solid #1c1f2e;
+  color: var(--mute);
+  font-size: 11px;
+  letter-spacing: .1em;
+}
+.term-body {
+  padding: 18px 22px;
+  color: #c5cbd8;
+  overflow-x: auto;
+  white-space: pre;
+}
+.term-ok { color: #6fe8a5; }
+.term-err { color: #ff8f8f; }
+.term-hint { color: var(--mute); font-style: italic; }
+
+/* Tables */
+.tbl-wrap {
+  margin: 22px 0;
+  overflow-x: auto;
+  border-radius: var(--radius);
+  border: 1px solid var(--line);
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14.5px;
+}
+th {
+  background: var(--cream);
+  text-align: left;
+  padding: 12px 16px;
+  font-weight: 600;
+  color: var(--ink);
+  border-bottom: 2px solid var(--line);
+}
+td {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--line);
+  color: var(--ink-2);
+}
+tbody tr:last-child td { border-bottom: none; }
+tbody tr:hover td { background: #fafbfd; }
+td.mono, th.mono { font-family: 'JetBrains Mono', monospace; }
+td .check { color: var(--ok); font-weight: 600; }
+td .overflow { color: var(--warn); font-weight: 600; }
+
+/* Figures */
+figure {
+  margin: 32px 0;
+  text-align: center;
+}
+figure svg {
+  max-width: 100%;
+  height: auto;
+  display: inline-block;
+}
+figcaption {
+  margin-top: 12px;
+  font-size: 13.5px;
+  color: var(--mute);
+}
+
+/* Pipeline list */
+.pipeline {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 14px;
+  margin: 26px 0;
+}
+.pipe-step {
+  padding: 18px 16px;
+  background: linear-gradient(180deg, var(--paper), var(--cream));
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  position: relative;
+}
+.pipe-step::after {
+  content: '→';
+  position: absolute;
+  right: -14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--mute);
+  font-weight: 600;
+  z-index: 2;
+  background: var(--paper);
+  padding: 2px;
+}
+.pipe-step:last-child::after { display: none; }
+.pipe-step .k {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--prism);
+  letter-spacing: .08em;
+  margin-bottom: 4px;
+  text-transform: uppercase;
+}
+.pipe-step .v {
+  font-size: 14.5px;
+  color: var(--ink);
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+/* Dissatisfaction cards */
+.pain-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+  margin: 20px 0 26px;
+}
+.pain-card {
+  padding: 16px;
+  background: #fff8f2;
+  border: 1px solid #f4dcc0;
+  border-left: 3px solid var(--prism-3);
+  border-radius: var(--radius);
+}
+.pain-card .name {
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--warn);
+  margin-bottom: 6px;
+}
+.pain-card .gripe {
+  font-size: 14px;
+  color: var(--ink-2);
+  line-height: 1.55;
+}
+
+/* Section anchors */
+a.anchor { color: inherit; text-decoration: none; }
+a.anchor:hover { color: var(--prism); }
+
+/* Footer */
+footer {
+  padding: 40px 24px;
+  background: var(--code-bg);
+  color: var(--mute);
+  text-align: center;
+  font-size: 14px;
+}
+footer a { color: var(--prism-2); text-decoration: none; }
+footer .next {
+  display: block;
+  margin-bottom: 12px;
+  font-family: 'Noto Serif SC', serif;
+  color: var(--code-fg);
+  font-size: 15px;
+}
+
+/* Small screens */
+@media (max-width: 640px) {
+  main { padding: 56px 20px 80px; }
+  .hero { padding: 64px 20px 56px; }
+  h2 { font-size: 26px; }
+  .pipe-step::after { display: none; }
+}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="hero-inner">
+    <div class="hero-eyebrow">七日创造 · 第一日 · 光 · 第 1 集</div>
+    <h1>从一颗加法器<span>开始</span></h1>
+    <p class="subtitle">第一天，程序员说：<strong>要有光</strong>——硬件开发的两条路（RTL 与 SystemC/TLM）各写一遍，同一份电路、两份代码，行为等价靠人盯。Prism 把这两条并成一条：<strong>一份源码，同时下降为可综合 RTL 与 TLM 模型</strong>，加一路 Python 黄金参考做独立对撞。第一集把这份"同源"落到最小可行示例——一颗 32 位加法器。</p>
+    <div class="hero-tags">
+      <span class="hero-tag">module</span>
+      <span class="hero-tag">Signal&lt;u32&gt;</span>
+      <span class="hero-tag">@schedule</span>
+      <span class="hero-tag">run / --cosim</span>
+    </div>
+
+    <figure class="hero-figure">
+      <svg viewBox="0 0 480 180" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="32 位加法器框图">
+        <defs>
+          <linearGradient id="body" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#a678ff" stop-opacity=".35"/>
+            <stop offset="100%" stop-color="#5b4bff" stop-opacity=".55"/>
+          </linearGradient>
+          <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+            <path d="M0,0 L10,5 L0,10 z" fill="#a678ff"/>
+          </marker>
+        </defs>
+        <!-- wires -->
+        <line x1="30" y1="60"  x2="180" y2="72"  stroke="#a678ff" stroke-width="2" marker-end="url(#arr)"/>
+        <line x1="30" y1="120" x2="180" y2="108" stroke="#a678ff" stroke-width="2" marker-end="url(#arr)"/>
+        <line x1="300" y1="90" x2="450" y2="90"  stroke="#ff8a4c" stroke-width="2" marker-end="url(#arr)"/>
+        <!-- body -->
+        <rect x="180" y="40" width="120" height="100" rx="12" fill="url(#body)" stroke="#a678ff" stroke-width="1.5"/>
+        <text x="240" y="82" text-anchor="middle" font-family="Noto Serif SC, serif" font-size="22" font-weight="600" fill="#fff">adder</text>
+        <text x="240" y="106" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="14" fill="#e0dcff">u32 + u32</text>
+        <!-- labels -->
+        <text x="30" y="52"  font-family="JetBrains Mono, monospace" font-size="14" fill="#a678ff" font-weight="600">a</text>
+        <text x="30" y="112" font-family="JetBrains Mono, monospace" font-size="14" fill="#a678ff" font-weight="600">b</text>
+        <text x="450" y="82" text-anchor="end" font-family="JetBrains Mono, monospace" font-size="14" fill="#ff8a4c" font-weight="600">sum</text>
+        <text x="30" y="76"  font-family="JetBrains Mono, monospace" font-size="10" fill="rgba(255,255,255,.5)">[31:0]</text>
+        <text x="30" y="136" font-family="JetBrains Mono, monospace" font-size="10" fill="rgba(255,255,255,.5)">[31:0]</text>
+        <text x="450" y="106" text-anchor="end" font-family="JetBrains Mono, monospace" font-size="10" fill="rgba(255,255,255,.5)">[31:0]</text>
+      </svg>
+      <figcaption>本集主角：三个 u32 端口 + 一句 <tspan font-family="JetBrains Mono, monospace">sum = a + b</tspan></figcaption>
+    </figure>
+  </div>
+</header>
+
+<main>
+
+<section id="s1">
+  <h2>为什么要有光</h2>
+  <p>"起初，地是空虚混沌，渊面黑暗。"</p>
+  <p>黑暗不是没有工具——恰恰相反，硬件开发有<strong>两条割裂的路</strong>：</p>
+
+  <div class="pain-grid">
+    <div class="pain-card">
+      <div class="name">RTL 路径 · Verilog / SystemVerilog / VHDL</div>
+      <div class="gripe">周期精确、可综合、可流片——但表达冗长，算法与微架构缠在一起；一份 FIR 想改流水级，得动 40 处 wire / reg / mux。</div>
+    </div>
+    <div class="pain-card">
+      <div class="name">系统建模路径 · SystemC / TLM</div>
+      <div class="gripe">事务级、快数个数量级，适合架构探索与黄金参考——但<strong>不可综合</strong>；与最终 RTL 的一致性全靠人工维护。</div>
+    </div>
+    <div class="pain-card" style="grid-column: 1 / -1;">
+      <div class="name">HLS · 只补了一半</div>
+      <div class="gripe">"算法 → RTL" 能做，但它吃的 SystemC 输入是<strong>可综合子集</strong>——产不出用于架构探索的 TLM 快模型；反过来，手写 TLM 也无法综合。同一个电路仍需两份代码，两份都要各自演进。</div>
+    </div>
+  </div>
+
+  <p>问题的核心不是语法旧，而是：<strong>同一个硬件被写了两遍，两遍的行为等价没有保证</strong>。</p>
+
+  <h3>Prism 的答案：一份源码，三条下降通路</h3>
+  <p>名字 <em>Prism</em>（棱镜）就是这张图——一束算法的光，经编译折射成两道光谱，再用第三个棱面独立验收：</p>
+
+  <div class="pipeline">
+    <div class="pipe-step">
+      <div class="k">算法层 + 调度层</div>
+      <div class="v"><code>module</code> 写"做什么"<br><code>@schedule</code> 写"怎么做"</div>
+    </div>
+    <div class="pipe-step">
+      <div class="k">→ RTL</div>
+      <div class="v">SystemVerilog<br>可综合、可流片</div>
+    </div>
+    <div class="pipe-step">
+      <div class="k">→ TLM</div>
+      <div class="v">SystemC / C++<br>架构探索快模型</div>
+    </div>
+    <div class="pipe-step">
+      <div class="k">→ golden</div>
+      <div class="v">Python 独立解释器<br>第三方对撞</div>
+    </div>
+  </div>
+
+  <p>三方 cosim 各抓一类 bug：<strong>RTL vs golden</strong> 抓 RTL 后端下降错；<strong>RTL vs TLM</strong> 抓时序抽象契约违反；<strong>golden vs 独立 ISS</strong> 封住"前端共性 bug 三方互查不出"的死角。这一集我们先把 <strong>RTL vs golden</strong> 这条路跑通——<code>--cosim</code>。</p>
+
+  <h3>为什么这一日第一集落在加法器</h3>
+  <p>"一份源码 → 三条通路"听起来宏大；<strong>能跑起来</strong>才是它的第一个证据。加法器不依赖复杂协议、没有时序陷阱，却能同时展示 <code>module</code> / 端口 / 组合赋值 / <code>Signal&lt;u32&gt;</code> / <code>run</code> 五件事——20 分钟就能让 Prism 的三条下降通路第一次同拍发出同一个数值。</p>
+  <p>这就是第一日的第一行"光"。</p>
+</section>
+
+<section id="s2">
+  <h2>环境准备</h2>
+  <p>Prism 编译器在本仓库 <code>prism/frontend/prism.py</code>；<code>run --cosim</code> 需要 Icarus Verilog。</p>
+  <div class="code">
+    <div class="code-header">
+      <span class="code-lang">bash</span>
+      <span class="code-file">一次性设置</span>
+    </div>
+<pre><span class="tk-com"># 安装 iverilog（macOS）</span>
+brew install icarus-verilog
+
+<span class="tk-com"># 编译器位置</span>
+<span class="tk-kw">export</span> PRISM_HOME=<span class="tk-str">/Users/zhuzg/works/soc/prism</span>
+
+<span class="tk-com"># 确认 CLI 可用</span>
+python3 <span class="tk-id">$PRISM_HOME</span>/frontend/prism.py --help</pre>
+  </div>
+  <p>本集源码在 <code>prism/docs/blog/examples/adder.prism</code>。</p>
+</section>
+
+<section id="s3">
+  <h2>32 位加法器</h2>
+  <p>三个 32 位无符号端口——两个输入 <code>a</code>、<code>b</code>，一个输出 <code>sum</code>——和一句组合赋值 <code>sum = a + b</code>。这就是一个加法器的全部。</p>
+
+  <div class="code">
+    <div class="code-header">
+      <span class="code-lang">prism</span>
+      <span class="code-file">adder.prism</span>
+    </div>
+<pre><span class="tk-kw">module</span> <span class="tk-typ">adder</span> {
+    <span class="tk-kw">in</span>  <span class="tk-id">a</span>   : <span class="tk-typ">Signal</span>&lt;<span class="tk-typ">u32</span>&gt;
+    <span class="tk-kw">in</span>  <span class="tk-id">b</span>   : <span class="tk-typ">Signal</span>&lt;<span class="tk-typ">u32</span>&gt;
+    <span class="tk-kw">out</span> <span class="tk-id">sum</span> : <span class="tk-typ">Signal</span>&lt;<span class="tk-typ">u32</span>&gt;
+
+    <span class="tk-id">sum</span> <span class="tk-op">=</span> <span class="tk-id">a</span> <span class="tk-op">+</span> <span class="tk-id">b</span>
+}
+
+<span class="tk-ann">@schedule</span> <span class="tk-typ">adder</span> {
+    <span class="tk-key">bitwidth</span>  : { data:<span class="tk-num">32</span> }
+    <span class="tk-key">pipeline</span>  : <span class="tk-num">1</span> stage
+    <span class="tk-key">storage</span>   : none
+    <span class="tk-key">interface</span> : a, b, sum = <span class="tk-typ">Signal</span>
+    <span class="tk-key">reset</span>     : async_low
+    <span class="tk-key">clock</span>     : <span class="tk-num">100</span> MHz, domain = single
+    <span class="tk-key">resource</span>  : none
+    <span class="tk-key">latency</span>   : <span class="tk-num">1</span> cycle
+}
+
+<span class="tk-kw">design</span> <span class="tk-typ">adder_top</span> {
+    <span class="tk-id">dut</span> : <span class="tk-typ">adder</span>
+}
+
+<span class="tk-kw">run</span> <span class="tk-typ">adder_check</span> <span class="tk-kw">of</span> <span class="tk-typ">adder_top</span> {
+    <span class="tk-key">stim</span> : {
+        a, b = {
+                     <span class="tk-num">0</span>,          <span class="tk-num">0</span>,
+                     <span class="tk-num">1</span>,          <span class="tk-num">2</span>,
+                   <span class="tk-num">100</span>,        <span class="tk-num">200</span>,
+            <span class="tk-num">2147483647</span>, <span class="tk-num">2147483647</span>,    <span class="tk-com">// 2^31-1 + 2^31-1 = 2^32-2</span>
+            <span class="tk-num">4294967295</span>,          <span class="tk-num">1</span>,    <span class="tk-com">// 回绕：2^32-1 + 1 → 0</span>
+        }
+    }
+    <span class="tk-key">until</span> : end <span class="tk-kw">of</span> <span class="tk-key">stim</span>
+    <span class="tk-key">show</span>  : { a, b, sum }
+}</pre>
+  </div>
+
+  <h3>代码解读</h3>
+
+  <h4>算法层 · <code>module adder</code></h4>
+  <ul>
+    <li><code>module adder { ... }</code> 定义一个模块，内部声明端口和逻辑。</li>
+    <li><code>Signal&lt;u32&gt;</code>：<strong>32 位无符号信号端口</strong>。<code>u&lt;N&gt;</code> 是无符号、<code>i&lt;N&gt;</code> 是有符号；Prism 的 <code>+</code> 按端口位宽自动截断（<code>u32</code> 加满 <code>2^32</code> 回绕到 0）。</li>
+    <li><code>sum = a + b</code>：组合赋值，描述输入到输出的函数关系。Prism 会推导出 <code>a + b</code> 的位宽是 32，赋给 32 位 <code>sum</code>——不需要手写位宽表。</li>
+  </ul>
+
+  <h4>调度层 · <code>@schedule adder</code></h4>
+  <p><code>@schedule</code> 补齐 7 项 G1~G7 元数据，告诉编译器"这个模块如何下降到 RTL"：</p>
+  <ul>
+    <li><code>interface : a, b, sum = Signal</code>——三个端口全部按 <code>Signal</code>（裸电平）协议对外，无握手。</li>
+    <li><code>storage : none</code>——没有寄存器，纯组合逻辑。</li>
+    <li><code>pipeline : 1 stage</code> / <code>latency : 1 cycle</code>——一拍算完。</li>
+  </ul>
+
+  <h4>顶层例化 · <code>design adder_top</code></h4>
+  <p><code>design</code> 用来把模块实例组装成完整电路。本集只有一个模块，<code>dut : adder</code> 就够；后续章节会用它串多模块。</p>
+
+  <h4>仿真入口 · <code>run adder_check</code></h4>
+  <ul>
+    <li><code>stim</code>：一张激励表——列名 <code>a, b</code> 只在列头写一次，每两个值一拍（换行只是排版），共 5 拍。</li>
+    <li><code>until : end of stim</code>：跑完这 5 拍就停。</li>
+    <li><code>show</code>：观测这三列，逐行打印。</li>
+  </ul>
+</section>
+
+<section id="s4">
+  <h2>运行</h2>
+
+  <div class="code">
+    <div class="code-header">
+      <span class="code-lang">bash</span>
+      <span class="code-file">shell</span>
+    </div>
+<pre>cd /Users/zhuzg/works/soc
+python3 <span class="tk-id">$PRISM_HOME</span>/frontend/prism.py run \
+    prism/docs/blog/examples/adder.prism --cosim</pre>
+  </div>
+
+  <div class="term">
+    <div class="term-header">▸ terminal</div>
+    <div class="term-body">cycle   a               b               sum
+0       0               0               0
+1       1               2               3
+2       100             200             300
+3       2147483647      2147483647      4294967294
+4       4294967295      1               0
+<span class="term-hint"># stop: end of stim (5 cycles)</span>
+<span class="term-ok">[run --cosim] ✅ PASS: adder_check golden == RTL 仿真（5 拍 × 3 列全等）</span></div>
+  </div>
+
+  <p>表头首列 <code>cycle</code> 是隐式拍号，其余三列按 <code>show</code> 声明序。对照手算：</p>
+
+  <div class="tbl-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th class="mono">cycle</th>
+          <th class="mono">a</th>
+          <th class="mono">b</th>
+          <th class="mono">sum</th>
+          <th>校验</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td class="mono">0</td><td class="mono">0</td><td class="mono">0</td><td class="mono">0</td><td><span class="check">✓</span> 零</td></tr>
+        <tr><td class="mono">1</td><td class="mono">1</td><td class="mono">2</td><td class="mono">3</td><td><span class="check">✓</span> 小整数</td></tr>
+        <tr><td class="mono">2</td><td class="mono">100</td><td class="mono">200</td><td class="mono">300</td><td><span class="check">✓</span> 中等值</td></tr>
+        <tr><td class="mono">3</td><td class="mono">2³¹−1</td><td class="mono">2³¹−1</td><td class="mono">2³²−2</td><td><span class="check">✓</span> 满载不溢出</td></tr>
+        <tr><td class="mono">4</td><td class="mono">2³²−1</td><td class="mono">1</td><td class="mono">0</td><td><span class="overflow">↺</span> 无符号回绕</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="callout">
+    <span class="callout-title">第 3、4 拍的两个边界</span>
+    <p style="margin: 0;">第 4 拍是<strong>满载</strong>——两个 <code>2³¹−1</code> 相加刚好把 <code>sum</code> 打到 <code>u32</code> 的最高可用值（<code>4294967294 = 2³² − 2</code>）；第 5 拍<strong>回绕</strong>——<code>2³²−1 + 1</code> 在 32 位无符号下落到 0。Prism 的加法和 Verilog 语义一致，都是<strong>位宽截断</strong>。这一点在跨语言对接时要记住。</p>
+  </div>
+
+  <h3><code>--cosim</code> 抓的是什么</h3>
+  <p>如果只跑 <code>run</code>（不带 <code>--cosim</code>），Prism 用内置的 Python 参考模型（golden）出结果——这是"编译器自证"。<strong>加上 <code>--cosim</code></strong>，编译器把模块下降成 SystemVerilog、调用 <code>iverilog</code> 真跑一遍，把 SV 侧的观测序列和 golden 侧逐拍逐列比对；两边全等才打 PASS。</p>
+
+  <figure>
+    <svg viewBox="0 0 640 240" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="cosim 对撞流程图">
+      <defs>
+        <marker id="arr2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+          <path d="M0,0 L10,5 L0,10 z" fill="#8892a6"/>
+        </marker>
+        <marker id="arr2ok" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+          <path d="M0,0 L10,5 L0,10 z" fill="#12a060"/>
+        </marker>
+        <linearGradient id="prismbox" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="#5b4bff"/>
+          <stop offset="100%" stop-color="#a678ff"/>
+        </linearGradient>
+      </defs>
+
+      <!-- source -->
+      <rect x="20" y="90" width="130" height="60" rx="8" fill="url(#prismbox)"/>
+      <text x="85" y="115" text-anchor="middle" font-family="Noto Serif SC, serif" font-size="14" font-weight="600" fill="#fff">adder.prism</text>
+      <text x="85" y="132" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="10" fill="rgba(255,255,255,.75)">module + run</text>
+
+      <!-- two paths -->
+      <path d="M150,110 L230,60"  stroke="#8892a6" stroke-width="1.5" fill="none" marker-end="url(#arr2)"/>
+      <path d="M150,130 L230,180" stroke="#8892a6" stroke-width="1.5" fill="none" marker-end="url(#arr2)"/>
+
+      <!-- golden path -->
+      <rect x="230" y="30" width="160" height="60" rx="8" fill="#fbf9f4" stroke="#5b4bff" stroke-width="1.5"/>
+      <text x="310" y="55" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="12" fill="#5b4bff" font-weight="600">golden.py</text>
+      <text x="310" y="72" text-anchor="middle" font-family="Noto Serif SC, serif" font-size="11" fill="#4a5468">Python 参考模型</text>
+
+      <!-- SV path -->
+      <rect x="230" y="150" width="160" height="60" rx="8" fill="#fbf9f4" stroke="#ff8a4c" stroke-width="1.5"/>
+      <text x="310" y="172" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="12" fill="#c85d1c" font-weight="600">iverilog</text>
+      <text x="310" y="188" text-anchor="middle" font-family="Noto Serif SC, serif" font-size="11" fill="#4a5468">SystemVerilog 仿真</text>
+
+      <line x1="390" y1="60"  x2="440" y2="105" stroke="#5b4bff" stroke-width="1.5" marker-end="url(#arr2)"/>
+      <line x1="390" y1="180" x2="440" y2="135" stroke="#ff8a4c" stroke-width="1.5" marker-end="url(#arr2)"/>
+
+      <!-- comparator -->
+      <rect x="440" y="90" width="140" height="60" rx="8" fill="#0f1420"/>
+      <text x="510" y="112" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" fill="#a678ff" font-weight="600">逐拍逐列比对</text>
+      <text x="510" y="132" text-anchor="middle" font-family="Noto Serif SC, serif" font-size="12" fill="#6fe8a5" font-weight="600">✅ PASS</text>
+    </svg>
+    <figcaption>同一份 <tspan font-family="JetBrains Mono, monospace">.prism</tspan> 走两条独立下降通路——两侧值域全等才打 PASS。</figcaption>
+  </figure>
+
+  <p>这一步同时钉住了两个后端：<strong>golden 求值器</strong>与 <strong>RTL 生成器</strong>——回归时任何一个出错，<code>--cosim</code> 会立刻指出是哪一拍哪一列分歧。</p>
+</section>
+
+<section id="s5">
+  <h2>生成的 RTL 长什么样</h2>
+  <p><code>prism.py gen-rtl</code> 把 <code>.prism</code> 下降到可综合的 SystemVerilog：</p>
+
+  <div class="code">
+    <div class="code-header">
+      <span class="code-lang">bash</span>
+      <span class="code-file">shell</span>
+    </div>
+<pre>python3 <span class="tk-id">$PRISM_HOME</span>/frontend/prism.py gen-rtl \
+    prism/docs/blog/examples/adder.prism -o /tmp/adder.sv</pre>
+  </div>
+
+  <p><code>/tmp/adder.sv</code> 里 <code>adder</code> 模块本体的核心部分（去掉 clk/rst 与顶层网表包装）：</p>
+
+  <div class="code">
+    <div class="code-header">
+      <span class="code-lang">systemverilog</span>
+      <span class="code-file">adder.sv</span>
+    </div>
+<pre><span class="tk-kw">module</span> <span class="tk-typ">adder_rtl</span> #(<span class="tk-kw">parameter int</span> DW = <span class="tk-num">32</span>)(
+  <span class="tk-kw">input</span>  <span class="tk-kw">logic</span> clk,
+  <span class="tk-kw">input</span>  <span class="tk-kw">logic</span> rst_n,
+  <span class="tk-kw">input</span>  <span class="tk-kw">logic</span> [<span class="tk-num">32</span><span class="tk-op">-</span><span class="tk-num">1</span>:<span class="tk-num">0</span>] a,
+  <span class="tk-kw">input</span>  <span class="tk-kw">logic</span> [<span class="tk-num">32</span><span class="tk-op">-</span><span class="tk-num">1</span>:<span class="tk-num">0</span>] b,
+  <span class="tk-kw">output</span> <span class="tk-kw">logic</span> [<span class="tk-num">32</span><span class="tk-op">-</span><span class="tk-num">1</span>:<span class="tk-num">0</span>] sum
+);
+
+  <span class="tk-com">// [P7] 组合输出 / 局部 wire 赋值</span>
+  <span class="tk-kw">assign</span> sum <span class="tk-op">=</span> (a <span class="tk-op">+</span> b);
+
+<span class="tk-kw">endmodule</span></pre>
+  </div>
+
+  <div class="callout">
+    <span class="callout-title">Prism ↔ SystemVerilog 对应</span>
+    <p style="margin: 0;"><code>Signal&lt;u32&gt;</code> 就是 <code>logic [31:0]</code>；<code>sum = a + b</code> 就是一条 <code>assign</code>。Prism 帮你把端口位宽、时钟复位分发、顶层网表包装全部生成，但电路核心和你手写的等价。</p>
+  </div>
+</section>
+
+<section id="s6">
+  <h2>小结</h2>
+  <p>这一集我们做了三件事：</p>
+  <ol>
+    <li>用 Prism 写了<strong>32 位加法器</strong>：3 个 <code>u32</code> 端口，一句 <code>sum = a + b</code>。</li>
+    <li>用 <code>run</code> 段声明 5 组激励，覆盖普通值 / 满载 / 回绕三类边界。</li>
+    <li>用 <code>--cosim</code> 把 <strong>golden 参考模型</strong> 与 <strong>iverilog 仿真 SV</strong> 逐拍对撞，一次同时验证组合语义实现和 RTL 后端下降。</li>
+  </ol>
+
+  <h3>Prism 工具链全景</h3>
+  <div class="pipeline">
+    <div class="pipe-step">
+      <div class="k">source</div>
+      <div class="v"><code>.prism</code> 源码<br>算法 + 调度</div>
+    </div>
+    <div class="pipe-step">
+      <div class="k">run</div>
+      <div class="v">Python golden<br>直跑出表</div>
+    </div>
+    <div class="pipe-step">
+      <div class="k">--cosim</div>
+      <div class="v">iverilog SV<br>逐拍对撞</div>
+    </div>
+    <div class="pipe-step">
+      <div class="k">gen-rtl</div>
+      <div class="v">生成 .sv<br>供下游综合</div>
+    </div>
+  </div>
+
+  <p><strong>下一集</strong>，我们讲 Prism 的<strong>类型系统</strong>——<code>u&lt;N&gt;</code> / <code>i&lt;N&gt;</code> / <code>bool</code>、位宽推导规则、以及为什么 1 位有符号 <code>i1</code> 只能取 <code>{-1, 0}</code>。会用类型系统把这一集的加法器扩到带符号版本，观察溢出与回绕的语义差。</p>
+</section>
+
+<section id="s7">
+  <h2>练习</h2>
+  <ol>
+    <li>把端口从 <code>Signal&lt;u32&gt;</code> 换成 <code>Signal&lt;i32&gt;</code>，同时把 <code>stim</code> 表里最后两行的 <code>4294967295</code> 与 <code>2147483647</code> 换成同位宽有符号域的值（比如 <code>-1</code>、<code>-2</code>），重跑 <code>--cosim</code>：<code>sum</code> 列现在按 <code>i32</code> 回绕显示。</li>
+    <li>把 <code>stim</code> 表里的 <code>4294967295</code> 换成 <code>5000000000</code>（超过 <code>u32</code> 上限），跑一次 <code>run</code>——报错会精确指出"向量 4 'a'=5000000000 越界（端口位宽 u32，范围 [0,4294967295]）"。</li>
+    <li>在 <code>show</code> 里加一列表达式 <code>(a + b) as direct</code>——它是<strong>表达式列</strong>，和端口列 <code>sum</code> 独立求值；观察两列是否逐拍相等，理解"表达式列"与"端口列"在 <code>--cosim</code> 里是<strong>同一份 golden、两条 RTL 通路</strong>。</li>
+  </ol>
+</section>
+
+<section id="s8">
+  <h2>附：一条命令复现本集</h2>
+  <div class="code">
+    <div class="code-header">
+      <span class="code-lang">bash</span>
+      <span class="code-file">reproduce</span>
+    </div>
+<pre><span class="tk-kw">export</span> PRISM_HOME=<span class="tk-str">/Users/zhuzg/works/soc/prism</span>
+cd <span class="tk-str">/Users/zhuzg/works/soc</span>
+python3 <span class="tk-id">$PRISM_HOME</span>/frontend/prism.py run \
+    prism/docs/blog/examples/adder.prism --cosim</pre>
+  </div>
+  <p>本集源码：<code>prism/docs/blog/examples/adder.prism</code></p>
+</section>
+
+</main>
+
+<footer>
+  <span class="next">第 2 集 · Prism 的类型系统：u&lt;N&gt;、i&lt;N&gt; 与位宽推导</span>
+  七日创造 · 第一日 · 第 1 集 · <a href="01-adder.md">Markdown 版</a>
+</footer>
+
+</body>
+</html>

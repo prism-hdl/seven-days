@@ -1,0 +1,190 @@
+module u8_add {
+    a   : Signal<u8>
+    b   : Signal<u8>
+    sum : Signal<u8>
+    sum = a + b
+}
+
+module i8_add {
+    a   : Signal<i8>
+    b   : Signal<i8>
+    sum : Signal<i8>
+    sum = a + b
+}
+
+module wide_add {
+    a   : Signal<u8>
+    b   : Signal<u8>
+    sum : Signal<u9>
+    sum = a + b
+}
+
+module i1_gate {
+    a  : Signal<i1>
+    b  : Signal<i1>
+    y  : Signal<i1>
+    y  = a & b
+}
+
+module bool_flag {
+    en : Signal<bool>
+    x  : Signal<u8>
+    y  : Signal<u8>
+    y  = en ? x : 0
+}
+
+module hex_lit {
+    x   : Signal<u16>
+    y   : Signal<u16>
+    y   = (x & 0x00FF) | 0xFF00
+}
+
+@schedule u8_add {
+    bitwidth  : { data:8 }
+    pipeline  : 1 stage
+    storage   : none
+    interface : a, b, sum = Signal
+    reset     : async_low
+    clock     : 100 MHz, domain = single
+    resource  : none
+    latency   : 1 cycle
+}
+
+@schedule i8_add {
+    bitwidth  : { data:8 }
+    pipeline  : 1 stage
+    storage   : none
+    interface : a, b, sum = Signal
+    reset     : async_low
+    clock     : 100 MHz, domain = single
+    resource  : none
+    latency   : 1 cycle
+}
+
+@schedule wide_add {
+    bitwidth  : { data:8, sum:9 }
+    pipeline  : 1 stage
+    storage   : none
+    interface : a, b, sum = Signal
+    reset     : async_low
+    clock     : 100 MHz, domain = single
+    resource  : none
+    latency   : 1 cycle
+}
+
+@schedule i1_gate {
+    bitwidth  : { data:1 }
+    pipeline  : 1 stage
+    storage   : none
+    interface : a, b, y = Signal
+    reset     : async_low
+    clock     : 100 MHz, domain = single
+    resource  : none
+    latency   : 1 cycle
+}
+
+@schedule bool_flag {
+    bitwidth  : { data:8 }
+    pipeline  : 1 stage
+    storage   : none
+    interface : en, x, y = Signal
+    reset     : async_low
+    clock     : 100 MHz, domain = single
+    resource  : none
+    latency   : 1 cycle
+}
+
+@schedule hex_lit {
+    bitwidth  : { data:16 }
+    pipeline  : 1 stage
+    storage   : none
+    interface : x, y = Signal
+    reset     : async_low
+    clock     : 100 MHz, domain = single
+    resource  : none
+    latency   : 1 cycle
+}
+
+design u8_top { d : u8_add }
+design i8_top { d : i8_add }
+design wide_top { d : wide_add }
+design i1_top { d : i1_gate }
+design bool_top { d : bool_flag }
+design hex_top { d : hex_lit }
+
+// ---- 1. u8 vs i8：同位宽、不同符号，加法溢出后的解释 ----
+run u8_run of u8_top {
+    stim : {
+        a, b = {
+            100,  55,
+            100, 100,  // 200 落在 u8 [0,255]
+            200, 100,  // 300 > 255 → 回绕 44
+        }
+    }
+    until : end of stim
+    show  : { a, b, sum }
+}
+
+run i8_run of i8_top {
+    stim : {
+        a, b = {
+             100,   55,
+             100,  100,  // 200 > 127 → i8 回绕 = -56
+            -100, -100,  // -200 < -128 → i8 回绕 = 56
+        }
+    }
+    until : end of stim
+    show  : { a, b, sum }
+}
+
+// ---- 2. 位宽防溢出：sum 用 u9，200+100=300 完整保住 ----
+run wide_run of wide_top {
+    stim : {
+        a, b = {
+            200, 100,
+            255, 255,  // 510 = 2^9-2，u9 恰好容得下
+        }
+    }
+    until : end of stim
+    show  : { a, b, sum }
+}
+
+// ---- 3. i1 只能取 -1 / 0 ----
+run i1_run of i1_top {
+    stim : {
+        a, b = {
+             0,  0,
+             0, -1,
+            -1,  0,
+            -1, -1,
+        }
+    }
+    until : end of stim
+    show  : { a, b, y }
+}
+
+// ---- 4. bool 端口 + 三元运算符 ----
+run bool_run of bool_top {
+    stim : {
+        en, x = {
+            1,  42,
+            0,  42,
+            1, 255,
+        }
+    }
+    until : end of stim
+    show  : { en, x, y }
+}
+
+// ---- 5. 常量：十六进制字面量与掩码 ----
+run hex_run of hex_top {
+    stim : {
+        x = {
+            0x1234,
+            0xABCD,
+            0x0000,
+        }
+    }
+    until : end of stim
+    show  : { x, y }
+}
