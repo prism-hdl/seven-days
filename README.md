@@ -41,14 +41,14 @@ Prism 的答案：**一份源码，同时下降为 RTL + TLM + 独立 Python gol
 
 ## 依赖
 
-- **Prism 编译器**：本仓库不含，另附于 `prism-hdl/prism`（`prism/frontend/prism.py`）。克隆到位后 `export PRISM_HOME=/path/to/prism`。
+- **Prism 编译器**：`pip install prism-hdl`，装好后全局命令 `prism` 即可使用。
 - **Icarus Verilog**（`--cosim` / `--rtl` 需要）：macOS `brew install icarus-verilog`。
 - **Python 3**（编译器运行环境）。
 
 一条命令复现某一集：
 
 ```bash
-python3 "$PRISM_HOME"/frontend/prism.py run examples/<file>.prism --cosim
+prism run examples/<file>.prism --cosim
 ```
 
 ---
@@ -58,7 +58,8 @@ python3 "$PRISM_HOME"/frontend/prism.py run examples/<file>.prism --cosim
 ```
 seven-days/
 ├── README.md              ← 你正在读
-├── outline.md             ← 27 集完整大纲
+├── outline.md             ← 主 outline · 27 集 · 创世记版
+├── outline-nvwa.md        ← 番外 · 25 集 · 女娲七日造人版（仅供对照，不发布）
 ├── episodes/              ← 每一集的正文（HTML）
 │   └── day1/
 ├── examples/              ← 每一集引用的 Prism 源码（可独立跑）
@@ -71,7 +72,8 @@ seven-days/
 
 连载写作中。当前进度：
 
-- **大纲** 已定稿（`outline.md`）
+- **主大纲** 已定稿（`outline.md`，创世记版 · 27 集）
+- **番外** 保留（`outline-nvwa.md`，女娲版 · 25 集）——不发布，仅供写作时借"引绳于泥中，举以为人"给 `Composer` 那一集做点睛
 - **正文** 未发布——旧的两篇草稿（`_archive/01-adder.html`、`_archive/02-types.html`）是重构前的版本，需要按新大纲重写才能贴出来。
 
 ---

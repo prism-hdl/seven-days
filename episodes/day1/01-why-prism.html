@@ -1,0 +1,492 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 1 集 · 一道裂缝：为什么要有 Prism · 创世记 · 第一日 · 光</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&family=Noto+Serif+SC:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #0f1420; --ink-2: #1c2333; --ink-3: #4a5468; --mute: #8892a6;
+  --line: #e5e8ef; --paper: #ffffff; --cream: #fbf9f4;
+  --prism: #5b4bff; --prism-2: #a678ff; --prism-3: #ff8a4c;
+  --ok: #12a060; --warn: #d84a4a;
+  --code-bg: #10131c; --code-fg: #d6d9e0; --radius: 10px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body { font-family: 'Inter', 'Noto Serif SC', -apple-system, sans-serif; color: var(--ink); background: var(--paper); line-height: 1.7; font-size: 17px; -webkit-font-smoothing: antialiased; }
+
+/* Hero */
+.hero { position: relative; padding: 96px 24px 80px; background: radial-gradient(ellipse 900px 500px at 30% 40%, rgba(166,120,255,.35) 0%, transparent 55%), radial-gradient(ellipse 700px 400px at 70% 60%, rgba(255,138,76,.22) 0%, transparent 55%), #050810; color: #fff; overflow: hidden; }
+.hero-inner { max-width: 900px; margin: 0 auto; position: relative; z-index: 2; }
+.hero-eyebrow { display: inline-block; padding: 6px 14px; border-radius: 999px; background: rgba(255,255,255,.08); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,.16); font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: .08em; margin-bottom: 22px; color: #d6d0ff; }
+.hero h1 { font-family: 'Noto Serif SC', serif; font-weight: 700; font-size: clamp(34px, 5.4vw, 54px); line-height: 1.2; margin-bottom: 20px; letter-spacing: -0.01em; }
+.hero h1 em { font-style: normal; background: linear-gradient(120deg, #ffffff 0%, #ffd9a8 60%, #ff8a4c 100%); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.hero .subtitle { font-size: 19px; font-weight: 300; color: rgba(255,255,255,.82); margin-bottom: 44px; max-width: 660px; line-height: 1.75; }
+.hero .subtitle strong { color: #ffffff; font-weight: 600; text-shadow: 0 0 14px rgba(255,138,76,.45); }
+.hero .verse { border-left: 2px solid rgba(255,138,76,.6); padding-left: 16px; margin-bottom: 36px; font-family: 'Noto Serif SC', serif; font-style: italic; color: rgba(255,255,255,.65); font-size: 16px; line-height: 1.85; }
+.hero .verse cite { display: block; margin-top: 6px; font-style: normal; font-size: 13px; color: rgba(255,255,255,.4); }
+
+/* Hero SVG */
+.hero-figure { padding: 24px 20px; background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.08); border-radius: 16px; }
+.hero-figure svg { width: 100%; height: auto; display: block; }
+.hero-figure figcaption { text-align: center; margin-top: 14px; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: rgba(255,255,255,.55); letter-spacing: .04em; }
+
+/* Content */
+main { max-width: 780px; margin: 0 auto; padding: 76px 24px 120px; }
+section { margin-bottom: 72px; }
+h2 { font-family: 'Noto Serif SC', serif; font-size: 30px; font-weight: 700; margin-bottom: 20px; padding-top: 8px; position: relative; }
+h2::before { content: ''; display: inline-block; width: 32px; height: 3px; background: linear-gradient(90deg, var(--prism), var(--prism-3)); border-radius: 2px; vertical-align: middle; margin-right: 12px; transform: translateY(-6px); }
+h3 { font-size: 20px; font-weight: 600; margin: 32px 0 12px; color: var(--ink-2); }
+p { margin-bottom: 16px; color: var(--ink-2); }
+p code, li code { font-family: 'JetBrains Mono', monospace; font-size: .93em; padding: 2px 6px; background: var(--cream); border: 1px solid var(--line); border-radius: 4px; color: var(--prism); font-weight: 500; }
+strong { color: var(--ink); font-weight: 600; }
+em { color: var(--ink); font-style: italic; }
+ul, ol { margin: 0 0 20px 24px; color: var(--ink-2); }
+li { margin-bottom: 8px; }
+
+.verse-inline { padding: 18px 22px; margin: 22px 0; background: linear-gradient(90deg, #fdf6ec 0%, transparent 60%); border-left: 3px solid var(--prism-3); border-radius: 0 var(--radius) var(--radius) 0; font-family: 'Noto Serif SC', serif; font-style: italic; color: var(--ink-3); }
+.verse-inline cite { display: block; margin-top: 6px; font-style: normal; font-size: 13px; color: var(--mute); }
+
+/* Split cards */
+.split { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 24px 0 28px; }
+.split-card { padding: 20px; border-radius: var(--radius); border: 1px solid var(--line); background: var(--cream); }
+.split-card .name { font-family: 'JetBrains Mono', monospace; font-weight: 600; font-size: 15px; margin-bottom: 6px; }
+.split-card .body { font-size: 14.5px; color: var(--ink-2); line-height: 1.65; }
+.split-card.rtl { border-left: 3px solid var(--warn); }
+.split-card.rtl .name { color: var(--warn); }
+.split-card.tlm { border-left: 3px solid var(--prism-3); }
+.split-card.tlm .name { color: var(--prism-3); }
+
+/* Beam table */
+.beams { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 24px 0; }
+.beam { padding: 18px 16px; background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius); text-align: center; }
+.beam .swatch { width: 32px; height: 4px; border-radius: 2px; margin: 0 auto 12px; }
+.beam-rtl .swatch { background: var(--warn); }
+.beam-tlm .swatch { background: var(--prism-3); }
+.beam-gold .swatch { background: var(--prism); }
+.beam .name { font-family: 'JetBrains Mono', monospace; font-weight: 600; font-size: 14px; color: var(--ink); margin-bottom: 4px; }
+.beam .use { font-size: 13.5px; color: var(--ink-3); line-height: 1.55; }
+
+/* Code blocks */
+.code { margin: 22px 0; background: var(--code-bg); border-radius: var(--radius); overflow: hidden; box-shadow: 0 4px 24px rgba(15,20,32,.08); border: 1px solid #1c1f2e; }
+.code-header { padding: 10px 16px; background: #0a0d15; border-bottom: 1px solid #1c1f2e; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.code-lang { font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: .1em; color: var(--prism-2); text-transform: uppercase; font-weight: 600; }
+.code-file { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--mute); }
+.code pre { padding: 20px 22px; overflow-x: auto; font-family: 'JetBrains Mono', monospace; font-size: 13.5px; line-height: 1.65; color: var(--code-fg); }
+.tk-kw   { color: #c57bff; font-weight: 500; }
+.tk-decl { color: #e08aff; font-weight: 600; }
+.tk-name { color: #ffffff; font-weight: 500; }
+.tk-dir  { color: #7ee8d8; font-weight: 500; }
+.tk-typ  { color: #4ad6b4; }
+.tk-prim { color: #79dfff; }
+.tk-rf   { color: #ffd479; font-weight: 500; }
+.tk-rw   { color: #b8a0e0; }
+.tk-stor { color: #4ad6b4; font-weight: 600; }
+.tk-sf   { color: #c5b890; }
+.tk-sv   { color: #8ab4f8; }
+.tk-op   { color: #ff8a4c; }
+.tk-num  { color: #79b8ff; }
+.tk-hex  { color: #79b8ff; font-weight: 500; }
+.tk-com  { color: #6c7488; font-style: italic; }
+.tk-ann  { color: #ff79c6; }
+.tk-str  { color: #ffd479; }
+.tk-fn   { color: #4ad6b4; }
+
+/* Terminal */
+.term { margin: 18px 0; background: #060810; border-radius: var(--radius); overflow: hidden; border: 1px solid #1c1f2e; font-family: 'JetBrains Mono', monospace; font-size: 12.5px; line-height: 1.7; }
+.term-header { padding: 8px 14px; background: #10131c; border-bottom: 1px solid #1c1f2e; color: var(--mute); font-size: 11px; letter-spacing: .1em; }
+.term-body { padding: 16px 20px; color: #c5cbd8; overflow-x: auto; white-space: pre; }
+.term-ok { color: #6fe8a5; }
+.term-hint { color: var(--mute); font-style: italic; }
+
+/* Tables */
+.tbl-wrap { margin: 20px 0; overflow-x: auto; border-radius: var(--radius); border: 1px solid var(--line); }
+table { width: 100%; border-collapse: collapse; font-size: 14.5px; }
+th { background: var(--cream); text-align: left; padding: 12px 16px; font-weight: 600; border-bottom: 2px solid var(--line); }
+td { padding: 12px 16px; border-bottom: 1px solid var(--line); color: var(--ink-2); }
+tbody tr:last-child td { border-bottom: none; }
+td.mono, th.mono { font-family: 'JetBrains Mono', monospace; }
+td .check { color: var(--ok); font-weight: 600; }
+
+/* Callout */
+.callout { padding: 18px 22px; background: var(--cream); border-left: 3px solid var(--prism); border-radius: 0 var(--radius) var(--radius) 0; margin: 24px 0; font-size: 15.5px; }
+.callout-title { font-weight: 600; color: var(--ink); margin-bottom: 6px; display: block; }
+
+/* Next nav */
+.pn { display: flex; justify-content: space-between; gap: 12px; padding: 16px 0 32px; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); margin-bottom: 56px; font-size: 14px; color: var(--mute); }
+.pn a { color: var(--prism); text-decoration: none; font-weight: 500; }
+
+footer { padding: 40px 24px; background: var(--code-bg); color: var(--mute); text-align: center; font-size: 14px; }
+footer a { color: var(--prism-2); text-decoration: none; }
+footer .next { display: block; margin-bottom: 12px; font-family: 'Noto Serif SC', serif; color: var(--code-fg); font-size: 15px; }
+
+@media (max-width: 640px) {
+  main { padding: 48px 20px 80px; }
+  .hero { padding: 64px 20px 56px; }
+  h2 { font-size: 24px; }
+  .split, .beams { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="hero-inner">
+    <div class="hero-eyebrow">七日创造 · 第一日 · 光 · 第 1 集</div>
+    <h1>一道裂缝<br><em>为什么要有 Prism</em></h1>
+    <p class="subtitle">混沌不是没有工具——恰恰相反，硬件世界有两层黑暗：<strong>同一个硬件被写了两遍</strong>（RTL + TLM，等价性靠人盯），而语言本身<strong>没有软件开发的精神与思想</strong>（没有类型、没有泛型、没有模式匹配）。Prism 同时回应这两层——一份源码三下降解决结构，类型驱动解决表达。</p>
+
+    <div class="verse">
+      "起初，神创造天地。地是空虚混沌，渊面黑暗；神的灵运行在水面上。<br>神说，要有光，就有了光。神看光是好的，就把光暗分开了。"
+      <cite>—— 《创世记》 1:1–4</cite>
+    </div>
+
+    <figure class="hero-figure">
+      <svg viewBox="0 0 720 320" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="一束白光经 Prism 棱镜折射为三道光谱">
+        <defs>
+          <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+            <feGaussianBlur stdDeviation="4" result="b"/>
+            <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+          <filter id="glow2" x="-50%" y="-50%" width="200%" height="200%">
+            <feGaussianBlur stdDeviation="10" result="b"/>
+            <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+          <linearGradient id="spectrum" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%"   stop-color="#d84a4a" stop-opacity=".6"/>
+            <stop offset="40%"  stop-color="#ff8a4c" stop-opacity=".4"/>
+            <stop offset="70%"  stop-color="#a678ff" stop-opacity=".45"/>
+            <stop offset="100%" stop-color="#5b4bff" stop-opacity=".55"/>
+          </linearGradient>
+          <linearGradient id="glass" x1="0" y1="0" x2=".8" y2="1">
+            <stop offset="0%" stop-color="rgba(255,255,255,.14)"/>
+            <stop offset="50%" stop-color="rgba(160,140,255,.06)"/>
+            <stop offset="100%" stop-color="rgba(255,255,255,.1)"/>
+          </linearGradient>
+        </defs>
+
+        <!-- 入射白光：梯形，有体积感 -->
+        <polygon points="30,148 310,152 310,168 30,172" fill="rgba(255,255,255,.85)" filter="url(#glow)"/>
+        <text x="36" y="136" font-family="JetBrains Mono, monospace" font-size="13" fill="rgba(255,255,255,.7)">module adder { ... }</text>
+        <text x="36" y="192" font-family="Noto Serif SC, serif" font-size="12" fill="rgba(255,255,255,.4)">一份源码 · 算法 + 调度</text>
+
+        <!-- 棱镜：大三角 + 玻璃质感 -->
+        <polygon points="310,55 470,285 150,285" fill="url(#glass)" stroke="rgba(255,255,255,.3)" stroke-width="1.5"/>
+        <!-- 内部折射路径（弯折） -->
+        <polygon points="310,152 395,168 395,178 310,168" fill="rgba(255,255,255,.2)"/>
+        <!-- 棱镜标注 -->
+        <text x="290" y="248" font-family="Noto Serif SC, serif" font-size="20" font-weight="600" fill="rgba(255,255,255,.6)">Prism</text>
+        <text x="275" y="270" font-family="JetBrains Mono, monospace" font-size="11" fill="rgba(255,255,255,.35)">编译器 · 三棱折射</text>
+
+        <!-- 出射扇形连续光谱（底层渐变） -->
+        <polygon points="395,162 700,60 700,270 395,178" fill="url(#spectrum)" filter="url(#glow2)" opacity=".5"/>
+
+        <!-- 三条主光束（梯形有宽度） -->
+        <polygon points="395,160 700,78 700,100 395,166" fill="#d84a4a" opacity=".9" filter="url(#glow)"/>
+        <polygon points="395,166 700,155 700,177 395,172" fill="#ff8a4c" opacity=".9" filter="url(#glow)"/>
+        <polygon points="395,172 700,232 700,254 395,178" fill="#a678ff" opacity=".9" filter="url(#glow)"/>
+
+        <!-- 光束标签 -->
+        <text x="530" y="72" font-family="JetBrains Mono, monospace" font-size="13" font-weight="600" fill="#ff8f8f">RTL · SystemVerilog</text>
+        <text x="530" y="90" font-family="Noto Serif SC, serif" font-size="11" fill="rgba(255,255,255,.45)">可综合 · 周期精确 · iverilog</text>
+
+        <text x="530" y="148" font-family="JetBrains Mono, monospace" font-size="13" font-weight="600" fill="#ffb48a">TLM · SystemC</text>
+        <text x="530" y="166" font-family="Noto Serif SC, serif" font-size="11" fill="rgba(255,255,255,.45)">事务级 · 架构探索 · g++</text>
+
+        <text x="530" y="226" font-family="JetBrains Mono, monospace" font-size="13" font-weight="600" fill="#c9a8ff">Golden · Python</text>
+        <text x="530" y="244" font-family="Noto Serif SC, serif" font-size="11" fill="rgba(255,255,255,.45)">独立解释 AST · 第三方对撞</text>
+
+        <!-- 底部注释 -->
+        <text x="160" y="310" font-family="Noto Serif SC, serif" font-size="12" fill="rgba(255,255,255,.3)">三份产物喂同一份激励 → 逐拍对撞 → 差异即报错</text>
+      </svg>
+      <figcaption>名字 <tspan font-family="JetBrains Mono, monospace">Prism</tspan>（棱镜）就是这张图——一束算法的白光，经编译器折射为三道光谱，第三个棱面独立验收</figcaption>
+    </figure>
+  </div>
+</header>
+
+<main>
+
+<div class="pn">
+  <span>七日创造 · 第 1 集 · 共 27 集</span>
+  <a href="02-layered.html">下一集 · 分层与语法骨架 →</a>
+</div>
+
+<section id="s1">
+  <h2>混沌：两条割裂的路</h2>
+  <p>硬件开发有两条路。它们描述<strong>同一个电路</strong>，却要各写一遍——</p>
+
+  <div class="split">
+    <div class="split-card rtl">
+      <div class="name">RTL 路径</div>
+      <div class="body">Verilog / SystemVerilog / VHDL。周期精确、可综合、可流片。代价：<strong>算法与微架构缠在一起</strong>——一份 FIR 想改流水级，得动 40 处 <code>wire</code> / <code>reg</code> / <code>mux</code>；<code>always @(posedge clk)</code> 里 <code>=</code> 与 <code>&lt;=</code> 一位之差就能出幽灵锁。</div>
+    </div>
+    <div class="split-card tlm">
+      <div class="name">系统建模路径</div>
+      <div class="body">SystemC / TLM。事务级、快数个数量级，适合架构探索与作为黄金参考。代价：<strong>不可综合</strong>——它与最终 RTL 之间的一致性全靠人工维护，两边演进不同步是常态。</div>
+    </div>
+  </div>
+
+  <p>两条路各写一遍意味着：<strong>同一颗硬件的行为等价性无保证</strong>。你写完 RTL、写完 TLM，跑仿真看两边算出的数是不是相同；改一个字段，两边都要动；漏动一遍，仿真器与综合器各自解释——这就是"黑暗"。</p>
+
+  <p>HLS 部分弥合了"算法 → RTL"——但它吃的 SystemC 输入是<strong>可综合子集</strong>，产不出用于架构探索的 TLM 快模型；反过来，手写 TLM 也无法综合。<strong>HLS 只补了半半。</strong></p>
+
+  <p>但还有一层更深的黑暗——一个写了十年 Rust / TypeScript / Python 的软件工程师第一次打开 Verilog 文件时，他不会说"这语言有两条路"，他会说：<strong>"这语言不想我说话。"</strong></p>
+
+  <ul>
+    <li>没有类型——只有 <code>wire</code> 和 <code>reg</code>，位宽靠 <code>[31:0]</code> 数数，符号靠人脑记；</li>
+    <li>没有泛型——改一个 8 位加法器成 32 位，复制粘贴、全局替换；</li>
+    <li>没有模式匹配——所有分支都是 <code>case</code> + <code>default</code> + 手写位段宏；</li>
+    <li>没有表达式——你想写 <code>sum = a + b</code>，它要你声明 <code>wire [31:0] sum;</code> + <code>assign sum = a + b;</code>，再告诉综合器这不是 latch；</li>
+    <li>没有包管理、没有类型检查器、没有 LSP、没有 <code>--help</code> 能直接跑通的 30 秒上手。</li>
+  </ul>
+
+  <p>软件世界的语言在进化——从 C 到 Rust、从 Java 到 Kotlin——每一代都在<strong>让编译器替人多想一步</strong>。硬件描述语言停在 1985。不是它"不够快"，是它<strong>不配当一个工程师用来思考的工具</strong>。</p>
+
+  <div class="callout">
+    <span class="callout-title">问题的核心——两层黑暗</span>
+    <p><strong>结构层</strong>：同一个硬件被写了两遍（RTL + TLM），两遍的等价性没有编译器的保证。</p>
+    <p style="margin:8px 0 0;"><strong>表达层</strong>：语言本身没有软件开发的精神与思想——没有类型、没有泛型、没有模式匹配、没有"让编译器替人想"的哲学。对软件工程师来说，Verilog 不香——不是它做不了事，是它<strong>不让你用思考的方式做事</strong>。</p>
+    <p style="margin:8px 0 0;">Prism 同时回应这两层：一份源码三下降解决结构；类型驱动 + 泛型 + <code>match</code> + <code>Interface</code> 解决表达。</p>
+  </div>
+</section>
+
+<section id="s2">
+  <h2>神说：要有光</h2>
+
+  <p>Prism 的答案：<strong>一份源码，同时下降为可综合 RTL 与 SystemC/TLM 模型</strong>——再加一路独立 Python 黄金参考——三条通路一起走，逐拍对撞。</p>
+
+  <p>编译器从同一棵 AST 分头下降到三个后端：</p>
+
+  <div class="beams">
+    <div class="beam beam-rtl">
+      <div class="swatch"></div>
+      <div class="name">RTL</div>
+      <div class="use">SystemVerilog · 可综合 · 周期精确</div>
+    </div>
+    <div class="beam beam-tlm">
+      <div class="swatch"></div>
+      <div class="name">TLM</div>
+      <div class="use">SystemC · 事务级 · 架构探索快模型</div>
+    </div>
+    <div class="beam beam-gold">
+      <div class="swatch"></div>
+      <div class="name">Golden</div>
+      <div class="use">Python 解释 AST · 独立 oracle</div>
+    </div>
+  </div>
+
+  <p>三份产物喂同一份激励，逐拍 / 逐事务比对，差异即报错——<strong>行为等价性由编译器保证</strong>，不再靠人盯。</p>
+</section>
+
+<section id="s3">
+  <h2>最小的一束光：32 位加法器</h2>
+  <p>第一集不谈深——只把这份"同源三下降"落到最小可行示例。三个端口、一句 <code>sum = a + b</code>、一段 <code>run</code> 激励；20 分钟从源码走到三份产物、再全绿对撞。</p>
+
+  <div class="code">
+    <div class="code-header">
+      <span class="code-lang">prism</span>
+      <span class="code-file">adder.prism</span>
+    </div>
+<pre><span class="tk-decl">module</span> <span class="tk-name">adder</span> {
+    <span class="tk-dir">in</span>  <span class="tk-name">a</span>   : <span class="tk-typ">Signal</span>&lt;<span class="tk-prim">u32</span>&gt;
+    <span class="tk-dir">in</span>  <span class="tk-name">b</span>   : <span class="tk-typ">Signal</span>&lt;<span class="tk-prim">u32</span>&gt;
+    <span class="tk-dir">out</span> <span class="tk-name">sum</span> : <span class="tk-typ">Signal</span>&lt;<span class="tk-prim">u32</span>&gt;
+
+    <span class="tk-name">sum</span> <span class="tk-op">=</span> <span class="tk-name">a</span> <span class="tk-op">+</span> <span class="tk-name">b</span>
+}
+
+<span class="tk-ann">@schedule</span> <span class="tk-name">adder</span> {
+    <span class="tk-sf">bitwidth</span>  : { <span class="tk-sv">data</span>:<span class="tk-num">32</span> }
+    <span class="tk-sf">pipeline</span>  : <span class="tk-num">1</span> <span class="tk-sv">stage</span>
+    <span class="tk-sf">storage</span>   : <span class="tk-sv">none</span>
+    <span class="tk-sf">interface</span> : <span class="tk-name">a</span>, <span class="tk-name">b</span>, <span class="tk-name">sum</span> = <span class="tk-typ">Signal</span>
+    <span class="tk-sf">reset</span>     : <span class="tk-sv">async_low</span>
+    <span class="tk-sf">clock</span>     : <span class="tk-num">100</span> <span class="tk-sv">MHz</span>, <span class="tk-sv">domain</span> = <span class="tk-sv">single</span>
+    <span class="tk-sf">resource</span>  : <span class="tk-sv">none</span>
+    <span class="tk-sf">latency</span>   : <span class="tk-num">1</span> <span class="tk-sv">cycle</span>
+}
+
+<span class="tk-decl">design</span> <span class="tk-name">adder_top</span> {
+    <span class="tk-name">dut</span> : <span class="tk-name">adder</span>
+}
+
+<span class="tk-decl">run</span> <span class="tk-name">adder_check</span> <span class="tk-rw">of</span> <span class="tk-name">adder_top</span> {
+    <span class="tk-rf">stim</span> <span class="tk-op">:</span> {
+        <span class="tk-name">a</span>, <span class="tk-name">b</span>, [<span class="tk-name">sum</span>] <span class="tk-op">=</span> {
+                  <span class="tk-num">1</span>,          <span class="tk-num">2</span>,            [<span class="tk-num">3</span>],
+                 <span class="tk-num">10</span>,         <span class="tk-num">20</span>,           [<span class="tk-num">30</span>],
+                <span class="tk-num">100</span>,        <span class="tk-num">200</span>,          [<span class="tk-num">300</span>],
+        }
+    }
+    <span class="tk-rf">until</span> <span class="tk-op">:</span> <span class="tk-rw">end</span> <span class="tk-rw">of</span> <span class="tk-rf">stim</span>
+    <span class="tk-rf">show</span>  <span class="tk-op">:</span> { <span class="tk-name">a</span>, <span class="tk-name">b</span>, <span class="tk-name">sum</span> }
+}</pre>
+  </div>
+
+  <p>这一份源码里已经有 Prism 的四件关键事——但先不展开。</p>
+  <ul>
+    <li><strong>算法层</strong>（<code>module adder</code>）——只写"做什么"：<code>sum = a + b</code>，一句数据流函数；端口用 <code>in</code> / <code>out</code> 显式标方向（不靠"有没有被赋值"倒推）。</li>
+    <li><strong>调度层</strong>（<code>@schedule adder</code>）——只谈"怎么做"：位宽、流水、存储、时钟、复位。它把微架构从算法里剥出来，独立成一个语法块。</li>
+    <li><strong>类型驱动</strong>（<code>Signal&lt;u32&gt;</code>）——32 位无符号；<code>+</code> 会自动扩一位防进位、<code>sum</code> 的 <code>u32</code> 目标再截回来。截断永远显式。</li>
+    <li><strong>仿真入口</strong>（<code>run adder_check</code>）——表式 <code>stim</code> 一次声明列头，每行末尾 <code>[...]</code> 是<strong>手算期望</strong>；跑一次就是一次自判定。5 拍 × 5 行全对，编译器打"expect: 5/5 全等 ✅"。</li>
+  </ul>
+
+  <p>第 2 集再讲这四件；这一集只看一件事——<strong>三条通路第一次同拍发出同一个数值</strong>。</p>
+</section>
+
+<section id="s4">
+  <h2>三道棱面 · 逐拍对撞</h2>
+  <p>三条命令、三次下降、三份产物。每一条都在同一颗 CPU（编译器）上、同一份激励上、跑同样的 5 拍：</p>
+
+  <h3>① Python golden 直跑</h3>
+  <div class="code">
+    <div class="code-header">
+      <span class="code-lang">bash</span>
+      <span class="code-file">shell</span>
+    </div>
+<pre>prism run examples/adder.prism</pre>
+  </div>
+  <div class="term">
+    <div class="term-header">▸ golden · Python 解释 AST</div>
+    <div class="term-body"># run: adder_check  design: adder_top
+cycle   a     b     sum
+0       1     2     3
+1       10    20    30
+2       100   200   300
+<span class="term-hint"># stop: end of stim (3 cycles)</span>
+<span class="term-ok"># expect: 3/3 拍有断言 · 1 列 · 全等 ✅</span></div>
+  </div>
+  <p>这一份是 <strong>golden</strong>——Python 直接解释 AST 得到的逐拍表；独立、快、可读。表尾 <code># expect: 3/3 ... 全等 ✅</code> 说的是每一行的手算期望 <code>[3]</code> / <code>[30]</code> / <code>[300]</code> 都命中——<strong>golden 一侧自己就能判定跑对没有</strong>。</p>
+
+  <h3>② RTL 通路 · iverilog 真仿真</h3>
+  <div class="code">
+    <div class="code-header">
+      <span class="code-lang">bash</span>
+      <span class="code-file">shell</span>
+    </div>
+<pre>prism run examples/adder.prism --cosim</pre>
+  </div>
+  <div class="term">
+    <div class="term-header">▸ RTL · SystemVerilog + iverilog</div>
+    <div class="term-body">cycle   a     b     sum
+0       1     2     3
+1       10    20    30
+2       100   200   300
+# stop: end of stim (3 cycles)
+<span class="term-ok">[run --cosim] ✅ PASS: adder_check golden == RTL 仿真（3 拍 × 3 列全等）</span>
+<span class="term-ok"># expect: 3/3 拍有断言 · 1 列 · 全等 ✅</span></div>
+  </div>
+  <p>编译器把同一份 <code>.prism</code> 下降成 SystemVerilog，<code>iverilog</code> 真跑，输出的每一拍每一列与 golden 对齐；同一份手算期望也在 SV 侧过一遍。<strong>RTL 后端的下降 bug（位宽截断错、符号性错、握手错）会被这一步逮住</strong>。</p>
+
+  <h3>③ TLM 通路 · SystemC 事务级</h3>
+  <div class="code">
+    <div class="code-header">
+      <span class="code-lang">bash</span>
+      <span class="code-file">shell</span>
+    </div>
+<pre>prism tlm examples/adder.prism</pre>
+  </div>
+  <div class="term">
+    <div class="term-header">▸ TLM · SystemC + g++</div>
+    <div class="term-body">Info: /OSCI/SystemC: Simulation stopped by user.
+cycle   a     b     sum
+0       1     2     3
+1       10    20    30
+2       100   200   300
+<span class="term-ok">[tlm] ✅ PASS: adder_check SystemC/TLM == golden（3 拍 × 3 列全等）</span>
+<span class="term-ok"># expect: 3/3 拍有断言 · 1 列 · 全等 ✅</span></div>
+  </div>
+  <p>编译器把同一份 <code>.prism</code> 下降成 SystemC/TLM C++ 源码，<code>g++</code> 编译、跑 SystemC 内核，<strong>忽略调度层塌缩为事务跳转</strong>——输出的观测表仍与 golden 对齐，同一份手算期望在 TLM 侧也过一遍。这一条抓的是"时序抽象契约违反"。</p>
+
+  <h3>三次对撞的合奏</h3>
+  <div class="tbl-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>通路</th>
+          <th>产物</th>
+          <th>仿真器</th>
+          <th>与 golden 逐拍对撞</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>Golden</td><td class="mono">Python AST</td><td>直接解释</td><td>基准</td></tr>
+        <tr><td>RTL</td><td class="mono">SystemVerilog</td><td class="mono">iverilog</td><td><span class="check">✅ 3×3 全等</span></td></tr>
+        <tr><td>TLM</td><td class="mono">SystemC C++</td><td class="mono">g++ + SystemC</td><td><span class="check">✅ 3×3 全等</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>三条通路全绿——同一份源码、三种编译产物、逐拍相同。<strong>行为等价性由编译器保证</strong>，不再需要人盯两遍代码。</p>
+
+  <div class="callout">
+    <span class="callout-title">"三方 cosim"抓三类 bug</span>
+    <ul style="margin: 6px 0 0 24px;">
+      <li><strong>RTL vs golden</strong>：抓 RTL 后端下降 bug——golden 走 Python AST 路径、RTL 走 SV 生成路径，两条独立。</li>
+      <li><strong>TLM vs golden</strong>：抓时序抽象契约违反——TLM 忽略调度层塌缩为事务，如果塌缩逻辑错、事务粒度错，这一步会喊。</li>
+      <li><strong>RTL vs TLM</strong>：两侧同源，抓的是"两份下降代码"彼此的一致性——RTL 与 TLM 之间不再是两份需要人维护等价性的产物。</li>
+    </ul>
+  </div>
+</section>
+
+<section id="s5">
+  <h2>神看光是好的</h2>
+  <p>这就是第一集要讲完的唯一一件事——Prism 存在的理由：<strong>把两遍写、两遍盯、两遍改，合成一遍</strong>。</p>
+  <p>一颗 32 位加法器 <code>sum = a + b</code>——同一行代码，20 分钟前只是一段字符，现在它同时是：</p>
+  <ul>
+    <li>一段可综合 SystemVerilog，可以送进 yosys / Vivado 出 bitfile；</li>
+    <li>一段 SystemC C++，可以挂进 gem5 / 事务级模型做架构探索；</li>
+    <li>一张 Python 参考表，可以逐拍钉住前两条的输出。</li>
+  </ul>
+  <p>三份产物行为等价——<strong>由编译器钉住</strong>，不再由人盯。</p>
+
+  <div class="verse-inline">
+    "神看光是好的，就把光暗分开了。神称光为昼，称暗为夜。有晚上，有早晨，这是头一日。"
+    <cite>—— 《创世记》 1:4–5</cite>
+  </div>
+
+  <p>光有了。从下一集起，我们把这份光<strong>掰开</strong>——第二集讲 Prism 的分层与语法骨架：`module` 与 `@schedule` 为什么必须分开，类型系统怎么把位宽和符号钉死，`reg` 与 `on clock` 与 `mem` 与 `fsm` 各自扮演什么角色。</p>
+  <p>第一日之后不再讲语法——因为光已经分开了。</p>
+</section>
+
+<section id="s6">
+  <h2>练习</h2>
+  <ol>
+    <li>把 <code>sum = a + b</code> 改成 <code>sum = a - b</code>，跑 <code>run --cosim</code>——cosim 依然 PASS（golden 与 RTL 同源、同时错），但行级期望 <code>[3]</code> 会喊"期望 3，实得 4294967295"。<strong>这就是行级期望的意义：不给一个"从不失败"的测试留活路。</strong></li>
+    <li>把 <code>@schedule</code> 里的 <code>bitwidth : { data:32 }</code> 删掉——Prism 会怎么报错？（提示：静态可下降性检查——信息不足时编译期报错，不静默产出劣质电路。）</li>
+    <li>把 <code>stim</code> 里加一行 <code>1000, 2000, [3000],</code>，三次下降仍全绿。</li>
+  </ol>
+</section>
+
+<section id="s7">
+  <h2>复现本集</h2>
+  <div class="code">
+    <div class="code-header">
+      <span class="code-lang">bash</span>
+      <span class="code-file">reproduce</span>
+    </div>
+<pre>pip install prism-hdl
+brew install icarus-verilog systemc   <span class="tk-com"># macOS</span>
+
+git clone https://github.com/prism-hdl/seven-days
+cd seven-days
+
+prism run examples/adder.prism              <span class="tk-com"># ① golden</span>
+prism run examples/adder.prism --cosim      <span class="tk-com"># ② RTL</span>
+prism tlm examples/adder.prism              <span class="tk-com"># ③ TLM</span></pre>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <span class="next">下一集 · 分层与语法骨架 · 一颗带 fsm 的饱和计数器把 Prism 语法一次摆完</span>
+  七日创造 · 第一日 · 第 1 集 · <a href="../../README.md">返回</a>
+</footer>
+
+</body>
+</html>
