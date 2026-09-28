@@ -1,0 +1,323 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>七日创造 · 用一门自造的语言，造一颗能跑操作系统的 RISC-V 处理器</title>
+<meta name="description" content="一个软件工程师，七天，从发明一门语言开始，造出能跑操作系统的 RISC-V 处理器。Prism DSL + RISC-V 连载。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&family=Noto+Serif+SC:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink:#0f1420; --ink-2:#1c2333; --ink-3:#4a5468; --mute:#8892a6;
+  --line:#e5e8ef; --paper:#ffffff; --cream:#fbf9f4;
+  --prism:#5b4bff; --prism-2:#a678ff; --sun:#ff8a4c;
+  --ok:#12a060;
+  --code-bg:#10131c; --code-fg:#d6d9e0; --radius:12px;
+}
+* { box-sizing:border-box; margin:0; padding:0; }
+html { scroll-behavior:smooth; }
+body { font-family:'Inter','Noto Serif SC',-apple-system,sans-serif; color:var(--ink); background:var(--paper); line-height:1.7; font-size:17px; -webkit-font-smoothing:antialiased; }
+
+/* ---------- Hero ---------- */
+.hero { position:relative; padding:104px 24px 88px; background:#05070e; color:#fff; overflow:hidden; }
+.hero::before { content:''; position:absolute; inset:0;
+  background:
+    radial-gradient(ellipse 780px 460px at 22% 26%, rgba(255,214,150,.22) 0%, transparent 58%),
+    radial-gradient(ellipse 820px 520px at 76% 62%, rgba(91,75,255,.32) 0%, transparent 58%),
+    radial-gradient(ellipse 560px 380px at 50% 100%, rgba(166,120,255,.18) 0%, transparent 60%);
+  pointer-events:none; }
+.hero-inner { max-width:940px; margin:0 auto; position:relative; z-index:2; }
+.hero-eyebrow { display:inline-block; padding:6px 14px; border-radius:999px; background:rgba(255,255,255,.08); backdrop-filter:blur(12px); border:1px solid rgba(255,255,255,.16); font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:.1em; margin-bottom:24px; color:#e8e0ff; }
+.hero h1 { font-family:'Noto Serif SC',serif; font-weight:700; font-size:clamp(36px,6vw,60px); line-height:1.16; margin-bottom:22px; letter-spacing:-.015em; }
+.hero h1 em { font-style:normal; background:linear-gradient(118deg,#ffffff 0%,#ffe0a8 42%,#ff8a4c 72%,#a678ff 100%); -webkit-background-clip:text; background-clip:text; color:transparent; }
+.hero .lede { font-size:20px; font-weight:300; color:rgba(255,255,255,.82); max-width:680px; line-height:1.8; margin-bottom:34px; }
+.hero .lede strong { color:#fff; font-weight:600; text-shadow:0 0 16px rgba(166,120,255,.5); }
+.hero-meta { display:flex; flex-wrap:wrap; gap:10px; margin-bottom:44px; }
+.chip { padding:6px 13px; border-radius:6px; background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.14); font-family:'JetBrains Mono',monospace; font-size:12px; color:rgba(255,255,255,.8); }
+.chip.on { border-color:rgba(111,232,165,.45); color:#a8f0c8; background:rgba(111,232,165,.08); }
+
+.hero-actions { display:flex; flex-wrap:wrap; gap:12px; }
+.btn { display:inline-flex; align-items:center; gap:8px; padding:12px 22px; border-radius:8px; font-size:15px; font-weight:600; text-decoration:none; transition:transform .15s ease, box-shadow .15s ease; }
+.btn-primary { background:linear-gradient(120deg,#5b4bff,#a678ff); color:#fff; box-shadow:0 6px 24px rgba(91,75,255,.35); }
+.btn-primary:hover { transform:translateY(-1px); box-shadow:0 8px 30px rgba(91,75,255,.45); }
+.btn-ghost { background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.18); color:#fff; }
+.btn-ghost:hover { background:rgba(255,255,255,.12); }
+
+/* ---------- 七日表 ---------- */
+main { max-width:940px; margin:0 auto; padding:80px 24px 40px; }
+section { margin-bottom:72px; }
+h2 { font-family:'Noto Serif SC',serif; font-size:30px; font-weight:700; margin-bottom:22px; padding-top:8px; }
+h2::before { content:''; display:inline-block; width:32px; height:3px; background:linear-gradient(90deg,var(--sun),var(--prism)); border-radius:2px; vertical-align:middle; margin-right:12px; transform:translateY(-6px); }
+p { margin-bottom:16px; color:var(--ink-2); }
+p code, li code { font-family:'JetBrains Mono',monospace; font-size:.92em; padding:2px 6px; background:var(--cream); border:1px solid var(--line); border-radius:4px; color:var(--prism); font-weight:500; }
+strong { color:var(--ink); font-weight:600; }
+ul, ol { margin:0 0 20px 24px; color:var(--ink-2); }
+li { margin-bottom:8px; }
+
+.days { display:grid; gap:14px; }
+.day { display:grid; grid-template-columns:132px 1fr; gap:20px; padding:22px 24px; border:1px solid var(--line); border-radius:var(--radius); background:linear-gradient(120deg,var(--paper) 0%,var(--cream) 100%); position:relative; overflow:hidden; }
+.day::before { content:''; position:absolute; left:0; top:0; bottom:0; width:3px; }
+.day.d1::before { background:#ffd479; } .day.d2::before { background:#4ad6b4; }
+.day.d3::before { background:#8ab4f8; } .day.d4::before { background:#a678ff; }
+.day.d5::before { background:#ff8a4c; } .day.d6::before { background:#e0507a; }
+.day.d7::before { background:#e5e8ef; }
+.day .label { font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.1em; color:var(--mute); margin-bottom:4px; }
+.day .name { font-family:'Noto Serif SC',serif; font-size:19px; font-weight:700; color:var(--ink); margin-bottom:4px; }
+.day .verse { font-size:12.5px; color:var(--mute); font-style:italic; line-height:1.6; }
+.day .body { }
+.day .desc { font-size:15px; color:var(--ink-2); line-height:1.65; margin-bottom:12px; }
+.eps { display:flex; flex-wrap:wrap; gap:8px; }
+.ep { display:inline-flex; align-items:baseline; gap:6px; padding:6px 12px; border-radius:6px; font-size:13.5px; text-decoration:none; border:1px solid var(--line); background:var(--paper); color:var(--ink-2); transition:border-color .15s, color .15s; }
+.ep:hover { border-color:var(--prism-2); color:var(--prism); }
+.ep .n { font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--mute); }
+.ep.todo { color:var(--mute); border-style:dashed; cursor:default; }
+.ep.todo:hover { border-color:var(--line); color:var(--mute); }
+.ep .dot { width:6px; height:6px; border-radius:50%; background:var(--ok); align-self:center; }
+.ep.todo .dot { background:#d6dae3; }
+
+/* ---------- 卡片 ---------- */
+.cards { display:grid; grid-template-columns:repeat(auto-fit,minmax(210px,1fr)); gap:14px; margin:24px 0; }
+.card { padding:20px; border:1px solid var(--line); border-radius:var(--radius); background:var(--paper); }
+.card .k { font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.09em; color:var(--prism); margin-bottom:8px; }
+.card .t { font-size:16px; font-weight:600; margin-bottom:6px; }
+.card .b { font-size:14px; color:var(--ink-3); line-height:1.6; }
+
+/* ---------- 代码 ---------- */
+.code { margin:20px 0; background:var(--code-bg); border-radius:var(--radius); overflow:hidden; border:1px solid #1c1f2e; box-shadow:0 4px 24px rgba(15,20,32,.08); }
+.code-header { padding:10px 16px; background:#0a0d15; border-bottom:1px solid #1c1f2e; display:flex; align-items:center; justify-content:space-between; gap:12px; }
+.code-lang { font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.1em; color:var(--prism-2); text-transform:uppercase; font-weight:600; }
+.code-file { font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--mute); }
+.code pre { padding:20px 22px; overflow-x:auto; font-family:'JetBrains Mono',monospace; font-size:13.5px; line-height:1.7; color:var(--code-fg); }
+.tk-com { color:#6c7488; font-style:italic; }
+.tk-kw { color:#c57bff; font-weight:500; }
+.tk-str { color:#ffd479; }
+
+.callout { padding:20px 24px; background:linear-gradient(120deg,#f6f4ff 0%,var(--cream) 100%); border-left:3px solid var(--prism); border-radius:0 var(--radius) var(--radius) 0; margin:26px 0; font-size:15.5px; }
+
+footer { margin-top:56px; padding:48px 24px; background:var(--code-bg); color:var(--mute); text-align:center; font-size:14px; }
+footer a { color:var(--prism-2); text-decoration:none; }
+footer .cols { display:flex; flex-wrap:wrap; justify-content:center; gap:24px; margin-bottom:20px; }
+
+@media (max-width:720px) {
+  main { padding:56px 20px 32px; }
+  .hero { padding:72px 20px 60px; }
+  h2 { font-size:24px; }
+  .day { grid-template-columns:1fr; gap:12px; }
+}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="hero-inner">
+    <div class="hero-eyebrow">PRISM DSL × RISC-V · 连载</div>
+    <h1>七日创造<br><em>从一门自造的语言，到一颗能跑操作系统的处理器</em></h1>
+    <p class="lede">《创世记》里神用七天造齐天地万物。这里借它的骨架讲另一件小事：<strong>用自己写的一门语言 Prism，从一颗 32 位加法器，一路造到能启动 OpenSBI 的 RISC-V 处理器</strong>。作者是一个人，工具是自己造的，编译器随文开源。</p>
+    <div class="hero-meta">
+      <span class="chip">27 集 · 七日</span>
+      <span class="chip on">第一日 已写完</span>
+      <span class="chip on">第二日 已写完</span>
+      <span class="chip on">第三日 连载中 · EP 10</span>
+      <span class="chip">第四日 起 待写</span>
+      <span class="chip">RISC-V RV32I / RV64I</span>
+      <span class="chip">一份源码 → RTL + TLM + golden</span>
+    </div>
+    <div class="hero-actions">
+      <a class="btn btn-primary" href="day1/01-why-prism.html">从第 1 集开始 →</a>
+      <a class="btn btn-ghost" href="outline.html">看全部 27 集大纲</a>
+    </div>
+  </div>
+</header>
+
+<main>
+
+<section id="days">
+  <h2>七日</h2>
+  <p>七日不是七天写完，是七层递进。<strong>第一日之后不再讲语法</strong>——每一日只回答一个问题：下一步该造什么。</p>
+
+  <div class="days">
+
+    <div class="day d1" id="day1">
+      <div>
+        <div class="label">DAY 1 · 已写完</div>
+        <div class="name">光</div>
+        <div class="verse">"神说，要有光，就有了光。<br>神看光是好的，就把光暗分开了。"</div>
+      </div>
+      <div class="body">
+        <p class="desc">把整门语言铺开一次，让读者先看见全景。四集走完整条弧线：为什么要有 Prism → 语法骨架 → 从模块到 CPU → 一台会说话的最小 SoC。</p>
+        <div class="eps">
+          <a class="ep" href="day1/01-why-prism.html"><span class="dot"></span><span class="n">EP 1</span>一道裂缝 · 为什么要有 Prism</a>
+          <a class="ep" href="day1/02-layered.html"><span class="dot"></span><span class="n">EP 2</span>分层与语法骨架</a>
+          <a class="ep" href="day1/03-cpu-top.html"><span class="dot"></span><span class="n">EP 3</span>从模块到 CPU</a>
+          <a class="ep" href="day1/04-let-there-be-light.html"><span class="dot"></span><span class="n">EP 4</span>让光打出去</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="day d2" id="day2">
+      <div>
+        <div class="label">DAY 2 · 已写完</div>
+        <div class="name">空气与水</div>
+        <div class="verse">"诸水之间要有空气，<br>将水分为上下。"</div>
+      </div>
+      <div class="body">
+        <p class="desc">把 CPU 拆成四颗器官，一颗一颗造，每颗都能单独跑、单独测；最后证明"如果它们坏了，测试会喊"。</p>
+        <div class="eps">
+          <a class="ep" href="day2/05-pc.html"><span class="dot"></span><span class="n">EP 5</span>pc · 心跳</a>
+          <a class="ep" href="day2/06-memory.html"><span class="dot"></span><span class="n">EP 6</span>记忆</a>
+          <a class="ep" href="day2/07-alu.html"><span class="dot"></span><span class="n">EP 7</span>ALU · 活动</a>
+          <a class="ep" href="day2/08-decoder.html"><span class="dot"></span><span class="n">EP 8</span>decoder · 理解世界</a>
+          <a class="ep" href="day2/09-observe.html"><span class="dot"></span><span class="n">EP 9</span>观察它们的心跳</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="day d3" id="day3">
+      <div>
+        <div class="label">DAY 3 · 连载中</div>
+        <div class="name">旱地与植物</div>
+        <div class="verse">"天下的水要聚在一处，<br>使旱地露出来。"</div>
+      </div>
+      <div class="body">
+        <p class="desc">把四颗器官放进同一具身体：<code>design</code> + <code>connect</code> 串成单周期 CPU、跑一段真程序、然后对它做同样的反证与变异扫描。</p>
+        <div class="eps">
+          <a class="ep" href="day3/10-cpu-top.html"><span class="dot"></span><span class="n">EP 10</span>cpu_top · 四颗合体</a>
+          <span class="ep todo"><span class="dot"></span><span class="n">EP 11</span>跑一段真程序</span>
+          <span class="ep todo"><span class="dot"></span><span class="n">EP 12</span>反证 · 变异扫描</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="day d4" id="day4">
+      <div>
+        <div class="label">DAY 4 · 待写</div>
+        <div class="name">天上光体</div>
+        <div class="verse">"天上要有光体，可以分昼夜、<br>作记号、定节令、日子、年岁。"</div>
+      </div>
+      <div class="body">
+        <p class="desc">有了节拍——时钟周期与流水段。<code>Interface</code> 与 <code>Composer</code> 在此刻出场：一次声明、五段生成；然后是冒险、前递、分支冲刷、RV64I 扩位。</p>
+        <div class="eps">
+          <span class="ep todo"><span class="dot"></span><span class="n">EP 13</span>Composer · 一次声明五段生成</span>
+          <span class="ep todo"><span class="dot"></span><span class="n">EP 14</span>五级流水线数据通路</span>
+          <span class="ep todo"><span class="dot"></span><span class="n">EP 15</span>数据冒险与前递</span>
+          <span class="ep todo"><span class="dot"></span><span class="n">EP 16</span>控制冒险与分支</span>
+          <span class="ep todo"><span class="dot"></span><span class="n">EP 17</span>RV64I 与整合验证</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="day d5" id="day5">
+      <div>
+        <div class="label">DAY 5 · 待写</div>
+        <div class="name">有生命的活物</div>
+        <div class="verse">"地要生出活物来，<br>各从其类。"</div>
+      </div>
+      <div class="body">
+        <p class="desc">处理器不再只会顺序执行——它开始响应外界：会疼（异常）、会躲（中断与 PMP）、会做事（跑真程序，并被一位不共享前端的"外人"逐拍盯着）。</p>
+        <div class="eps">
+          <span class="ep todo"><span class="dot"></span><span class="n">EP 18</span>RV32M 乘除法</span>
+          <span class="ep todo"><span class="dot"></span><span class="n">EP 19</span>CSR 框架与异常</span>
+          <span class="ep todo"><span class="dot"></span><span class="n">EP 20</span>中断与 PMP</span>
+          <span class="ep todo"><span class="dot"></span><span class="n">EP 21</span>模式切换与上板</span>
+          <span class="ep todo"><span class="dot"></span><span class="n">EP 22</span>独立 ISS 四方对撞</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="day d6" id="day6">
+      <div>
+        <div class="label">DAY 6 · 待写</div>
+        <div class="name">照着形象造人</div>
+        <div class="verse">"使他们管理海里的鱼、<br>空中的鸟、地上的牲畜。"</div>
+      </div>
+      <div class="body">
+        <p class="desc">CPU 挂上外设、开始"管理"它们——总线与地址映射、SRAM、BootROM、PLIC、UART，以及 ABI 与链接脚本。</p>
+        <div class="eps">
+          <span class="ep todo"><span class="dot"></span><span class="n">EP 23</span>总线 / ABI / 链接脚本</span>
+          <span class="ep todo"><span class="dot"></span><span class="n">EP 24</span>SRAM 与 BootROM</span>
+          <span class="ep todo"><span class="dot"></span><span class="n">EP 25</span>PLIC 与 UART</span>
+          <span class="ep todo"><span class="dot"></span><span class="n">EP 26</span>SoC 顶层组装</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="day d7" id="day7">
+      <div>
+        <div class="label">DAY 7 · 待写</div>
+        <div class="name">安息</div>
+        <div class="verse">"神造物的工已经完毕，<br>就在第七日歇了他一切的工。"</div>
+      </div>
+      <div class="body">
+        <p class="desc">作者退场：一段不属于我们的固件（OpenSBI）在 Prism 造的 CPU 上自己起来——M 态跳 S 态、串口打出 banner。从此 CPU 跑的不是我们写的激励，是别人写的操作系统。</p>
+        <div class="eps">
+          <span class="ep todo"><span class="dot"></span><span class="n">EP 27</span>OpenSBI 移植与最小 SoC 跑通</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<section id="why">
+  <h2>为什么要有这门语言</h2>
+  <p>硬件开发有两条<strong>割裂的路</strong>：RTL（Verilog / SystemVerilog / VHDL）周期精确、可综合，但算法与微架构缠在一起；SystemC / TLM 事务级、快数个数量级，但不可综合。两条路描述<strong>同一个硬件</strong>、要各写一遍——<strong>行为等价性没有编译器的保证</strong>。HLS 只补了"算法 → RTL"这一半，输入还得是可综合子集，产不出用于架构探索的 TLM 快模型。</p>
+  <p>还有一层更深的：对写了十年 Rust / TypeScript / Python 的人来说，Verilog <strong>不像在想电路</strong>——没有类型、没有泛型、没有模式匹配，位宽靠数数、符号靠人脑记。</p>
+  <p>Prism 同时回应这两层：<strong>一份源码，同时下降为 RTL + TLM + 独立 Python golden</strong>，三方 cosim 闭环逐拍对撞；而语言本身类型驱动、显式时钟域、分层清晰。</p>
+
+  <div class="cards">
+    <div class="card"><div class="k">结构层</div><div class="t">一份源码三下降</div><div class="b">同一份 <code>.prism</code>，编译器分别产出可综合 SV、SystemC/TLM、独立 Python 参考——差异即报错。</div></div>
+    <div class="card"><div class="k">表达层</div><div class="t">类型驱动</div><div class="b"><code>Signal&lt;u32&gt;</code> 就是 32 位无符号；<code>i1</code> 只能取 {-1, 0}；截断永远显式。</div></div>
+    <div class="card"><div class="k">验证层</div><div class="t">行级期望</div><div class="b">激励表行尾 <code>[...]</code> 直接写手算值——跑一次就是一次自判定。</div></div>
+  </div>
+</section>
+
+<section id="start">
+  <h2>快速上手</h2>
+  <p>Prism 编译器已打包为 pip 包，装好后全局命令 <code>prism</code> 即可使用。<code>run --cosim</code> 需要 iverilog。</p>
+
+  <div class="code">
+    <div class="code-header"><span class="code-lang">bash</span><span class="code-file">30 秒跑通第一个模块</span></div>
+<pre>pip install prism-hdl
+brew install icarus-verilog        <span class="tk-com"># macOS</span>
+
+git clone https://github.com/prism-hdl/seven-days
+cd seven-days
+
+prism run examples/adder.prism --cosim</pre>
+  </div>
+
+  <p>输出会是一张逐拍的表，外加一条 <code># expect: 3/3 拍有断言 · 1 列 · 全等 ✅</code>——<strong>那张表里的期望值是手写进源码的，不是事后补的</strong>。</p>
+
+  <div class="callout">
+    <strong>一行代码都不信，直到它在两个后端上跑出同一个数。</strong><br>
+    <code>prism run</code> 出 Python 参考模型；<code>prism run --cosim</code> 走 iverilog 真仿真；<code>prism tlm</code> 走 SystemC。三条通路喂同一份激励，逐拍逐列对撞。
+  </div>
+</section>
+
+<section id="repo">
+  <h2>仓库里有什么</h2>
+  <div class="cards">
+    <div class="card"><div class="k">episodes/</div><div class="t">每一集的正文</div><div class="b"><code>day1/</code> 四集 · <code>day2/</code> 五集 · <code>day3/</code> 连载中。每一集都是独立可读的单页 HTML。</div></div>
+    <div class="card"><div class="k">examples/</div><div class="t">每一集引用的 Prism 源码</div><div class="b"><code>adder</code> / <code>sat_counter</code> / <code>mini_cpu</code> / <code>day2/</code> 四颗器官 / <code>day3/</code> 单周期 CPU——都可独立跑。</div></div>
+    <a class="card" href="outline.html" style="text-decoration:none;color:inherit"><div class="k">outline.html</div><div class="t">27 集完整大纲</div><div class="b">七日框架、每集要造什么、firmament 落在哪里。点开看全部 27 集。</div></a>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="cols">
+    <a href="day1/01-why-prism.html">第 1 集</a>
+    <a href="day2/09-observe.html">第 9 集</a>
+    <a href="day3/10-cpu-top.html">第 10 集</a>
+    <a href="outline.html">大纲</a>
+    <a href="https://github.com/prism-hdl/seven-days">GitHub</a>
+  </div>
+  七日创造 · 一个软件工程师与一门自造的语言<br>
+  连载写作中 · 第一日、第二日已写完 · 第三日 EP 10 已写完
+</footer>
+
+</body>
+</html>

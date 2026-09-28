@@ -1,0 +1,60 @@
+// =============================================================================
+// pc.prism —— 第二日 · 第 5 集：PC，CPU 的心跳
+//
+// 一颗只做一件事的模块：每拍往前走一步。
+//   pc' = load ? target : pc + 4      （RISC-V 指令定长 4 字节）
+// 复位到 0 —— 上电后第一条指令的地址。
+//
+// 就这两行，CPU 有了节律。谁在这里按下"跳转"，谁就改变了整个程序的走向。
+//
+// 注：这里没有"冻住"（en）端口——单周期核每拍都要推进，冻住只有流水线的
+// 取指停顿才用得上。等第五日做五级流水时，这颗模块会为它长出一根新端口。
+// =============================================================================
+
+module pc<T: bits> {
+    in  load   : Signal<u1>    // 1 = 载入 target（跳转），0 = 自增 +4
+    in  target : Signal<T>     // 跳转目标地址
+    out addr   : Signal<T>     // 当前 PC 值
+
+    reg pc : T
+
+    on clock {
+        pc' = load ? target : pc + 4
+    }
+
+    addr = pc
+}
+
+@schedule pc {
+    bitwidth  : { data:64 }
+    pipeline  : 1 stage
+    storage   : pc = reg, width = param(T)
+    interface : load, target, addr = Signal
+    reset     : async_low
+    clock     : 100 MHz, domain = single
+    resource  : adder = parallel(1)
+    latency   : 1 cycle
+}
+
+design pc_top {
+    dut : pc<T = i32>
+}
+
+// 逐拍手算（观测点在边沿之后）：
+//   拍 0/1  自增：0 → 4 → 8
+//   拍 2    load 拉高：跳到 100
+//   拍 3    继续自增：104
+//   拍 4    跳回 0（复位向量）
+run pc_check of pc_top {
+    stim : {
+        dut.load, dut.target, [dut.addr] = {
+            0,   0, [  4],
+            0,   0, [  8],
+            1, 100, [100],   // 跳转
+            0,   0, [104],
+            1,   0, [  0],   // 跳回复位向量
+        }
+    }
+    until : end of stim
+    show  : { dut.load, dut.target, dut.addr }
+}

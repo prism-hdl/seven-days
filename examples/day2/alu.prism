@@ -1,0 +1,70 @@
+// =============================================================================
+// alu.prism —— 第二日 · 第 7 集：ALU，活动
+//
+// 纯组合，无时钟：op 选哪条路，结果立刻出来。
+// 十种运算 + 一条防御性 `_ => 0`。白虹的真核里这里还挂着 M 扩展（乘除），
+// 本集只放基础十条；乘除在多周期单元里，见同目录 divider.prism。
+//
+// firmament 在这颗模块的端口上看得最清：
+//   a / b       —— 数据面（值）
+//   op          —— 控制面（选哪条路）
+// 控制面从不参与运算，只决定"这一拍走哪条；数据面从不影响选路。
+// =============================================================================
+
+module alu<T: bits> {
+    in  a      : Signal<T>      // 操作数 1
+    in  b      : Signal<T>      // 操作数 2（调用方已做好移位量掩码）
+    in  op     : Signal<u4>     // 运算选择 0..9
+    out result : Signal<T>
+
+    result = match op {
+        0 => a + b,              // ADD
+        1 => a - b,              // SUB
+        2 => a & b,              // AND
+        3 => a | b,              // OR
+        4 => a ^ b,              // XOR
+        5 => a << b,             // SLL（逻辑左移，b 已掩码）
+        6 => a >> b,             // SRA（算术右移，保号）
+        7 => a < b,              // SLT（有符号比较）
+        8 => T(u(a) >> b),       // SRL：先按无符号移，再用 T() 收回有符号
+        9 => u(a) < u(b),        // SLTU（无符号比较）
+        _ => 0,                  // 防御：op 越界给 0
+    }
+}
+
+@schedule alu {
+    bitwidth  : { data:64 }
+    pipeline  : 1 stage
+    storage   : none
+    interface : a, b, op, result = Signal
+    reset     : async_low
+    clock     : 100 MHz, domain = single
+    resource  : adder = parallel(1)
+    latency   : 1 cycle
+}
+
+design alu_top {
+    dut : alu<T = i32>
+}
+
+// 逐拍手算：一组向量把十条路各打一遍（外加一次越界 op）。
+// a=-8、b=1 是为右移准备的：算术右移保号（-4），逻辑右移按无符号看（2147483644）。
+run alu_check of alu_top {
+    stim : {
+        dut.a, dut.b, dut.op, [dut.result] = {
+                    5,         10, 0, [          15],   // ADD
+                   10,          5, 1, [           5],   // SUB
+                   12,         10, 2, [           8],   // AND
+                   12,         10, 3, [          14],   // OR
+                   12,         10, 4, [           6],   // XOR
+                    3,          4, 5, [          48],   // SLL
+                   -8,          1, 6, [          -4],   // SRA 保号
+                   -8,          1, 7, [           1],   // SLT：-8 < 1
+                   -8,          1, 8, [  2147483644],   // SRL 无符号
+                   -8,          1, 9, [           0],   // SLTU：4294967288 < 1 为假
+                    7,          7, 15, [          0],   // op 越界 → 0
+        }
+    }
+    until : end of stim
+    show  : { dut.a, dut.b, dut.op, dut.result }
+}

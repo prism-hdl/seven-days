@@ -61,7 +61,11 @@ seven-days/
 ├── outline.md             ← 主 outline · 27 集 · 创世记版
 ├── outline-nvwa.md        ← 番外 · 25 集 · 女娲七日造人版（仅供对照，不发布）
 ├── episodes/              ← 每一集的正文（HTML）
-│   └── day1/
+│   ├── index.html         ← 落地页（七日导览 + 快速上手）
+│   ├── outline.html       ← 27 集大纲（网页版）
+│   ├── day1/              ← 光 · 4 集
+│   ├── day2/              ← 空气与水 · 5 集
+│   └── day3/              ← 旱地与植物 · 连载中
 ├── examples/              ← 每一集引用的 Prism 源码（可独立跑）
 └── _archive/              ← 重构前的旧草稿，仅供对照
 ```
@@ -74,8 +78,10 @@ seven-days/
 
 - **主大纲** 已定稿（`outline.md`，创世记版 · 27 集）
 - **番外** 保留（`outline-nvwa.md`，女娲版 · 25 集）——不发布，仅供写作时借"引绳于泥中，举以为人"给 `Composer` 那一集做点睛
-- **第一日 · 光 四集写完**：`episodes/day1/` 下 `01-why-prism` / `02-layered` / `03-cpu-top` / `04-let-there-be-light`，配套样例在 `examples/`（`adder` / `sat_counter` / `mini_cpu`，三条下降全绿）
-- **第二日起** 未动笔
+- **第一日 · 光 四集写完**：`episodes/day1/` 下 `01-why-prism` / `02-layered` / `03-cpu-top` / `04-let-there-be-light`，配套样例在 `examples/`（`adder` / `sat_counter` / `mini_cpu`）
+- **第二日 · 空气与水 五集写完**：`episodes/day2/` 下 `05-pc` / `06-memory` / `07-alu` / `08-decoder` / `09-observe`，配套样例在 `examples/day2/`（`pc` / `memory` / `alu` / `decoder`，五段 run 三条下降全等）
+- **第三日 · 旱地与植物 EP 10 写完**：`episodes/day3/10-cpu-top.html`，配套样例 `examples/day3/`（`iu.prism` 五颗器官 + `cpu.prism` 单周期 CPU，24 拍跑出 `x1 = 15`，golden / RTL / TLM 三方逐拍全等）
+- **第三日 EP 11–12 与第四日起** 未动笔
 
 ---
 

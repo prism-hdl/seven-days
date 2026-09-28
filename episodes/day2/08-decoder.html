@@ -1,0 +1,348 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 8 集 · decoder：理解世界 · 创世记 · 第二日 · 空气与水</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&family=Noto+Serif+SC:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink:#0f1420; --ink-2:#1c2333; --ink-3:#4a5468; --mute:#8892a6;
+  --line:#e5e8ef; --paper:#ffffff; --cream:#fbf9f4;
+  --prism:#5b4bff; --prism-2:#a678ff;
+  --accent:#8a5bff; --accent-2:#c9b8ff;
+  --ok:#12a060; --warn:#d84a4a;
+  --code-bg:#10131c; --code-fg:#d6d9e0; --radius:10px;
+}
+* { box-sizing:border-box; margin:0; padding:0; }
+html { scroll-behavior:smooth; }
+body { font-family:'Inter','Noto Serif SC',-apple-system,sans-serif; color:var(--ink); background:var(--paper); line-height:1.7; font-size:17px; -webkit-font-smoothing:antialiased; }
+
+.hero { position:relative; padding:90px 24px 72px; background:radial-gradient(ellipse 820px 460px at 28% 34%, rgba(138,91,255,.30) 0%, transparent 58%), radial-gradient(ellipse 680px 400px at 76% 64%, rgba(74,214,180,.16) 0%, transparent 55%), #08070f; color:#fff; overflow:hidden; }
+.hero-inner { max-width:900px; margin:0 auto; position:relative; z-index:2; }
+.hero-eyebrow { display:inline-block; padding:6px 14px; border-radius:999px; background:rgba(255,255,255,.08); backdrop-filter:blur(12px); border:1px solid rgba(255,255,255,.16); font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:.08em; margin-bottom:22px; color:#e0d4ff; }
+.hero h1 { font-family:'Noto Serif SC',serif; font-weight:700; font-size:clamp(32px,5.2vw,52px); line-height:1.2; margin-bottom:20px; letter-spacing:-0.01em; }
+.hero h1 em { font-style:normal; background:linear-gradient(120deg,#fff 0%,#d6c6ff 50%,#8a5bff 100%); -webkit-background-clip:text; background-clip:text; color:transparent; }
+.hero .subtitle { font-size:19px; font-weight:300; color:rgba(255,255,255,.82); margin-bottom:38px; max-width:660px; line-height:1.75; }
+.hero .subtitle strong { color:#fff; font-weight:600; text-shadow:0 0 14px rgba(138,91,255,.6); }
+.hero .verse { border-left:2px solid rgba(138,91,255,.65); padding-left:16px; margin-bottom:32px; font-family:'Noto Serif SC',serif; font-style:italic; color:rgba(255,255,255,.65); font-size:16px; line-height:1.85; }
+.hero .verse cite { display:block; margin-top:6px; font-style:normal; font-size:13px; color:rgba(255,255,255,.4); }
+.hero-figure { padding:22px 18px; background:rgba(255,255,255,.03); border:1px solid rgba(255,255,255,.08); border-radius:16px; }
+.hero-figure svg { width:100%; height:auto; display:block; }
+.hero-figure figcaption { text-align:center; margin-top:12px; font-family:'JetBrains Mono',monospace; font-size:12px; color:rgba(255,255,255,.55); letter-spacing:.04em; }
+
+main { max-width:780px; margin:0 auto; padding:76px 24px 120px; }
+section { margin-bottom:72px; }
+h2 { font-family:'Noto Serif SC',serif; font-size:30px; font-weight:700; margin-bottom:20px; padding-top:8px; }
+h2::before { content:''; display:inline-block; width:32px; height:3px; background:linear-gradient(90deg,var(--accent),var(--accent-2)); border-radius:2px; vertical-align:middle; margin-right:12px; transform:translateY(-6px); }
+h3 { font-size:20px; font-weight:600; margin:32px 0 12px; color:var(--ink-2); }
+p { margin-bottom:16px; color:var(--ink-2); }
+p code, li code, td code { font-family:'JetBrains Mono',monospace; font-size:.93em; padding:2px 6px; background:var(--cream); border:1px solid var(--line); border-radius:4px; color:#6b3fd4; font-weight:500; }
+strong { color:var(--ink); font-weight:600; }
+ul, ol { margin:0 0 20px 24px; color:var(--ink-2); }
+li { margin-bottom:8px; }
+
+.verse-inline { padding:18px 22px; margin:22px 0; background:linear-gradient(90deg,#f6f2ff 0%,transparent 60%); border-left:3px solid var(--accent); border-radius:0 var(--radius) var(--radius) 0; font-family:'Noto Serif SC',serif; font-style:italic; color:var(--ink-3); }
+.verse-inline cite { display:block; margin-top:6px; font-style:normal; font-size:13px; color:var(--mute); }
+
+.stack { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:12px; margin:22px 0; }
+.stk { padding:16px 15px; border-radius:var(--radius); border:1px solid var(--line); background:linear-gradient(180deg,var(--paper),var(--cream)); }
+.stk .k { font-family:'JetBrains Mono',monospace; font-size:11px; color:#6b3fd4; letter-spacing:.08em; margin-bottom:4px; }
+.stk .t { font-size:15px; font-weight:600; color:var(--ink); margin-bottom:4px; }
+.stk .d { font-size:13px; color:var(--ink-3); line-height:1.55; }
+
+.code { margin:22px 0; background:var(--code-bg); border-radius:var(--radius); overflow:hidden; box-shadow:0 4px 24px rgba(15,20,32,.08); border:1px solid #1c1f2e; }
+.code-header { padding:10px 16px; background:#0a0d15; border-bottom:1px solid #1c1f2e; display:flex; align-items:center; justify-content:space-between; gap:12px; }
+.code-lang { font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.1em; color:var(--accent-2); text-transform:uppercase; font-weight:600; }
+.code-file { font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--mute); }
+.code pre { padding:20px 22px; overflow-x:auto; font-family:'JetBrains Mono',monospace; font-size:13.5px; line-height:1.65; color:var(--code-fg); }
+
+.tk-kw{color:#c57bff;font-weight:500}.tk-decl{color:#e08aff;font-weight:600}.tk-name{color:#fff;font-weight:500}
+.tk-dir{color:#7ee8d8;font-weight:500}.tk-typ{color:#4ad6b4}.tk-prim{color:#79dfff}
+.tk-rf{color:#ffd479;font-weight:500}.tk-rw{color:#b8a0e0}.tk-stor{color:#4ad6b4;font-weight:600}
+.tk-sf{color:#c5b890}.tk-sv{color:#8ab4f8}.tk-op{color:#ff8a4c}.tk-num{color:#79b8ff}
+.tk-com{color:#6c7488;font-style:italic}.tk-ann{color:#ff79c6}.tk-fn{color:#4ad6b4}.tk-str{color:#ffd479}.tk-hex{color:#ffb86b}
+
+.term { margin:18px 0; background:#060810; border-radius:var(--radius); overflow:hidden; border:1px solid #1c1f2e; font-family:'JetBrains Mono',monospace; font-size:12.5px; line-height:1.7; }
+.term-header { padding:8px 14px; background:#10131c; border-bottom:1px solid #1c1f2e; color:var(--mute); font-size:11px; letter-spacing:.1em; }
+.term-body { padding:16px 20px; color:#c5cbd8; overflow-x:auto; white-space:pre; }
+.term-ok{color:#6fe8a5}.term-err{color:#ff8f8f}.term-hint{color:var(--mute);font-style:italic}
+
+.callout { padding:18px 22px; background:var(--cream); border-left:3px solid var(--accent); border-radius:0 var(--radius) var(--radius) 0; margin:24px 0; font-size:15.5px; }
+.callout-title { font-weight:600; color:var(--ink); margin-bottom:6px; display:block; }
+.callout.warn { border-left-color:var(--warn); background:#fdf4f4; }
+
+.pn { display:flex; justify-content:space-between; gap:12px; padding:16px 0 32px; border-top:1px solid var(--line); border-bottom:1px solid var(--line); margin-bottom:56px; font-size:14px; color:var(--mute); }
+.pn a { color:var(--prism); text-decoration:none; font-weight:500; }
+
+footer { padding:40px 24px; background:var(--code-bg); color:var(--mute); text-align:center; font-size:14px; }
+footer a { color:var(--prism-2); text-decoration:none; }
+footer .next { display:block; margin-bottom:12px; font-family:'Noto Serif SC',serif; color:var(--code-fg); font-size:15px; }
+
+@media (max-width:640px){ main{padding:48px 20px 80px} .hero{padding:60px 20px 52px} h2{font-size:24px} }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="hero-inner">
+    <div class="hero-eyebrow">七日创造 · 第二日 · 空气与水 · 第 8 集</div>
+    <h1>理解世界<br><em>decoder</em></h1>
+    <p class="subtitle">前三颗器官：会走、会记、会算。但它们<strong>不知道该做什么</strong>——指令流进来只是一串 32 位的 0 和 1。这一集造最后一颗器官，它唯一的本事是<strong>理解</strong>。</p>
+
+    <div class="verse">
+      "将水分为上下。"
+      <cite>—— 《创世记》 1:6</cite>
+    </div>
+
+    <figure class="hero-figure">
+      <svg viewBox="0 0 720 260" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="decoder 把 32 位字符串翻译成控制位与地址">
+        <defs>
+          <linearGradient id="dbody" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#8a5bff" stop-opacity=".34"/>
+            <stop offset="100%" stop-color="#c9b8ff" stop-opacity=".2"/>
+          </linearGradient>
+          <marker id="a8" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+            <path d="M0,0 L10,5 L0,10 z" fill="#c9b8ff"/>
+          </marker>
+        </defs>
+
+        <!-- instr in -->
+        <text x="30" y="120" font-family="JetBrains Mono, monospace" font-size="13" fill="#c9b8ff">0x002081b3</text>
+        <text x="30" y="140" font-family="Noto Serif SC, serif" font-size="11" fill="rgba(255,255,255,.45)">32 位，什么都不知道</text>
+        <line x1="140" y1="128" x2="240" y2="128" stroke="#c9b8ff" stroke-width="2.5" marker-end="url(#a8)"/>
+
+        <rect x="244" y="60" width="170" height="136" rx="12" fill="url(#dbody)" stroke="#8a5bff" stroke-width="1.5"/>
+        <text x="329" y="118" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="16" font-weight="600" fill="#fff">decoder</text>
+        <text x="329" y="140" text-anchor="middle" font-family="Noto Serif SC, serif" font-size="11" fill="rgba(255,255,255,.6)">纯组合 · 只翻译不动手</text>
+        <text x="329" y="160" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="10" fill="rgba(255,255,255,.4)">opcode / funct3 / funct7</text>
+
+        <!-- two exits -->
+        <g stroke-width="2.5" fill="none">
+          <line x1="418" y1="100" x2="620" y2="66"  stroke="#4ad6b4" marker-end="url(#a8)"/>
+          <line x1="418" y1="112" x2="620" y2="98"  stroke="#4ad6b4" marker-end="url(#a8)"/>
+          <line x1="418" y1="126" x2="620" y2="130" stroke="#4ad6b4" marker-end="url(#a8)"/>
+          <line x1="418" y1="140" x2="620" y2="162" stroke="#ffd479" marker-end="url(#a8)"/>
+          <line x1="418" y1="152" x2="620" y2="194" stroke="#ffd479" marker-end="url(#a8)"/>
+          <line x1="418" y1="164" x2="620" y2="226" stroke="#ffd479" marker-end="url(#a8)"/>
+        </g>
+        <g font-family="JetBrains Mono, monospace" font-size="12">
+          <text x="626" y="70"  fill="#7ee8d8">imm</text>
+          <text x="626" y="102" fill="#7ee8d8">rd / rs1 / rs2</text>
+          <text x="626" y="134" fill="#7ee8d8">alu_op</text>
+          <text x="626" y="166" fill="#ffd479">reg_wen</text>
+          <text x="626" y="198" fill="#ffd479">mem_ren / mem_wen</text>
+          <text x="626" y="230" fill="#ffd479">is_branch / jal / jalr</text>
+        </g>
+        <text x="626" y="52" font-family="Noto Serif SC, serif" font-size="10" fill="rgba(255,255,255,.45)">给寄存器堆与 ALU 的值</text>
+        <text x="626" y="250" font-family="Noto Serif SC, serif" font-size="10" fill="rgba(255,255,255,.45)">决定"这一拍允许什么发生"</text>
+
+        <text x="30" y="42" font-family="Noto Serif SC, serif" font-size="12" fill="rgba(255,255,255,.45)">一次翻译，分两路出去：一部分是"送哪儿"，一部分是"准不准"</text>
+      </svg>
+      <figcaption>decoder 的输入是一串位，输出是一组值与一组许可</figcaption>
+    </figure>
+  </div>
+</header>
+
+<main>
+
+<div class="pn">
+  <a href="07-alu.html">← 第 7 集 · ALU</a>
+  <a href="09-observe.html">第 9 集 · 观察它们的心跳 →</a>
+</div>
+
+<section id="s1">
+  <h2>四颗里最"干净"的一颗</h2>
+  <p><code>decoder</code> 是四颗器官里唯一<strong>完全不碰数据通路</strong>的：它不参与运算、不保存状态，输出<strong>只是一束控制位</strong>与几个地址。整颗模块由纯组合表达式与 <code>match</code> 构成——没有 <code>reg</code>、没有 <code>mem</code>、没有 <code>fsm</code>。</p>
+
+  <div class="stack">
+    <div class="stk"><div class="k">输入</div><div class="t">instr</div><div class="d">一条 32 位的指令字</div></div>
+    <div class="stk"><div class="k">输出 · 地址</div><div class="t">rd / rs1 / rs2 / imm</div><div class="d">送给寄存器堆、ALU、PC</div></div>
+    <div class="stk"><div class="k">输出 · 许可</div><div class="t">reg_wen / mem_ren / mem_wen / is_branch…</div><div class="d">决定这一拍允许什么发生</div></div>
+  </div>
+
+  <p>这个形状就是第一日讲的"理解 = 把外界字符串翻译成内部动作"。<strong>decoder 从不做事，只发号施令</strong>——做不做是别人的事。</p>
+</section>
+
+<section id="s2">
+  <h2>第一步：把 32 位切开</h2>
+  <p>RISC-V 的指令字是一套固定格式的位域拼图。理解的第一步就是<strong>切片</strong>：</p>
+
+  <div class="code">
+    <div class="code-header"><span class="code-lang">prism</span><span class="code-file">decoder.prism · 字段抽取（节选）</span></div>
+<pre>    <span class="tk-com">// ---- 字段抽取 ----</span>
+    opcode = instr[<span class="tk-num">6</span>:<span class="tk-num">0</span>]
+    funct3 = instr[<span class="tk-num">14</span>:<span class="tk-num">12</span>]
+    funct7 = instr[<span class="tk-num">31</span>:<span class="tk-num">25</span>]
+
+    rd_raw = instr[<span class="tk-num">11</span>:<span class="tk-num">7</span>]
+    rs1    = instr[<span class="tk-num">19</span>:<span class="tk-num">15</span>]
+    rs2    = instr[<span class="tk-num">24</span>:<span class="tk-num">20</span>]</pre>
+  </div>
+
+  <p><code>[hi:lo]</code> 是位切片。注意 <code>opcode</code> / <code>funct3</code> / <code>funct7</code> 都在<strong>所有指令格式里位置相同</strong>——这是 ISA 设计时刻意留的：解码器可以<strong>先看 opcode 判大类、再看 funct3/funct7 判细分</strong>，而不必先知道整条指令长什么样。</p>
+</section>
+
+<section id="s3">
+  <h2>第二步：立即数的五种拼法</h2>
+  <p>立即数（指令里内嵌的常量）是最麻烦的部分——<strong>五种指令格式，五种把位数重新排列的方式</strong>。RISC-V 这么做是为了让所有格式里"该固定的字段固定"：</p>
+
+  <div class="code">
+    <div class="code-header"><span class="code-lang">prism</span><span class="code-file">decoder.prism · 立即数（节选）</span></div>
+<pre>    <span class="tk-com">// I-type：取高 12 位，再手工符号扩展</span>
+    i_raw = instr &gt;&gt; <span class="tk-num">20</span>
+    i_imm = i_raw &gt;= <span class="tk-num">0x800</span> ? i_raw - <span class="tk-num">0x1000</span> : i_raw
+
+    <span class="tk-com">// S-type：高 7 位 &lt;&lt; 5，接低 5 位；再手工符号扩展</span>
+    s_raw  = (((instr &gt;&gt; <span class="tk-num">25</span>) &amp; <span class="tk-num">0x7f</span>) &lt;&lt; <span class="tk-num">5</span>) | ((instr &gt;&gt; <span class="tk-num">7</span>) &amp; <span class="tk-num">0x1f</span>)
+    s_imm  = s_raw &gt;= <span class="tk-num">0x800</span> ? s_raw - <span class="tk-num">0x1000</span> : s_raw
+
+    <span class="tk-com">// B-type：imm[12|11|10:5|4:1|0] —— 位被拆成四段重新拼</span>
+    b12    = (instr &gt;&gt; <span class="tk-num">31</span>) &amp; <span class="tk-num">0x1</span>
+    b11    = (instr &gt;&gt; <span class="tk-num">7</span>)  &amp; <span class="tk-num">0x1</span>
+    b10_5  = (instr &gt;&gt; <span class="tk-num">25</span>) &amp; <span class="tk-num">0x3f</span>
+    b4_1   = (instr &gt;&gt; <span class="tk-num">8</span>)  &amp; <span class="tk-num">0xf</span>
+    b_raw  = (b12 &lt;&lt; <span class="tk-num">12</span>) | (b11 &lt;&lt; <span class="tk-num">11</span>) | (b10_5 &lt;&lt; <span class="tk-num">5</span>) | (b4_1 &lt;&lt; <span class="tk-num">1</span>)
+    b_imm  = b_raw &gt;= <span class="tk-num">0x1000</span> ? b_raw - <span class="tk-num">0x2000</span> : b_raw</pre>
+  </div>
+
+  <div class="callout warn">
+    <span class="callout-title">这一版我写错过一次——而且测试没喊</span>
+    <p>第一版 <code>i_imm</code> 我只写了一行：<code>i_imm = instr &gt;&gt; 20</code>。看起来和第 7 集 ALU 的逻辑右移一样干净。向量跑完 <strong>9/9 全等 ✅</strong>。</p>
+    <p style="margin:10px 0 0;">然后我加了一条 <code>addi x11, x0, -8</code>（编码 <code>0xff800593</code>）——立刻红：<strong>期望 -8，实得 4088</strong>。</p>
+    <p style="margin:10px 0 0;">原因：<code>instr</code> 是无符号的 <code>Signal&lt;u32&gt;</code>，<code>&gt;&gt;</code> 是<strong>逻辑右移</strong>，不会替我们补符号位。之前 9 条向量的立即数全是正数——正数的符号扩展和零扩展结果一样，所以<strong>测试全绿，但代码是错的</strong>。</p>
+    <p style="margin:10px 0 0;">修法是显式判"够不够半个范围再减回去"，S / B / J 三型本来就这么写的——只有 I 型因为"看起来能偷懒"而漏了。这就是那条老规矩：<strong>一个测试从没失败过，说明它还没被测到。</strong></p>
+  </div>
+</section>
+
+<section id="s4">
+  <h2>第三步：分派</h2>
+
+  <div class="code">
+    <div class="code-header"><span class="code-lang">prism</span><span class="code-file">decoder.prism · 分派（节选）</span></div>
+<pre>    <span class="tk-com">// R 型与 I 型共用同一张 funct3 表；funct7 == 0x20 是"算术变体"标志</span>
+    alu_op_r = <span class="tk-kw">match</span> funct3 {
+        <span class="tk-num">0</span> =&gt; (funct7 == <span class="tk-num">0x20</span>) ? <span class="tk-num">1</span> : <span class="tk-num">0</span>,   <span class="tk-com">// SUB / ADD</span>
+        <span class="tk-num">1</span> =&gt; <span class="tk-num">5</span>,                          <span class="tk-com">// SLL</span>
+        <span class="tk-num">2</span> =&gt; <span class="tk-num">7</span>,                          <span class="tk-com">// SLT</span>
+        <span class="tk-num">3</span> =&gt; <span class="tk-num">9</span>,                          <span class="tk-com">// SLTU</span>
+        <span class="tk-num">4</span> =&gt; <span class="tk-num">4</span>,                          <span class="tk-com">// XOR</span>
+        <span class="tk-num">5</span> =&gt; (funct7 == <span class="tk-num">0x20</span>) ? <span class="tk-num">6</span> : <span class="tk-num">8</span>,   <span class="tk-com">// SRA / SRL</span>
+        <span class="tk-num">6</span> =&gt; <span class="tk-num">3</span>,                          <span class="tk-com">// OR</span>
+        _ =&gt; <span class="tk-num">2</span>,                          <span class="tk-com">// AND</span>
+    }
+
+    <span class="tk-com">// ---- opcode 分派：一次判完"这是什么指令" ----</span>
+    is_r      = (opcode == <span class="tk-num">0x33</span>)
+    is_i_alu  = (opcode == <span class="tk-num">0x13</span>)
+    is_load   = (opcode == <span class="tk-num">0x03</span>)
+    is_store  = (opcode == <span class="tk-num">0x23</span>)
+    is_lui    = (opcode == <span class="tk-num">0x37</span>)
+    is_auipc  = (opcode == <span class="tk-num">0x17</span>)
+    is_b      = (opcode == <span class="tk-num">0x63</span>)
+    is_j      = (opcode == <span class="tk-num">0x6f</span>)
+    is_jr     = (opcode == <span class="tk-num">0x67</span>)
+
+    reg_wen   = is_r | is_i_alu | is_load | is_lui | is_auipc | is_j | is_jr
+    mem_ren   = is_load
+    mem_wen   = is_store
+    is_branch = is_b
+    is_jal    = is_j
+    is_jalr   = is_jr</pre>
+  </div>
+
+  <p>到这里，"理解"就写完了。每条控制位都是几条布尔式的<strong>与或拼接</strong>——没有循环、没有状态、没有时序。</p>
+
+  <div class="callout warn">
+    <span class="callout-title">一个不易察觉的坑：store 的 <code>instr[11:7]</code> 不是 rd</span>
+    <p style="margin:0;">S 型格式把低 5 位当 <code>imm[4:0]</code> 用——那一格<strong>根本不是目的寄存器</strong>。如果 decoder 不门控就把 <code>rd_raw</code> 报出去，store 指令会顺手把一个随机值当寄存器号送到寄存器堆。所以最后加一行：</p>
+    <pre style="margin:10px 0 0;font-family:'JetBrains Mono',monospace;font-size:12.5px;color:#d6d9e0;white-space:pre">rd = reg_wen ? rd_raw : 0</pre>
+    <p style="margin:8px 0 0;">不写回时把目的寄存器报成 0——等于写 x0，天然无害。<strong>防御性默认值比"下游自己小心"可靠。</strong></p>
+  </div>
+</section>
+
+<section id="s5">
+  <h2>跑起来：九条指令，九次"理解"</h2>
+
+  <div class="term">
+    <div class="term-header">▸ prism run examples/day2/decoder.prism</div>
+    <div class="term-body">cycle  instr        rd  alu_op  alu_src  reg_wen  mem_ren  mem_wen  imm          is_branch  is_jal  is_illegal
+0      0x00500093   1   0       1        1        0        0        5            0          0       0      <span class="term-hint"># addi x1, x0, 5</span>
+1      0x002081b3   3   0       0        1        0        0        0            0          0       0      <span class="term-hint"># add  x3, x1, x2</span>
+2      0x40110233   4   1       0        1        0        0        0            0          0       0      <span class="term-hint"># sub  x4, x2, x1（funct7=0x20）</span>
+3      0x00002483   9   0       1        1        1        0        0            0          0       0      <span class="term-hint"># lw   x9, 0(x0)</span>
+4      0x00302423   0   0       1        0        0        1        8            0          0       0      <span class="term-hint"># sw   x3, 8(x0)：rd 被门成 0</span>
+5      0x123457b7   15  0       1        1        0        0        305418240    0          0       0      <span class="term-hint"># lui  x15, 0x12345</span>
+6      0x00418863   0   0       0        0        0        0        16           1          0       0      <span class="term-hint"># beq  x3, x4, +16</span>
+7      0x008000ef   1   0       0        1        0        0        8            0          1       0      <span class="term-hint"># jal  x1, +8</span>
+8      0xff800593   11  0       1        1        0        0        -8           0          0       0      <span class="term-hint"># addi x11, x0, -8 —— 负立即数</span>
+9      0x0000007f   0   0       0        0        0        0        0            0          0       1      <span class="term-hint"># 不存在的 opcode → illegal</span>
+<span class="term-ok"># expect: 10/10 拍有断言 · 8 列 · 全等 ✅</span>
+<span class="term-ok">[run --cosim] ✅ PASS: decoder_check golden == RTL 仿真（10 拍 × 11 列全等）</span></div>
+  </div>
+
+  <p>逐条看几处关键：</p>
+  <ul>
+    <li><strong>拍 2（sub）</strong>：<code>funct3=0</code> 和 add 一样，靠 <code>funct7 == 0x20</code> 才分出 <code>alu_op=1</code>。<strong>同一格 opcode 里的两条指令，靠另一个字段区分。</strong></li>
+    <li><strong>拍 4（sw）</strong>：<code>mem_wen=1</code>、<code>reg_wen=0</code>、<code>imm=8</code>——它是 store，不写寄存器，但立即数照样解析出来（地址偏移）。</li>
+    <li><strong>拍 6（beq）</strong>：<code>is_branch=1</code>、<code>reg_wen=0</code>、<code>imm=16</code>——分支不带写回，但它的立即数是<strong>跳转偏移</strong>，第三日会接到 PC 的 <code>target</code>。</li>
+    <li><strong>拍 8</strong>：<code>imm = -8</code>——负立即数。这一行是后补的，也正是它逮出了上面那个 bug。</li>
+    <li><strong>拍 9</strong>：<code>opcode=0x7f</code> 不认识 → <code>is_illegal=1</code>。<strong>理解不了就说"我不懂"</strong>，而不是猜一个动作出来。</li>
+  </ul>
+
+  <div class="callout">
+    <span class="callout-title"><code>is_illegal</code> 只是一个位，谁来用它？</span>
+    <p style="margin:0;">decoder 只负责"举手报告"，<strong>怎么处置是 CPU 顶层的事</strong>：第三日的 <code>cpu_top</code> 会把 <code>is_illegal</code> 当门，把写使能全掐掉。白虹真核里的写法是
+    <code>wire rf_wen_eff : u1 = ctrl.rf_wen &amp; legal -&gt; rf.wen</code>——<strong>一条线把"非法"翻译成"这一拍什么都不许落地"</strong>。第五日还会再加一层：非法指令同时触发异常，跳到 <code>mtvec</code>。</p>
+  </div>
+</section>
+
+<section id="s6">
+  <h2>小结</h2>
+  <p>四颗器官造齐了。回头看它们各自把"水"分在了哪里：</p>
+  <div class="stack">
+    <div class="stk"><div class="k">pc</div><div class="t">控制 → 数据</div><div class="d">入：en / load / target；出：addr</div></div>
+    <div class="stk"><div class="k">regfile</div><div class="t">地址 / 使能 vs 值</div><div class="d">raddr / waddr / wen 是控制，rdata / wdata 是数据</div></div>
+    <div class="stk"><div class="k">alu</div><div class="t">op vs a / b</div><div class="d">选路信号从不参与运算</div></div>
+    <div class="stk"><div class="k">decoder</div><div class="t">整颗都是控制</div><div class="d">数据只在 instr 里路过</div></div>
+  </div>
+
+  <div class="verse-inline">
+    "将水分为上下。"
+    <cite>—— 《创世记》 1:6</cite>
+  </div>
+
+  <p>下一集是第二日最后一集——<strong>观察它们的心跳</strong>。四颗器官此刻都各自活着，我们要做的最后一件事是：证明它们真的活着，而且证明"如果它们坏了，测试会喊"。</p>
+</section>
+
+<section id="s7">
+  <h2>练习</h2>
+  <ol>
+    <li>给 decoder 加一条 <code>jalr</code>（opcode <code>0x67</code>）的检查——它已经在 <code>is_jr</code> 里了。跑一条 <code>jalr x0, 0(x1)</code>（编码 <code>0x00008067</code>），看 <code>rd</code> 是否报 0、<code>is_jalr</code> 是否为 1。</li>
+    <li>把 <code>rd = reg_wen ? rd_raw : 0</code> 的 <code>0</code> 改成 <code>rd_raw</code>（即不门控），跑一次——<code>sw</code> 那一拍的 <code>rd</code> 变成了什么？这个值送到寄存器堆会有什么后果？（提示：<code>wen=0</code> 所以不会真写，但如果将来有人接了别的通路呢？）</li>
+    <li>把 <code>known</code> 的成员列表删掉 <code>0x63</code>（分支）——<code>beq</code> 也会被判非法。想想：真实的 CPU 里"不认识某条指令"和"这条指令不该在此时出现"，是同一件事吗？</li>
+  </ol>
+</section>
+
+<section id="s8">
+  <h2>复现本集</h2>
+  <div class="code">
+    <div class="code-header"><span class="code-lang">bash</span><span class="code-file">reproduce</span></div>
+<pre>git clone https://github.com/prism-hdl/seven-days
+cd seven-days
+
+prism run examples/day2/decoder.prism --cosim</pre>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <span class="next">第 9 集 · 观察它们的心跳 —— 第二日收束</span>
+  七日创造 · 第二日 · 空气与水 · 第 8 集 · <a href="../index.html">返回首页</a>
+</footer>
+
+</body>
+</html>

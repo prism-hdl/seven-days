@@ -17,8 +17,8 @@ Prism 的答案：**一份源码，同时下降为 RTL + TLM + 独立 Python gol
 
 - **第 1 集 · 一道裂缝：为什么要有 Prism** — RTL 与 TLM 两条路各写一遍的痛；Prism 的答案是**一束光、三道棱面**——同一份源码，编译器分别产出可综合 SV、SystemC TLM、独立 Python 黄金参考，`run --cosim` 让三条通路逐拍对撞。最小示例：`module adder { a, b, sum : Signal<u32>; sum = a + b }` + `@schedule` + `run`，20 分钟三下降全绿。
 - **第 2 集 · 分层与语法骨架** — `module` 只写"做什么"（组合表达式 `x = expr`、时序更新 `on clock { x' = expr }`、`reg` / `mem` / `fsm` 原语、`match` / 三元 / 位切片 / 泛型 `<T: Bits>` / `Stream<T>` 协议端口），`@schedule` 才补"怎么做"（位宽、流水、存储、时钟、复位）；类型驱动位宽与符号，截断永远显式。**这一集用一颗带 fsm 的饱和计数器把语法骨架一次摆完**——一颗小模块同时含组合、时序、状态、协议端口、`run` 行级期望。
-- **第 3 集 · 从模块到 CPU：组装与抽象** — `design` + 批量 `connect` + `wire` + `expose` 把子模块拼成一颗顶层；`Interface` 定契约，`Composer` 编译期把可复用段展平到每一级；`blackbox` 让外部 SV IP 直接例化；`import` 把工程切分到多文件。**这一集展示 whitebow 单周期 CPU 顶层**——`regfile` / `im` / `pc` / `decoder` / `alu` / `dm` 六颗独立 `module` 用一份 `design` 串起来，读者第一次看见**"这真的就是一颗 CPU"**。
-- **第 4 集 · 让光打出去：从 CPU 到跑起 OpenSBI** — `run` / `stim` / `show` / `until` / 行级期望 / `--cosim` 每一颗模块自证；`gen-rtl` 出 SV 送到 yosys / Vivado 综合；SoC 顶层再挂 SRAM / BootROM / PLIC / UART 四颗外设，接上 OpenSBI。**这一集不写新代码，只放真实产物**——FPGA 上电、串口 banner 从 Prism 造的 CPU 里打出来。看完读者心里应该有一句话：**这门语言真的能造芯片**。
+- **第 3 集 · 从模块到 CPU：组装与抽象** — `design` + `connect` + `wire`（三种形态）+ `expose` 把子模块拼成一颗顶层；一颗 runnable 的三模块样例 `mini_cpu` 跑通后，看生成的顶层网表；然后铺开 `Interface` / `Composer` / `import` / `blackbox` 四件抽象手段（对照白虹单周期 CPU 的 `design` 段：6 颗实例 + 45 根 wire）。**读者第一次看见"这真的就是一颗 CPU"**。
+- **第 4 集 · 让光打出去：一台会说话的最小 SoC** — 不写新代码，只放**跑通过的**真实产物：白虹 SoC（6 颗实例 / 197 行）跑自己的 ROM 固件、经一根**比特级 8N1 串口线**与宿主往返（喂 `HI\n` 收 `HI\n`）；`gen-rtl` 出 2156 行 SV，`yosys` 综合出 4876 个单元 / 17 个子模块。看完读者心里应该有一句话：**这门语言真的能造芯片**。（FPGA 上板与 OpenSBI 是第七日的目标，本集明确标注边界。）
 
 **从第二日起不再讲语法**——每一日只回答"下一步造什么"。
 
@@ -30,11 +30,11 @@ Prism 的答案：**一份源码，同时下降为 RTL + TLM + 独立 Python gol
 
 一台 CPU 里流着两条水——**数据**（值）与**控制**（决定值什么时候被允许流过）。每一颗器官都在自己内部把这两条水分开一次：`pc` 分"当前值"与"+4 / 分支"，`regfile` 分"读写数据"与"写使能 / 地址"，`ALU` 分"操作数"与"`alu_op`"，`decoder` 干脆整颗就是一束控制位。第二日造四颗器官、每颗各自能测——**先有零件，再谈身体**。
 
-- **第 5 集 · PC — 心跳** — 一颗 `pc` 就是一个节律器：`reg pc : i32` + `on clock { pc' = mux(en, pc + 4, pc) }`；分支与跳转把 `pc_target` 拽进来那一刻，心跳换节奏；`reset` 把 `pc` 拉回 `boot_addr`。这一集把 `reg` / `on clock` / `mux` 三件事讲透——CPU 第一次会自己走。
-- **第 6 集 · 记忆：`memory` / `regfile` / `im` / `dm`** — `mem` 阵列 + 数组初值 + 读写端口；哈佛架构 `im`（指令）与 `dm`（数据）各一颗独立 SRAM；`regfile` 32 个通用寄存器 + `x0` 硬连线零（读端口给 0、写屏蔽 `waddr == 0`）。**记忆分两层**：短的在 `reg`、长的在 `mem`——第六日的 SRAM 是第三层。
-- **第 7 集 · ALU — 活动** — `add` / `sub` / `and` / `or` / `xor` / `sll` / `srl` / `sra` / `slt` / `sltu`；一张 `match` 表把 12 种 `alu_op` 摆平；`ult` / `uge` / `srl` 内建函数；`fsm` 除法器把 `div` / `divu` / `rem` / `remu` 挂到同一颗 ALU 上，多周期握手第一次登场。**firmament 在 ALU 端口上看得最清**：`a` / `b` / `imm` 一堆线，`alu_op` / `funct3` / `funct7` 另一堆。
+- **第 5 集 · PC — 心跳** — 一颗 `pc<T: bits>` 就是一个节律器：`reg pc : T` + `on clock { pc' = load ? target : pc + 4 }`——全部决策就在这一个三目里。为什么是 `+4`（定长指令）、为什么复位到 0、为什么**没有** `en`（冻住只有五级流水的取指停顿才用得上，接口是长出来的不是提前留的）。CPU 第一次会自己走。
+- **第 6 集 · 记忆：`regfile` / `ram` / im / dm** — `mem` 阵列的两副面孔：`regfile` 32 项 2 读 1 写、`x0` 由它**自己**保证恒零（读侧给 0 + 写侧丢弃，两道都焊在模块内）；`ram` 字阵列**异步读 + 同步写**（单周期核必须这个形状，否则取指晚一拍）、读口由 `ren` 门控。**哈佛 = 同一份源码例化两次**，不是两份代码。
+- **第 7 集 · ALU — 活动** — `add` / `sub` / `and` / `or` / `xor` / `sll` / `srl` / `sra` / `slt` / `sltu`；一张 `match` 表把十条路摆平；`u(...)` / `T(...)` 的位模式重解释；移位量掩码归调用方、不产生标志位、不做多周期的事——三条边界划清 ALU 的形状。**firmament 在 ALU 端口上看得最清**：`a` / `b` 一堆线，`op` 另一堆。
 - **第 8 集 · decoder — 理解世界** — opcode / funct3 / funct7 → 一束控制位；I / S / U / B / J 五种立即数扩展；这颗模块**整颗都是纯组合表达式 + `match`**，输出"只是一束控制位"——不碰数据面，与 `alu` / `regfile` / `dm` 完全隔离。**理解 = 把外界字符串翻译成内部动作**。
-- **第 9 集 · 观察它们的心跳** — 每一颗器官独立 `run` + `stim` + `show` + `until`；`expose` 把内部 `pc` / `regs[x]` / `state` 引到顶层；`--cosim` 让 golden 与 SV 逐拍对撞；`stim` 表行尾 `[v1, v2, ...]` 手算期望钉死终态。**四颗器官此刻都各自活着——但还不是一个生命**。
+- **第 9 集 · 观察它们的心跳** — 三种观察手段的边界（端口 / `wire` / `expose`：只有 reg / mem 能被 expose）；**四发反证**——拿掉 pc 的选择子、删掉 regfile 的写屏蔽、让 decoder 不报非法、以及写作过程中真发生的"负立即数不符号扩展"（9 条全正数的向量全绿却漏了 bug）。**四颗器官此刻都各自活着——但还不是一个生命**。
 
 ---
 
@@ -44,7 +44,7 @@ Prism 的答案：**一份源码，同时下降为 RTL + TLM + 独立 Python gol
 
 第二日造完的四颗各自能测，但散在桌上。**旱地**是把它们串起来那天：`design` 里 `connect`——一批 wire 走数据（`wb_data` / `pc_target` / `load_result`），一批走控制（`rf_wen` / `dm_wen` / `is_illegal`）。第三日之后，CPU 不再只是四颗会跳的零件，而是一具**能跑真程序的躯体**，并能自己识别"这一份代码错在哪儿"。
 
-- **第 10 集 · `cpu_top`：`design` + `connect` 把四颗串起来** — 顶层网表；批量 `connect { ... }`；`wire` 与 `assign`；`import` 把每颗器官分到独立 `.prism` 文件；`expose` 观测内部 `pc` / `regs` 到顶层。**旱地至此露出**。
+- **第 10 集 · `cpu_top`：`design` + `connect` 把四颗串起来** — 顶层网表；五颗器官原样搬来（合体只暴露出一处缺口：decoder 的 `alu_op` 得管分支）；`import` 把器官分到独立 `.prism` 文件；`expose` 观测内部 `pc` / `regs` 到顶层；一段六条指令的真循环，24 拍跑出 `x1 = 15`，三方逐拍全等。**旱地至此露出**。
 - **第 11 集 · 跑一段真程序** — 汇编一段 Fibonacci / 冒泡 / memcpy 小程序，`im` 数组初始化；`run --cosim` 逐拍看 `pc` 与 `x` 寄存器演化；`stim` 表行级期望把最终状态钉死——**CPU 第一次做事，不是做示例**。
 - **第 12 集 · 反证 · 变异扫描** — 手动改坏三处："把 `regfile` 的 `x0` 硬连线删掉" / "把 `sb` 通道的字节掩码改成整字写" / "把分支目标符号扩展丢掉"；每次改坏 `--cosim` **必须逮到**、差异必须落在真程序那一段可见的样本上。这一集不是新语法，是把第二 / 三日的**观察力磨亮**：一个不会反证的验证等于没验证。
 

@@ -1,0 +1,122 @@
+// =============================================================================
+// memory.prism —— 第二日 · 第 6 集：记忆
+//
+// 记忆分两层：
+//   短的 —— regfile：32 个通用寄存器，2 个组合读口 + 1 个时序写口；
+//          x0 硬连线为零（读 0、写丢弃），由 regfile 自身保证，不外包给 decoder。
+//   长的 —— ram：字阵列，异步读（同拍出数）+ 同步写。
+//
+// 这两颗是哈佛架构的两半：ram 的指令副本是 im、数据副本是 dm。同一份源码，
+// 例化两次就得到两套独立的存储器。
+// =============================================================================
+
+module regfile<T: bits> {
+    in  raddr1 : Signal<u5>     // 读地址 1
+    in  raddr2 : Signal<u5>     // 读地址 2
+    in  waddr  : Signal<u5>     // 写地址
+    in  wdata  : Signal<T>      // 写数据
+    in  wen    : Signal<u1>     // 写使能
+    out rdata1 : Signal<T>      // 读数据 1（组合）
+    out rdata2 : Signal<T>      // 读数据 2（组合）
+
+    mem regs : [32] T = 0       // 32 项阵列；复位清零（上电是确定的 0，不是 x）
+
+    // 组合读：x0 硬连线——读地址 0 直接给 0，不查阵列
+    rdata1 = (raddr1 == 0) ? 0 : regs[raddr1]
+    rdata2 = (raddr2 == 0) ? 0 : regs[raddr2]
+
+    // 时序写：waddr == 0 丢弃。读侧给 0 + 写侧拒收，两道合起来才是"x0 恒零"。
+    on clock {
+        regs'[waddr] = (wen & (waddr != 0)) ? wdata : regs[waddr]
+    }
+}
+
+module ram<SIZE: int> {
+    in  addr  : Signal<u6>      // 字地址 0..63
+    in  wdata : Signal<u32>
+    out rdata : Signal<u32>
+    in  wen   : Signal<u1>
+    in  ren   : Signal<u1>
+
+    mem mem : [SIZE] u32 = 0    // 字阵列，复位清零（未初始化的阵列会读出 x）
+
+    // 异步读：同拍出数（单周期核需要这个形状——寄存读会给到上一条 pc 的数据）
+    rdata = ren ? mem[addr] : 0
+
+    // 同步写
+    on clock {
+        if (wen) {
+            mem'[addr] = wdata
+        }
+    }
+}
+
+@schedule regfile {
+    bitwidth  : { data:64 }
+    pipeline  : 1 stage
+    storage   : regs = reg_array, depth = 32, width = param(T)
+    interface : raddr1, raddr2, waddr, wdata, wen, rdata1, rdata2 = Signal
+    reset     : async_low
+    clock     : 100 MHz, domain = single
+    resource  : none
+    latency   : 1 cycle
+}
+
+@schedule ram {
+    bitwidth  : { data:32 }
+    pipeline  : 1 stage
+    storage   : mem = reg_array, depth = 64, width = 32
+    interface : addr, wdata, rdata, wen, ren = Signal
+    reset     : async_low
+    clock     : 100 MHz, domain = single
+    resource  : none
+    latency   : 1 cycle
+}
+
+design regfile_top {
+    dut : regfile<T = i32>
+    // 读侧的硬连线只能证明"读不出 x0"；要证明"x0 写不进"，得把阵列本身引出来看。
+    expose dut.regs[0] as x0_raw
+}
+
+design ram_top {
+    dut : ram<SIZE = 64>
+}
+
+// 逐拍手算（观测点在边沿之后）：
+//   写 x5=100 → 同拍读回 100；x6 此刻仍是 0
+//   写 x6=200 → 读回 200
+//   试图写 x0=999 → 读口本来就是 0（读侧硬连线），而 x0_raw 直接看阵列：也是 0
+//   （写侧屏蔽生效）。两侧各管一半，合起来才是"x0 恒零"。
+run regfile_check of regfile_top {
+    stim : {
+        dut.raddr1, dut.raddr2, dut.waddr, dut.wdata, dut.wen, [dut.rdata1, dut.rdata2, x0_raw] = {
+            5, 0,  5, 100, 1, [100,   0,   0],   // 写 x5 = 100
+            5, 6,  0,   0, 0, [100,   0,   0],   // 只读：x6 尚未写
+            6, 0,  6, 200, 1, [200,   0,   0],   // 写 x6 = 200
+            0, 5,  0,   0, 0, [  0, 100,   0],   // 读 x0（恒 0）与 x5
+            0, 0,  0, 999, 1, [  0,   0,   0],   // 试图写 x0：写侧丢弃，阵列里仍是 0
+            6, 0,  0,   0, 0, [200,   0,   0],   // x6 没被 x0 的写冲掉
+        }
+    }
+    until : end of stim
+    show  : { dut.raddr1, dut.raddr2, dut.waddr, dut.wdata, dut.wen, dut.rdata1, dut.rdata2, x0_raw }
+}
+
+// 写三个字、读回来；ren=0 时读口给 0（不泄阵列值）。
+// 注意拍 0：写与读同一拍——异步读口在边沿之后已经看到刚写入的值。
+run ram_check of ram_top {
+    stim : {
+        dut.addr, dut.wdata, dut.wen, dut.ren, [dut.rdata] = {
+            10, 1111, 1, 1, [1111],   // 写 1111；异步读口同拍可见
+            10,    0, 0, 1, [1111],   // 读回
+            11, 2222, 1, 1, [2222],   // 写 2222
+            11,    0, 0, 1, [2222],   // 读回
+             0, 3333, 1, 0, [   0],   // 写 addr 0；ren=0 → 读口给 0
+             0,    0, 0, 1, [3333],   // 读回
+            12,    0, 0, 1, [   0],   // 没写过的地址读到复位值 0
+        }
+    }
+    until : end of stim
+    show  : { dut.addr, dut.wdata, dut.wen, dut.ren, dut.rdata }
+}

@@ -1,0 +1,347 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 6 集 · 记忆：regfile / ram / im / dm · 创世记 · 第二日 · 空气与水</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&family=Noto+Serif+SC:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink:#0f1420; --ink-2:#1c2333; --ink-3:#4a5468; --mute:#8892a6;
+  --line:#e5e8ef; --paper:#ffffff; --cream:#fbf9f4;
+  --prism:#5b4bff; --prism-2:#a678ff;
+  --accent:#0a9e8f; --accent-2:#4ad6b4;
+  --ok:#12a060; --warn:#d84a4a;
+  --code-bg:#10131c; --code-fg:#d6d9e0; --radius:10px;
+}
+* { box-sizing:border-box; margin:0; padding:0; }
+html { scroll-behavior:smooth; }
+body { font-family:'Inter','Noto Serif SC',-apple-system,sans-serif; color:var(--ink); background:var(--paper); line-height:1.7; font-size:17px; -webkit-font-smoothing:antialiased; }
+
+.hero { position:relative; padding:90px 24px 72px; background:radial-gradient(ellipse 820px 460px at 28% 34%, rgba(10,158,143,.26) 0%, transparent 58%), radial-gradient(ellipse 680px 400px at 76% 64%, rgba(91,75,255,.22) 0%, transparent 55%), #07090f; color:#fff; overflow:hidden; }
+.hero-inner { max-width:900px; margin:0 auto; position:relative; z-index:2; }
+.hero-eyebrow { display:inline-block; padding:6px 14px; border-radius:999px; background:rgba(255,255,255,.08); backdrop-filter:blur(12px); border:1px solid rgba(255,255,255,.16); font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:.08em; margin-bottom:22px; color:#b8f0e6; }
+.hero h1 { font-family:'Noto Serif SC',serif; font-weight:700; font-size:clamp(32px,5.2vw,52px); line-height:1.2; margin-bottom:20px; letter-spacing:-0.01em; }
+.hero h1 em { font-style:normal; background:linear-gradient(120deg,#fff 0%,#a8ecdf 50%,#0a9e8f 100%); -webkit-background-clip:text; background-clip:text; color:transparent; }
+.hero .subtitle { font-size:19px; font-weight:300; color:rgba(255,255,255,.82); margin-bottom:38px; max-width:660px; line-height:1.75; }
+.hero .subtitle strong { color:#fff; font-weight:600; text-shadow:0 0 14px rgba(74,214,180,.55); }
+.hero .verse { border-left:2px solid rgba(10,158,143,.65); padding-left:16px; margin-bottom:32px; font-family:'Noto Serif SC',serif; font-style:italic; color:rgba(255,255,255,.65); font-size:16px; line-height:1.85; }
+.hero .verse cite { display:block; margin-top:6px; font-style:normal; font-size:13px; color:rgba(255,255,255,.4); }
+.hero-figure { padding:22px 18px; background:rgba(255,255,255,.03); border:1px solid rgba(255,255,255,.08); border-radius:16px; }
+.hero-figure svg { width:100%; height:auto; display:block; }
+.hero-figure figcaption { text-align:center; margin-top:12px; font-family:'JetBrains Mono',monospace; font-size:12px; color:rgba(255,255,255,.55); letter-spacing:.04em; }
+
+main { max-width:780px; margin:0 auto; padding:76px 24px 120px; }
+section { margin-bottom:72px; }
+h2 { font-family:'Noto Serif SC',serif; font-size:30px; font-weight:700; margin-bottom:20px; padding-top:8px; }
+h2::before { content:''; display:inline-block; width:32px; height:3px; background:linear-gradient(90deg,var(--accent),var(--accent-2)); border-radius:2px; vertical-align:middle; margin-right:12px; transform:translateY(-6px); }
+h3 { font-size:20px; font-weight:600; margin:32px 0 12px; color:var(--ink-2); }
+p { margin-bottom:16px; color:var(--ink-2); }
+p code, li code, td code { font-family:'JetBrains Mono',monospace; font-size:.93em; padding:2px 6px; background:var(--cream); border:1px solid var(--line); border-radius:4px; color:#0a7a6f; font-weight:500; }
+strong { color:var(--ink); font-weight:600; }
+ul, ol { margin:0 0 20px 24px; color:var(--ink-2); }
+li { margin-bottom:8px; }
+
+.verse-inline { padding:18px 22px; margin:22px 0; background:linear-gradient(90deg,#eefaf8 0%,transparent 60%); border-left:3px solid var(--accent); border-radius:0 var(--radius) var(--radius) 0; font-family:'Noto Serif SC',serif; font-style:italic; color:var(--ink-3); }
+.verse-inline cite { display:block; margin-top:6px; font-style:normal; font-size:13px; color:var(--mute); }
+
+.stack { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:12px; margin:22px 0; }
+.stk { padding:16px 15px; border-radius:var(--radius); border:1px solid var(--line); background:linear-gradient(180deg,var(--paper),var(--cream)); }
+.stk .k { font-family:'JetBrains Mono',monospace; font-size:11px; color:#0a7a6f; letter-spacing:.08em; margin-bottom:4px; }
+.stk .t { font-size:15px; font-weight:600; color:var(--ink); margin-bottom:4px; }
+.stk .d { font-size:13px; color:var(--ink-3); line-height:1.55; }
+
+.code { margin:22px 0; background:var(--code-bg); border-radius:var(--radius); overflow:hidden; box-shadow:0 4px 24px rgba(15,20,32,.08); border:1px solid #1c1f2e; }
+.code-header { padding:10px 16px; background:#0a0d15; border-bottom:1px solid #1c1f2e; display:flex; align-items:center; justify-content:space-between; gap:12px; }
+.code-lang { font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.1em; color:var(--accent-2); text-transform:uppercase; font-weight:600; }
+.code-file { font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--mute); }
+.code pre { padding:20px 22px; overflow-x:auto; font-family:'JetBrains Mono',monospace; font-size:13.5px; line-height:1.65; color:var(--code-fg); }
+
+.tk-kw{color:#c57bff;font-weight:500}.tk-decl{color:#e08aff;font-weight:600}.tk-name{color:#fff;font-weight:500}
+.tk-dir{color:#7ee8d8;font-weight:500}.tk-typ{color:#4ad6b4}.tk-prim{color:#79dfff}
+.tk-rf{color:#ffd479;font-weight:500}.tk-rw{color:#b8a0e0}.tk-stor{color:#4ad6b4;font-weight:600}
+.tk-sf{color:#c5b890}.tk-sv{color:#8ab4f8}.tk-op{color:#ff8a4c}.tk-num{color:#79b8ff}
+.tk-com{color:#6c7488;font-style:italic}.tk-ann{color:#ff79c6}.tk-fn{color:#4ad6b4}.tk-str{color:#ffd479}.tk-hex{color:#ffb86b}
+
+.term { margin:18px 0; background:#060810; border-radius:var(--radius); overflow:hidden; border:1px solid #1c1f2e; font-family:'JetBrains Mono',monospace; font-size:12.5px; line-height:1.7; }
+.term-header { padding:8px 14px; background:#10131c; border-bottom:1px solid #1c1f2e; color:var(--mute); font-size:11px; letter-spacing:.1em; }
+.term-body { padding:16px 20px; color:#c5cbd8; overflow-x:auto; white-space:pre; }
+.term-ok{color:#6fe8a5}.term-err{color:#ff8f8f}.term-hint{color:var(--mute);font-style:italic}
+
+.callout { padding:18px 22px; background:var(--cream); border-left:3px solid var(--accent); border-radius:0 var(--radius) var(--radius) 0; margin:24px 0; font-size:15.5px; }
+.callout-title { font-weight:600; color:var(--ink); margin-bottom:6px; display:block; }
+.callout.warn { border-left-color:var(--warn); background:#fdf4f4; }
+
+.pn { display:flex; justify-content:space-between; gap:12px; padding:16px 0 32px; border-top:1px solid var(--line); border-bottom:1px solid var(--line); margin-bottom:56px; font-size:14px; color:var(--mute); }
+.pn a { color:var(--prism); text-decoration:none; font-weight:500; }
+
+footer { padding:40px 24px; background:var(--code-bg); color:var(--mute); text-align:center; font-size:14px; }
+footer a { color:var(--prism-2); text-decoration:none; }
+footer .next { display:block; margin-bottom:12px; font-family:'Noto Serif SC',serif; color:var(--code-fg); font-size:15px; }
+
+@media (max-width:640px){ main{padding:48px 20px 80px} .hero{padding:60px 20px 52px} h2{font-size:24px} }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="hero-inner">
+    <div class="hero-eyebrow">七日创造 · 第二日 · 空气与水 · 第 6 集</div>
+    <h1>记忆<br><em>短的与长的</em></h1>
+    <p class="subtitle"><code style="background:none;border:none;color:#4ad6b4">pc</code> 只会走，不会记。要"计算"，得先有地方<strong>存放</strong>。这一集造两种记忆：短的在寄存器堆里（32 个），长的在字阵列里（按地址）。</p>
+
+    <div class="verse">
+      "神就造出空气，将空气以下的水、空气以上的水分开了。事就这样成了。"
+      <cite>—— 《创世记》 1:7</cite>
+    </div>
+
+    <figure class="hero-figure">
+      <svg viewBox="0 0 720 250" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="两层记忆：寄存器堆与字阵列">
+        <defs>
+          <linearGradient id="m1" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#0a9e8f" stop-opacity=".35"/>
+            <stop offset="100%" stop-color="#4ad6b4" stop-opacity=".22"/>
+          </linearGradient>
+          <linearGradient id="m2" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#5b4bff" stop-opacity=".32"/>
+            <stop offset="100%" stop-color="#a678ff" stop-opacity=".22"/>
+          </linearGradient>
+        </defs>
+
+        <!-- short-term -->
+        <rect x="40" y="60" width="280" height="130" rx="12" fill="url(#m1)" stroke="#0a9e8f" stroke-width="1.5"/>
+        <text x="180" y="88" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="15" font-weight="600" fill="#d6fff6">regfile</text>
+        <text x="180" y="108" text-anchor="middle" font-family="Noto Serif SC, serif" font-size="11" fill="rgba(255,255,255,.6)">32 个通用寄存器 · 按名字取</text>
+        <g font-family="JetBrains Mono, monospace" font-size="11" fill="#4ad6b4">
+          <text x="60" y="140">x0  = 0      （硬连线）</text>
+          <text x="60" y="160">x5  = 100</text>
+          <text x="60" y="180">x6  = 200</text>
+        </g>
+
+        <!-- long-term -->
+        <rect x="400" y="60" width="280" height="130" rx="12" fill="url(#m2)" stroke="#a678ff" stroke-width="1.5"/>
+        <text x="540" y="88" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="15" font-weight="600" fill="#ece2ff">ram</text>
+        <text x="540" y="108" text-anchor="middle" font-family="Noto Serif SC, serif" font-size="11" fill="rgba(255,255,255,.6)">字阵列 · 按地址取</text>
+        <g font-family="JetBrains Mono, monospace" font-size="11" fill="#c9b8ff">
+          <text x="420" y="140">[10] = 1111</text>
+          <text x="420" y="160">[11] = 2222</text>
+          <text x="420" y="180">[ 0] = 3333</text>
+        </g>
+
+        <text x="360" y="42" text-anchor="middle" font-family="Noto Serif SC, serif" font-size="12" fill="rgba(255,255,255,.45)">写一个地址 / 读一个地址 —— 两条不同的取用方式</text>
+        <text x="180" y="222" text-anchor="middle" font-family="Noto Serif SC, serif" font-size="12" fill="rgba(255,255,255,.35)">2 读 1 写口</text>
+        <text x="540" y="222" text-anchor="middle" font-family="Noto Serif SC, serif" font-size="12" fill="rgba(255,255,255,.35)">异步读 + 同步写</text>
+      </svg>
+      <figcaption>记忆的两层：寄存器堆按名字，字阵列按地址——都在同一份源码里</figcaption>
+    </figure>
+  </div>
+</header>
+
+<main>
+
+<div class="pn">
+  <a href="05-pc.html">← 第 5 集 · PC</a>
+  <a href="07-alu.html">第 7 集 · ALU →</a>
+</div>
+
+<section id="s1">
+  <h2>记忆分两层</h2>
+  <p>为什么不是一种？因为取用方式不同：</p>
+
+  <div class="stack">
+    <div class="stk"><div class="k">短 · reg</div><div class="t">寄存器堆</div><div class="d">32 项，<strong>按名字</strong>取（x1、x5）。是运算的直接操作数来源，必须一拍取到。</div></div>
+    <div class="stk"><div class="k">长 · mem</div><div class="t">字阵列</div><div class="d">按<strong>地址</strong>取。容量大，用来放程序和数据。</div></div>
+    <div class="stk"><div class="k">更远 · SoC</div><div class="t">片外 SRAM/DDR</div><div class="d">第六日才出场。这里先记住：记忆是分层的，越远越慢越大。</div></div>
+  </div>
+
+  <p>这一集在算法层造出前两层——用的还是那个 <code>mem</code> 原语，但配上完全不同的读写口形状。</p>
+</section>
+
+<section id="s2">
+  <h2>寄存器堆：32 个名字 + 一条铁律</h2>
+
+  <div class="code">
+    <div class="code-header"><span class="code-lang">prism</span><span class="code-file">memory.prism · regfile</span></div>
+<pre><span class="tk-decl">module</span> <span class="tk-name">regfile</span>&lt;T: bits&gt; {
+    <span class="tk-dir">in</span>  <span class="tk-name">raddr1</span> : <span class="tk-typ">Signal</span>&lt;<span class="tk-prim">u5</span>&gt;     <span class="tk-com">// 读地址 1</span>
+    <span class="tk-dir">in</span>  <span class="tk-name">raddr2</span> : <span class="tk-typ">Signal</span>&lt;<span class="tk-prim">u5</span>&gt;     <span class="tk-com">// 读地址 2</span>
+    <span class="tk-dir">in</span>  <span class="tk-name">waddr</span>  : <span class="tk-typ">Signal</span>&lt;<span class="tk-prim">u5</span>&gt;     <span class="tk-com">// 写地址</span>
+    <span class="tk-dir">in</span>  <span class="tk-name">wdata</span>  : <span class="tk-typ">Signal</span>&lt;T&gt;      <span class="tk-com">// 写数据</span>
+    <span class="tk-dir">in</span>  <span class="tk-name">wen</span>    : <span class="tk-typ">Signal</span>&lt;<span class="tk-prim">u1</span>&gt;     <span class="tk-com">// 写使能</span>
+    <span class="tk-dir">out</span> <span class="tk-name">rdata1</span> : <span class="tk-typ">Signal</span>&lt;T&gt;      <span class="tk-com">// 读数据 1（组合）</span>
+    <span class="tk-dir">out</span> <span class="tk-name">rdata2</span> : <span class="tk-typ">Signal</span>&lt;T&gt;      <span class="tk-com">// 读数据 2（组合）</span>
+
+    <span class="tk-stor">mem</span> regs : [<span class="tk-num">32</span>] T = <span class="tk-num">0</span>       <span class="tk-com">// 32 项阵列；复位清零</span>
+
+    <span class="tk-com">// 组合读：x0 硬连线——读地址 0 直接给 0，不查阵列</span>
+    rdata1 = (raddr1 == <span class="tk-num">0</span>) ? <span class="tk-num">0</span> : regs[raddr1]
+    rdata2 = (raddr2 == <span class="tk-num">0</span>) ? <span class="tk-num">0</span> : regs[raddr2]
+
+    <span class="tk-com">// 时序写：waddr == 0 丢弃</span>
+    <span class="tk-stor">on</span> <span class="tk-stor">clock</span> {
+        regs<span class="tk-op">'</span>[waddr] = (wen &amp; (waddr != <span class="tk-num">0</span>)) ? wdata : regs[waddr]
+    }
+}</pre>
+  </div>
+
+  <p>三个设计点：</p>
+  <ul>
+    <li><strong>2 读 1 写</strong>——ALU 的两个操作数要<strong>同一拍</strong>取到，所以读口有两个、且是组合的。写口是时序的：结果在边沿落进阵列。</li>
+    <li><strong>读侧硬连线</strong>——<code>raddr == 0</code> 直接返回 0，根本不查阵列。这是"x0 恒零"的第一道。</li>
+    <li><strong>写侧丢弃</strong>——<code>waddr == 0</code> 时写不进去。这是第二道。</li>
+  </ul>
+
+  <div class="callout">
+    <span class="callout-title">为什么两道都要？</span>
+    <p style="margin:0;">RISC-V 规定 <code>x0</code> 恒为 0。有的人把这条规矩放在 decoder 里（"译码时发现 rd=0 就不发写使能"）。但那是把 <strong>寄存器堆自己的不变式</strong>外包给了别人——只要有任何一条路径绕过 decoder 直接驱动 <code>waddr=0, wen=1</code>，x0 就被写坏了。<strong>谁的状态谁负责</strong>：读口给 0、写口拒收，两道焊在 regfile 内部。第三日你会看到，decoder 那边<em>还</em>有一道门——但那是冗余的第二层，不是唯一的一层。</p>
+  </div>
+</section>
+
+<section id="s3">
+  <h2>字阵列：为什么读必须"同拍出数"</h2>
+
+  <div class="code">
+    <div class="code-header"><span class="code-lang">prism</span><span class="code-file">memory.prism · ram</span></div>
+<pre><span class="tk-decl">module</span> <span class="tk-name">ram</span>&lt;SIZE: int&gt; {
+    <span class="tk-dir">in</span>  <span class="tk-name">addr</span>  : <span class="tk-typ">Signal</span>&lt;<span class="tk-prim">u6</span>&gt;      <span class="tk-com">// 字地址 0..63</span>
+    <span class="tk-dir">in</span>  <span class="tk-name">wdata</span> : <span class="tk-typ">Signal</span>&lt;<span class="tk-prim">u32</span>&gt;
+    <span class="tk-dir">out</span> <span class="tk-name">rdata</span> : <span class="tk-typ">Signal</span>&lt;<span class="tk-prim">u32</span>&gt;
+    <span class="tk-dir">in</span>  <span class="tk-name">wen</span>   : <span class="tk-typ">Signal</span>&lt;<span class="tk-prim">u1</span>&gt;
+    <span class="tk-dir">in</span>  <span class="tk-name">ren</span>   : <span class="tk-typ">Signal</span>&lt;<span class="tk-prim">u1</span>&gt;
+
+    <span class="tk-stor">mem</span> mem : [SIZE] <span class="tk-prim">u32</span> = <span class="tk-num">0</span>    <span class="tk-com">// 字阵列，复位清零</span>
+
+    <span class="tk-com">// 异步读：同拍出数</span>
+    rdata = ren ? mem[addr] : <span class="tk-num">0</span>
+
+    <span class="tk-com">// 同步写</span>
+    <span class="tk-stor">on</span> <span class="tk-stor">clock</span> {
+        <span class="tk-kw">if</span> (wen) {
+            mem<span class="tk-op">'</span>[addr] = wdata
+        }
+    }
+}</pre>
+  </div>
+
+  <div class="callout warn">
+    <span class="callout-title">如果读口是"寄存读"（下一拍才出数）会怎样？</span>
+    <p style="margin:0;">单周期核里，pc 与数据通路共用同一个边沿：pc 指向 4 的那一拍，就得拿到地址 4 的指令。若是寄存读，你会拿到<strong>上一拍 pc</strong> 的指令——<code>auipc</code> / <code>jal</code> 算出的链接地址会差一条指令的 pc；复位后第一个边沿更糟：它会去译码存储器里的复位值 <code>0</code>，当成非法指令跳去异常入口。<strong>"同步读"的存储器是另一个模型，不是这颗的开关。</strong></p>
+  </div>
+
+  <p>还有一条容易被忽略的：<code>rdata = ren ? mem[addr] : 0</code>。读口被 <code>ren</code> 门控，不读的时候给 0。<strong>不给外设发假读</strong>——第六日接上 UART 时，这条门就是"读走即消费"的开关，漏了它固件会永远等不到下一个字节。</p>
+</section>
+
+<section id="s4">
+  <h2>跑起来</h2>
+
+  <h3>寄存器堆：写进去、读回来、x0 拦不拦得住</h3>
+  <div class="code">
+    <div class="code-header"><span class="code-lang">prism</span><span class="code-file">memory.prism · regfile_check</span></div>
+<pre><span class="tk-decl">design</span> <span class="tk-name">regfile_top</span> {
+    <span class="tk-name">dut</span> : <span class="tk-name">regfile</span>&lt;T = <span class="tk-prim">i32</span>&gt;
+    <span class="tk-com">// 读侧的硬连线只能证明"读不出 x0"；要证明"x0 写不进"，得把阵列本身引出来看。</span>
+    <span class="tk-kw">expose</span> dut.regs[<span class="tk-num">0</span>] <span class="tk-kw">as</span> x0_raw
+}</pre>
+  </div>
+
+  <div class="term">
+    <div class="term-header">▸ prism run examples/day2/memory.prism --run regfile_check</div>
+    <div class="term-body">cycle  raddr1  raddr2  waddr  wdata  wen  rdata1  rdata2  x0_raw
+0      5       0       5      100    1    100     0       0
+1      5       6       0      0      0    100     0       0
+2      6       0       6      200    1    200     0       0
+3      0       5       0      0      0    0       100     0
+4      0       0       0      999    1    0       0       0        <span class="term-hint"># 试图写 x0</span>
+5      6       0       0      0      0    200     0       0
+<span class="term-ok"># expect: 6/6 拍有断言 · 3 列 · 全等 ✅</span></div>
+  </div>
+
+  <p>注意拍 4：<code>wen=1</code>、<code>waddr=0</code>、<code>wdata=999</code>——<strong>写请求确实发出去了，但被 regfile 拒收</strong>。<code>rdata1</code> 是 0（读侧硬连线），<code>x0_raw</code> 也是 0（写侧丢弃，阵列里根本没变）。这两列一起，才是完整证据。</p>
+
+  <h3>字阵列：写三个字、读回来</h3>
+  <div class="term">
+    <div class="term-header">▸ prism run examples/day2/memory.prism --run ram_check</div>
+    <div class="term-body">cycle  addr  wdata  wen  ren  rdata
+0      10    1111   1    1    1111       <span class="term-hint"># 写与读同拍：异步读口已看到新值</span>
+1      10    0      0    1    1111
+2      11    2222   1    1    2222
+3      11    0      0    1    2222
+4      0     3333   1    0    0          <span class="term-hint"># ren=0：读口给 0，不泄阵列值</span>
+5      0     0      0    1    3333
+6      12    0      0    1    0          <span class="term-hint"># 没写过的地址读到复位值</span>
+<span class="term-ok"># expect: 7/7 拍有断言 · 1 列 · 全等 ✅</span>
+<span class="term-ok">[run --cosim] ✅ PASS: 两个 run 均与 RTL 仿真逐拍全等</span></div>
+  </div>
+</section>
+
+<section id="s5">
+  <h2>哈佛：同一份源码，例化两次</h2>
+  <p>RISC-V 常见两种组织：冯·诺依曼（指令与数据共用一块存储器）和哈佛（分开两块）。<strong>在 Prism 里这不是两个模块，而是同一个 <code>ram</code> 例化两次</strong>：</p>
+
+  <div class="code">
+    <div class="code-header"><span class="code-lang">prism</span><span class="code-file">第三日 cpu_top 里的样子（预告）</span></div>
+<pre><span class="tk-decl">design</span> <span class="tk-name">cpu_top</span> {
+    <span class="tk-name">pc</span> : <span class="tk-name">pc</span>&lt;T = <span class="tk-prim">i32</span>&gt;
+    <span class="tk-name">im</span> : <span class="tk-name">ram</span>&lt;SIZE = <span class="tk-num">64</span>&gt;    <span class="tk-com">// 指令侧</span>
+    <span class="tk-name">dm</span> : <span class="tk-name">ram</span>&lt;SIZE = <span class="tk-num">64</span>&gt;    <span class="tk-com">// 数据侧</span>
+    <span class="tk-com">…</span>
+}</pre>
+  </div>
+
+  <p>白虹的真核就是这么写的——它 <code>import</code> 了一份 <code>iu/sram.prism</code>，在顶层例化出 <code>im</code> 与 <code>dm</code> 两颗。<strong>"哈佛"不是多写一份代码，是多画一次实例。</strong></p>
+
+  <div class="callout">
+    <span class="callout-title">回看：为什么第一集要讲"信息注入"</span>
+    <p style="margin:0;">这里正是那句话的例子：<code>ram</code> 的算法层只有"按地址读写"，它不知道自己是 im 还是 dm——那是<strong>调度层 / 组装层</strong>的决定（例化几次、接给谁）。如果语言不允许把"做什么"和"怎么接"分开，你就得写两份几乎一样的存储器模块。</p>
+  </div>
+</section>
+
+<section id="s6">
+  <h2>小结</h2>
+  <ul>
+    <li><strong>短记忆</strong>：寄存器堆，2 组合读 + 1 时序写；<code>x0</code> 由它<strong>自己</strong>保证恒零（读给 0 + 写丢弃）。</li>
+    <li><strong>长记忆</strong>：字阵列，<strong>异步读 + 同步写</strong>——单周期核必须这个形状，否则取指会晚一拍。</li>
+    <li><strong>读口要门控</strong>（<code>ren</code>）：不读就明确给 0，别把阵列值当"正在读"送出去。</li>
+    <li><strong>哈佛 = 同一份源码例化两次</strong>，不是两份代码。</li>
+  </ul>
+
+  <div class="verse-inline">
+    "神就造出空气，将空气以下的水、空气以上的水分开了。事就这样成了。"
+    <cite>—— 《创世记》 1:7</cite>
+  </div>
+
+  <p>下一集造 <strong>ALU</strong>——四颗器官里唯一"纯组合"的一颗，也是第一次出现"会走多步"的单元。</p>
+</section>
+
+<section id="s7">
+  <h2>练习</h2>
+  <ol>
+    <li>把 regfile 写侧的 <code>(waddr != 0)</code> 条件删掉，跑 <code>regfile_check</code>——哪一列先喊？（提示：不是 <code>rdata1</code>，是 <code>x0_raw</code>。想想为什么。）</li>
+    <li>把 <code>rdata = ren ? mem[addr] : 0</code> 里的 <code>ren ? … : 0</code> 去掉（直接 <code>rdata = mem[addr]</code>），跑 <code>ram_check</code>——第 5 拍（cycle 4）会变成什么？为什么这个"泄漏"在接上外设时很危险？</li>
+    <li>给 <code>ram</code> 加一个 <code>size</code> 形参之外的第二个实例 <code>im</code>，并用 <code>mem mem : [SIZE] u32 = [...]</code> 塞几条指令进去（常量列表）——这就是第三日要跑的程序的雏形。</li>
+  </ol>
+</section>
+
+<section id="s8">
+  <h2>复现本集</h2>
+  <div class="code">
+    <div class="code-header"><span class="code-lang">bash</span><span class="code-file">reproduce</span></div>
+<pre>git clone https://github.com/prism-hdl/seven-days
+cd seven-days
+
+prism run examples/day2/memory.prism --run regfile_check --cosim
+prism run examples/day2/memory.prism --run ram_check     --cosim</pre>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <span class="next">第 7 集 · ALU：活动，以及第一次"会走多步"的单元</span>
+  七日创造 · 第二日 · 空气与水 · 第 6 集 · <a href="../index.html">返回首页</a>
+</footer>
+
+</body>
+</html>

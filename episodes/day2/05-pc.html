@@ -1,0 +1,309 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 5 集 · PC：心跳 · 创世记 · 第二日 · 空气与水</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&family=Noto+Serif+SC:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink:#0f1420; --ink-2:#1c2333; --ink-3:#4a5468; --mute:#8892a6;
+  --line:#e5e8ef; --paper:#ffffff; --cream:#fbf9f4;
+  --prism:#5b4bff; --prism-2:#a678ff;
+  --accent:#e0507a; --accent-2:#ff8aa8;
+  --ok:#12a060; --warn:#d84a4a;
+  --code-bg:#10131c; --code-fg:#d6d9e0; --radius:10px;
+}
+* { box-sizing:border-box; margin:0; padding:0; }
+html { scroll-behavior:smooth; }
+body { font-family:'Inter','Noto Serif SC',-apple-system,sans-serif; color:var(--ink); background:var(--paper); line-height:1.7; font-size:17px; -webkit-font-smoothing:antialiased; }
+
+.hero { position:relative; padding:90px 24px 72px; background:radial-gradient(ellipse 820px 460px at 28% 34%, rgba(224,80,122,.28) 0%, transparent 58%), radial-gradient(ellipse 680px 400px at 76% 64%, rgba(91,75,255,.22) 0%, transparent 55%), #07080f; color:#fff; overflow:hidden; }
+.hero-inner { max-width:900px; margin:0 auto; position:relative; z-index:2; }
+.hero-eyebrow { display:inline-block; padding:6px 14px; border-radius:999px; background:rgba(255,255,255,.08); backdrop-filter:blur(12px); border:1px solid rgba(255,255,255,.16); font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:.08em; margin-bottom:22px; color:#ffd0dd; }
+.hero h1 { font-family:'Noto Serif SC',serif; font-weight:700; font-size:clamp(32px,5.2vw,52px); line-height:1.2; margin-bottom:20px; letter-spacing:-0.01em; }
+.hero h1 em { font-style:normal; background:linear-gradient(120deg,#fff 0%,#ffc2d4 50%,#e0507a 100%); -webkit-background-clip:text; background-clip:text; color:transparent; }
+.hero .subtitle { font-size:19px; font-weight:300; color:rgba(255,255,255,.82); margin-bottom:38px; max-width:660px; line-height:1.75; }
+.hero .subtitle strong { color:#fff; font-weight:600; text-shadow:0 0 14px rgba(224,80,122,.6); }
+.hero .verse { border-left:2px solid rgba(224,80,122,.6); padding-left:16px; margin-bottom:32px; font-family:'Noto Serif SC',serif; font-style:italic; color:rgba(255,255,255,.65); font-size:16px; line-height:1.85; }
+.hero .verse cite { display:block; margin-top:6px; font-style:normal; font-size:13px; color:rgba(255,255,255,.4); }
+.hero-figure { padding:22px 18px; background:rgba(255,255,255,.03); border:1px solid rgba(255,255,255,.08); border-radius:16px; }
+.hero-figure svg { width:100%; height:auto; display:block; }
+.hero-figure figcaption { text-align:center; margin-top:12px; font-family:'JetBrains Mono',monospace; font-size:12px; color:rgba(255,255,255,.55); letter-spacing:.04em; }
+
+main { max-width:780px; margin:0 auto; padding:76px 24px 120px; }
+section { margin-bottom:72px; }
+h2 { font-family:'Noto Serif SC',serif; font-size:30px; font-weight:700; margin-bottom:20px; padding-top:8px; }
+h2::before { content:''; display:inline-block; width:32px; height:3px; background:linear-gradient(90deg,var(--accent),var(--accent-2)); border-radius:2px; vertical-align:middle; margin-right:12px; transform:translateY(-6px); }
+h3 { font-size:20px; font-weight:600; margin:32px 0 12px; color:var(--ink-2); }
+p { margin-bottom:16px; color:var(--ink-2); }
+p code, li code, td code { font-family:'JetBrains Mono',monospace; font-size:.93em; padding:2px 6px; background:var(--cream); border:1px solid var(--line); border-radius:4px; color:var(--accent); font-weight:500; }
+strong { color:var(--ink); font-weight:600; }
+ul, ol { margin:0 0 20px 24px; color:var(--ink-2); }
+li { margin-bottom:8px; }
+
+.verse-inline { padding:18px 22px; margin:22px 0; background:linear-gradient(90deg,#fff2f6 0%,transparent 60%); border-left:3px solid var(--accent); border-radius:0 var(--radius) var(--radius) 0; font-family:'Noto Serif SC',serif; font-style:italic; color:var(--ink-3); }
+.verse-inline cite { display:block; margin-top:6px; font-style:normal; font-size:13px; color:var(--mute); }
+
+.stack { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:12px; margin:22px 0; }
+.stk { padding:16px 15px; border-radius:var(--radius); border:1px solid var(--line); background:linear-gradient(180deg,var(--paper),var(--cream)); }
+.stk .k { font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--accent); letter-spacing:.08em; margin-bottom:4px; }
+.stk .t { font-size:15px; font-weight:600; color:var(--ink); margin-bottom:4px; }
+.stk .d { font-size:13px; color:var(--ink-3); line-height:1.55; }
+
+.code { margin:22px 0; background:var(--code-bg); border-radius:var(--radius); overflow:hidden; box-shadow:0 4px 24px rgba(15,20,32,.08); border:1px solid #1c1f2e; }
+.code-header { padding:10px 16px; background:#0a0d15; border-bottom:1px solid #1c1f2e; display:flex; align-items:center; justify-content:space-between; gap:12px; }
+.code-lang { font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.1em; color:var(--accent-2); text-transform:uppercase; font-weight:600; }
+.code-file { font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--mute); }
+.code pre { padding:20px 22px; overflow-x:auto; font-family:'JetBrains Mono',monospace; font-size:13.5px; line-height:1.65; color:var(--code-fg); }
+
+.tk-kw{color:#c57bff;font-weight:500}.tk-decl{color:#e08aff;font-weight:600}.tk-name{color:#fff;font-weight:500}
+.tk-dir{color:#7ee8d8;font-weight:500}.tk-typ{color:#4ad6b4}.tk-prim{color:#79dfff}
+.tk-rf{color:#ffd479;font-weight:500}.tk-rw{color:#b8a0e0}.tk-stor{color:#4ad6b4;font-weight:600}
+.tk-sf{color:#c5b890}.tk-sv{color:#8ab4f8}.tk-op{color:#ff8a4c}.tk-num{color:#79b8ff}
+.tk-com{color:#6c7488;font-style:italic}.tk-ann{color:#ff79c6}.tk-fn{color:#4ad6b4}.tk-str{color:#ffd479}.tk-hex{color:#ffb86b}
+
+.term { margin:18px 0; background:#060810; border-radius:var(--radius); overflow:hidden; border:1px solid #1c1f2e; font-family:'JetBrains Mono',monospace; font-size:12.5px; line-height:1.7; }
+.term-header { padding:8px 14px; background:#10131c; border-bottom:1px solid #1c1f2e; color:var(--mute); font-size:11px; letter-spacing:.1em; }
+.term-body { padding:16px 20px; color:#c5cbd8; overflow-x:auto; white-space:pre; }
+.term-ok{color:#6fe8a5}.term-err{color:#ff8f8f}.term-hint{color:var(--mute);font-style:italic}
+
+.callout { padding:18px 22px; background:var(--cream); border-left:3px solid var(--accent); border-radius:0 var(--radius) var(--radius) 0; margin:24px 0; font-size:15.5px; }
+.callout-title { font-weight:600; color:var(--ink); margin-bottom:6px; display:block; }
+.callout.warn { border-left-color:var(--warn); background:#fdf4f4; }
+
+.pn { display:flex; justify-content:space-between; gap:12px; padding:16px 0 32px; border-top:1px solid var(--line); border-bottom:1px solid var(--line); margin-bottom:56px; font-size:14px; color:var(--mute); }
+.pn a { color:var(--prism); text-decoration:none; font-weight:500; }
+
+footer { padding:40px 24px; background:var(--code-bg); color:var(--mute); text-align:center; font-size:14px; }
+footer a { color:var(--prism-2); text-decoration:none; }
+footer .next { display:block; margin-bottom:12px; font-family:'Noto Serif SC',serif; color:var(--code-fg); font-size:15px; }
+
+@media (max-width:640px){ main{padding:48px 20px 80px} .hero{padding:60px 20px 52px} h2{font-size:24px} }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="hero-inner">
+    <div class="hero-eyebrow">七日创造 · 第二日 · 空气与水 · 第 5 集</div>
+    <h1>心跳<br><em>PC</em></h1>
+    <p class="subtitle">第一日造出了语言和一台会说话的机器——那是<strong>预告片</strong>。从今日起，我们重新来一遍，而且这次要知道每一颗零件为什么长这样。第二日造四颗器官，第一颗是 <code style="background:none;border:none;color:#a678ff">pc</code>：<strong>CPU 的心跳</strong>。</p>
+
+    <div class="verse">
+      "神说，诸水之间要有空气，将水分为上下。"
+      <cite>—— 《创世记》 1:6</cite>
+    </div>
+
+    <figure class="hero-figure">
+      <svg viewBox="0 0 720 260" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="PC 每拍前进 4 字节，遇跳转改为载入目标地址">
+        <defs>
+          <linearGradient id="pcline" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stop-color="#e0507a" stop-opacity=".9"/>
+            <stop offset="100%" stop-color="#e0507a" stop-opacity=".25"/>
+          </linearGradient>
+          <marker id="a5" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+            <path d="M0,0 L10,5 L0,10 z" fill="#ff8aa8"/>
+          </marker>
+        </defs>
+
+        <!-- address axis -->
+        <line x1="40" y1="150" x2="690" y2="150" stroke="rgba(255,255,255,.18)" stroke-width="2"/>
+        <g font-family="JetBrains Mono, monospace" font-size="11" fill="rgba(255,255,255,.4)">
+          <text x="40" y="172">0</text>
+          <text x="165" y="172">4</text>
+          <text x="290" y="172">8</text>
+          <text x="415" y="172">12</text>
+          <text x="600" y="172">100</text>
+        </g>
+        <g stroke="rgba(255,255,255,.15)" stroke-width="1">
+          <line x1="40" y1="146" x2="40" y2="154"/>
+          <line x1="165" y1="146" x2="165" y2="154"/>
+          <line x1="290" y1="146" x2="290" y2="154"/>
+          <line x1="415" y1="146" x2="415" y2="154"/>
+          <line x1="600" y1="146" x2="600" y2="154"/>
+        </g>
+
+        <!-- ticks (heartbeats) -->
+        <g fill="#e0507a">
+          <circle cx="40" cy="120" r="7"/><circle cx="165" cy="120" r="7"/>
+          <circle cx="290" cy="120" r="7"/><circle cx="415" cy="120" r="7"/>
+        </g>
+        <text x="60" y="108" font-family="Noto Serif SC, serif" font-size="12" fill="#ffc2d4">每拍 +4（自增）</text>
+
+        <!-- jump arc -->
+        <path d="M415,120 C500,40 560,40 600,112" stroke="url(#pcline)" stroke-width="2.5" fill="none" marker-end="url(#a5)"/>
+        <text x="500" y="42" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="12" fill="#ff8aa8">load → target</text>
+        <circle cx="600" cy="120" r="7" fill="#a678ff"/>
+        <text x="612" y="108" font-family="Noto Serif SC, serif" font-size="12" fill="#c9b8ff">跳转</text>
+
+        <text x="40" y="220" font-family="Noto Serif SC, serif" font-size="12" fill="rgba(255,255,255,.35)">一条定长指令流：不打断就一直 +4；跳转只做一件事——把 target 拽进来</text>
+      </svg>
+      <figcaption>PC 的全部行为：下一步是 <tspan font-family="JetBrains Mono, monospace">pc + 4</tspan>，还是 <tspan font-family="JetBrains Mono, monospace">target</tspan></figcaption>
+    </figure>
+  </div>
+</header>
+
+<main>
+
+<div class="pn">
+  <a href="../day1/04-let-there-be-light.html">← 第一日 · 第 4 集</a>
+  <a href="06-memory.html">第 6 集 · 记忆 →</a>
+</div>
+
+<section id="s1">
+  <h2>四颗器官，为什么从它开始</h2>
+  <p>第一日最后那台会说话的 SoC，是一颗完整的五级流水 CPU。但那是<strong>几万行源码一次摆在你面前</strong>——看得见结果，看不见因果。</p>
+
+  <p>第二日换个走法：把 CPU 拆成四颗器官，一颗一颗造。<strong>每一颗都能单独跑、单独测</strong>，四颗都在自己内部把"数据"与"控制"两条水分开一次。等四颗都活了，第三日再把它们放进同一具身体。</p>
+
+  <div class="stack">
+    <div class="stk"><div class="k">EP 5</div><div class="t">pc · 心跳</div><div class="d">自己会走的那一颗</div></div>
+    <div class="stk"><div class="k">EP 6</div><div class="t">记忆</div><div class="d">regfile / ram / im / dm</div></div>
+    <div class="stk"><div class="k">EP 7</div><div class="t">ALU · 活动</div><div class="d">算，还有会走多步的算</div></div>
+    <div class="stk"><div class="k">EP 8</div><div class="t">decoder · 理解</div><div class="d">把字符串翻译成动作</div></div>
+  </div>
+
+  <p>从 <code>pc</code> 开始，因为它是四颗里<strong>唯一会自己动的</strong>。其余三颗都要等别人给输入才动——pc 不用，时钟一到它就往前走。</p>
+</section>
+
+<section id="s2">
+  <h2>一颗 pc 的全部</h2>
+
+  <div class="code">
+    <div class="code-header"><span class="code-lang">prism</span><span class="code-file">pc.prism</span></div>
+<pre><span class="tk-decl">module</span> <span class="tk-name">pc</span>&lt;T: bits&gt; {
+    <span class="tk-dir">in</span>  <span class="tk-name">load</span>   : <span class="tk-typ">Signal</span>&lt;<span class="tk-prim">u1</span>&gt;    <span class="tk-com">// 1 = 载入 target（跳转），0 = 自增 +4</span>
+    <span class="tk-dir">in</span>  <span class="tk-name">target</span> : <span class="tk-typ">Signal</span>&lt;T&gt;     <span class="tk-com">// 跳转目标地址</span>
+    <span class="tk-dir">out</span> <span class="tk-name">addr</span>   : <span class="tk-typ">Signal</span>&lt;T&gt;     <span class="tk-com">// 当前 PC 值</span>
+
+    <span class="tk-stor">reg</span> pc : T
+
+    <span class="tk-stor">on</span> <span class="tk-stor">clock</span> {
+        pc<span class="tk-op">'</span> = load ? target : pc + <span class="tk-num">4</span>
+    }
+
+    addr = pc
+}</pre>
+  </div>
+
+  <p>全部就这些。逐行看：</p>
+  <ul>
+    <li><strong><code>reg pc : T</code></strong>——一份跨拍状态。它没有初值写法，因为"上电时 PC 应该是什么"归调度层（<code>reset : async_low</code> + 复位向量 0）。</li>
+    <li><strong><code>on clock { pc' = … }</code></strong>——唯一的时序写法。注意右边读的是<strong>本拍</strong>的 pc，左边写的是<strong>下一拍</strong>的 pc；这就是 prime 记号的语义。</li>
+    <li><strong><code>load ? target : pc + 4</code></strong>——两个候选值，一个选择子。整颗模块的全部决策就在这一个三目里。</li>
+    <li><strong><code>addr = pc</code></strong>——组合输出。PC 的值一给出去，取指单元立刻能拿去查指令存储器。</li>
+  </ul>
+
+  <div class="callout">
+    <span class="callout-title">为什么是 <code>+ 4</code>？</span>
+    <p style="margin:0;">RISC-V 基础指令定长 4 字节。所以"下一条指令"就是"当前地址 + 4"——PC 的步长是 ISA 规定死的，不是我们选的。（压缩指令集 RV32C 的指令是 2 字节变长，那时这条线就要另想办法——这也是为什么真核里 PC 的加法常常不是简单 +4。）</p>
+  </div>
+
+  <div class="callout warn">
+    <span class="callout-title">为什么这里没有"冻住"？</span>
+    <p style="margin:0;">真核里的 pc 有一个 <code>en</code> 端口（<code>en=0</code> 时整拍不动），但那是<strong>给五级流水的取指停顿用的</strong>。单周期核每拍都要往前走，<code>en</code> 会恒接 1——那就不该有这根线。<br><br>
+    白虹的对照版就是这么分的：单周期文件里写的是 <code>1 -&gt; pc.en</code>（注释："冻住只有流水线用"），流水线文件里才是 <code>pc_en -&gt; pc.en</code>。<strong>等第五日做流水线，这颗模块会为它长出一根新端口</strong>——接口是长出来的，不是提前留的。</p>
+  </div>
+</section>
+
+<section id="s3">
+  <h2>跑起来：五拍看全两种行为</h2>
+
+  <div class="code">
+    <div class="code-header"><span class="code-lang">prism</span><span class="code-file">pc.prism · run 段</span></div>
+<pre><span class="tk-decl">run</span> <span class="tk-name">pc_check</span> <span class="tk-rw">of</span> <span class="tk-name">pc_top</span> {
+    <span class="tk-rf">stim</span> : {
+        <span class="tk-name">dut.load</span>, <span class="tk-name">dut.target</span>, [<span class="tk-name">dut.addr</span>] <span class="tk-op">=</span> {
+            <span class="tk-num">0</span>,   <span class="tk-num">0</span>, [  <span class="tk-num">4</span>],
+            <span class="tk-num">0</span>,   <span class="tk-num">0</span>, [  <span class="tk-num">8</span>],
+            <span class="tk-num">1</span>, <span class="tk-num">100</span>, [<span class="tk-num">100</span>],   <span class="tk-com">// 跳转</span>
+            <span class="tk-num">0</span>,   <span class="tk-num">0</span>, [<span class="tk-num">104</span>],
+            <span class="tk-num">1</span>,   <span class="tk-num">0</span>, [  <span class="tk-num">0</span>],   <span class="tk-com">// 跳回复位向量</span>
+        }
+    }
+    <span class="tk-rf">until</span> : <span class="tk-rw">end</span> <span class="tk-rw">of</span> <span class="tk-rf">stim</span>
+    <span class="tk-rf">show</span>  : { <span class="tk-name">dut.load</span>, <span class="tk-name">dut.target</span>, <span class="tk-name">dut.addr</span> }
+}</pre>
+  </div>
+
+  <div class="term">
+    <div class="term-header">▸ prism run examples/day2/pc.prism</div>
+    <div class="term-body">cycle   dut_load   dut_target   dut_addr
+0       0          0            4
+1       0          0            8
+2       1          100          100        <span class="term-hint"># 跳转：addr 直接变成 target</span>
+3       0          0            104
+4       1          0            0
+<span class="term-ok"># expect: 5/5 拍有断言 · 1 列 · 全等 ✅</span>
+<span class="term-ok">[run --cosim] ✅ PASS: pc_check golden == RTL 仿真（5 拍 × 3 列全等）</span></div>
+  </div>
+
+  <p>两点值得看：</p>
+  <ul>
+    <li><strong>拍 0 的 <code>addr</code> 是 4，不是 0</strong>。因为观测点在<strong>时钟边沿之后</strong>——复位后第一拍，pc 已经从 0 走到了 4。（想看"还没走"的样子，得把观测点挪到边沿之前——Prism 的 <code>run</code> 固定在边沿后取值，这一层约定在两个后端（golden / RTL）是同一份。）</li>
+    <li><strong>拍 2 的 <code>addr</code> 是 100，不是 "8 再跳"</strong>。载入与自增是同一个候选式里的两条分支，不是两步；<code>load</code> 一拍就把顺序流掰断。</li>
+  </ul>
+</section>
+
+<section id="s4">
+  <h2>pipeline 里只有它会"自己动"</h2>
+  <p>四颗器官里，pc 的接口形状是最特别的：<strong>它唯一的输入只有控制（load / target），没有数据输入</strong>。它在端口上就已经把两条水分开了——</p>
+  <div class="stack">
+    <div class="stk"><div class="k">控制面</div><div class="t">load · target</div><div class="d">决定"跳不跳"和"跳到哪"</div></div>
+    <div class="stk"><div class="k">数据面</div><div class="t">addr</div><div class="d">唯一的输出，流向指令存储器</div></div>
+  </div>
+  <p>第三日把它们串起来时，这条 <code>addr</code> 线会接到指令存储器的地址口；<code>target</code> 会来自 ALU 算出的跳转目标；<code>load</code> 会来自"这一条是分支且条件成立"。<strong>一颗 pc 的接线图，就是整个控制流的形状。</strong></p>
+</section>
+
+<section id="s5">
+  <h2>小结</h2>
+  <ul>
+    <li><code>reg</code> + <code>on clock</code> = 一份跨拍状态；<code>'</code> 左边是下一拍，右边是本拍。</li>
+    <li>两种走法（自增 / 载入）写在<strong>同一个候选式</strong>里，用一个选择子切换——不是两步。</li>
+    <li>整颗模块的决策只有一个三目：<code>load ? target : pc + 4</code>。</li>
+    <li>它在端口上就是"控制进、数据出"的样子：firmament 最朴素的一个样本。</li>
+  </ul>
+
+  <div class="verse-inline">
+    "神说，诸水之间要有空气，将水分为上下。"
+    <cite>—— 《创世记》 1:6</cite>
+  </div>
+
+  <p>下一集造<strong>记忆</strong>：短的在寄存器堆里，长的在字阵列里。</p>
+</section>
+
+<section id="s6">
+  <h2>练习</h2>
+  <ol>
+    <li>把 <code>load ? target : pc + 4</code> 里的选择子拿掉（改成恒为 <code>pc + 4</code>），跑一次——<strong>哪一拍先对不上</strong>？这就是"删掉一个决策，测试必须喊"的最小样本。</li>
+    <li>把 <code>pc + 4</code> 改成 <code>pc + 2</code>，<code>stim</code> 表的期望逐行改一遍——全绿之后想一想：如果这是真核，什么情况下会需要 +2？</li>
+    <li>给 <code>pc</code> 加一个 <code>jump</code> 输出（组合等于 <code>load</code>），接给未来 decoder 的 <code>is_branch</code>——接口会变成什么样？为什么现在不加？</li>
+  </ol>
+</section>
+
+<section id="s7">
+  <h2>复现本集</h2>
+  <div class="code">
+    <div class="code-header"><span class="code-lang">bash</span><span class="code-file">reproduce</span></div>
+<pre>pip install prism-hdl
+brew install icarus-verilog
+
+git clone https://github.com/prism-hdl/seven-days
+cd seven-days
+
+prism run examples/day2/pc.prism --cosim</pre>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <span class="next">第 6 集 · 记忆：regfile / ram / im / dm</span>
+  七日创造 · 第二日 · 空气与水 · 第 5 集 · <a href="../index.html">返回首页</a>
+</footer>
+
+</body>
+</html>
