@@ -1,0 +1,103 @@
+// =============================================================================
+// mini_cpu.prism —— 第三集样例：用 design + connect + wire + expose 把三颗
+// 独立模块拼成一颗"迷你数据通路"。
+//
+//   ticker  →（wire：+1）→  doubler  →  thresh
+//     心跳         组合            组合       比较
+//
+// 每颗模块都可以单独 run；拼起来之后，一颗的心跳驱动下一颗的动作。
+// 这不是完整的 CPU，但是 CPU 的形状：PC → 取指 → 译码 → 执行 → 判分支。
+// =============================================================================
+
+module ticker {
+    in  en  : Signal<u1>
+    out c   : Signal<u7>
+    reg cnt : u7
+
+    on clock {
+        cnt' = en ? cnt + 1 : cnt
+    }
+
+    c = cnt
+}
+
+module doubler {
+    in  x : Signal<u8>
+    out y : Signal<u8>
+
+    y = x + x
+}
+
+module thresh {
+    in  x   : Signal<u8>
+    out hit : Signal<u1>
+
+    hit = (x >= 16) ? 1 : 0
+}
+
+@schedule ticker {
+    bitwidth  : { data:7 }
+    pipeline  : 1 stage
+    storage   : cnt = reg, width = 7
+    interface : en, c = Signal
+    reset     : async_low
+    clock     : 100 MHz, domain = single
+    resource  : none
+    latency   : 1 cycle
+}
+
+@schedule doubler {
+    bitwidth  : { data:8 }
+    pipeline  : 1 stage
+    storage   : none
+    interface : x, y = Signal
+    reset     : async_low
+    clock     : 100 MHz, domain = single
+    resource  : none
+    latency   : 1 cycle
+}
+
+@schedule thresh {
+    bitwidth  : { data:8 }
+    pipeline  : 1 stage
+    storage   : none
+    interface : x, hit = Signal
+    reset     : async_low
+    clock     : 100 MHz, domain = single
+    resource  : none
+    latency   : 1 cycle
+}
+
+design mini_cpu {
+    t : ticker
+    d : doubler
+    h : thresh
+
+    // 《wire》：写表达式，落到一个具名网线上，再 `->` 推给下游端口
+    wire step : u8 = t.c + 1 -> d.x
+    wire res  : u8 = d.y     -> h.x
+
+    // 《expose》：把实例内部 reg 引到顶层做观测端口
+    expose t.cnt as ticks
+}
+
+// 逐拍手算（观测点在边沿之后）：
+//   ticks = 1,2,3,…   step = ticks+1   res = step*2   hit = res >= 16
+run mini_cpu_check of mini_cpu {
+    stim : {
+        t.en, [ticks, step, res, h.hit] = {
+            1, [ 1,  2,  4, 0],
+            1, [ 2,  3,  6, 0],
+            1, [ 3,  4,  8, 0],
+            1, [ 4,  5, 10, 0],
+            1, [ 5,  6, 12, 0],
+            1, [ 6,  7, 14, 0],
+            1, [ 7,  8, 16, 1],
+            1, [ 8,  9, 18, 1],
+            1, [ 9, 10, 20, 1],
+            1, [10, 11, 22, 1],
+        }
+    }
+    until : end of stim
+    show  : { t.en, ticks, step, res, h.hit }
+}

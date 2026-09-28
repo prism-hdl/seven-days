@@ -1,0 +1,423 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 4 集 · 让光打出去：一台会说话的最小 SoC · 创世记 · 第一日 · 光</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&family=Noto+Serif+SC:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #0f1420; --ink-2: #1c2333; --ink-3: #4a5468; --mute: #8892a6;
+  --line: #e5e8ef; --paper: #ffffff; --cream: #fbf9f4;
+  --prism: #5b4bff; --prism-2: #a678ff; --prism-3: #ff8a4c;
+  --ok: #12a060; --warn: #d84a4a;
+  --code-bg: #10131c; --code-fg: #d6d9e0; --radius: 10px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body { font-family: 'Inter', 'Noto Serif SC', -apple-system, sans-serif; color: var(--ink); background: var(--paper); line-height: 1.7; font-size: 17px; -webkit-font-smoothing: antialiased; }
+
+.hero { position: relative; padding: 92px 24px 74px; background: radial-gradient(ellipse 950px 500px at 28% 32%, rgba(255,214,150,.22) 0%, transparent 55%), radial-gradient(ellipse 750px 440px at 74% 66%, rgba(91,75,255,.28) 0%, transparent 55%), #05070e; color: #fff; overflow: hidden; }
+.hero-inner { max-width: 900px; margin: 0 auto; position: relative; z-index: 2; }
+.hero-eyebrow { display: inline-block; padding: 6px 14px; border-radius: 999px; background: rgba(255,255,255,.08); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,.16); font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: .08em; margin-bottom: 22px; color: #ffe6c0; }
+.hero h1 { font-family: 'Noto Serif SC', serif; font-weight: 700; font-size: clamp(32px, 5.2vw, 52px); line-height: 1.2; margin-bottom: 20px; letter-spacing: -0.01em; }
+.hero h1 em { font-style: normal; background: linear-gradient(120deg, #ffffff 0%, #ffe0a8 45%, #ff8a4c 100%); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.hero .subtitle { font-size: 19px; font-weight: 300; color: rgba(255,255,255,.82); margin-bottom: 40px; max-width: 660px; line-height: 1.75; }
+.hero .subtitle strong { color: #ffffff; font-weight: 600; text-shadow: 0 0 16px rgba(255,170,90,.55); }
+.hero .verse { border-left: 2px solid rgba(255,190,120,.6); padding-left: 16px; margin-bottom: 34px; font-family: 'Noto Serif SC', serif; font-style: italic; color: rgba(255,255,255,.65); font-size: 16px; line-height: 1.85; }
+.hero .verse cite { display: block; margin-top: 6px; font-style: normal; font-size: 13px; color: rgba(255,255,255,.4); }
+.hero-figure { padding: 22px 18px; background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.08); border-radius: 16px; }
+.hero-figure svg { width: 100%; height: auto; display: block; }
+.hero-figure figcaption { text-align: center; margin-top: 12px; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: rgba(255,255,255,.55); letter-spacing: .04em; }
+
+main { max-width: 780px; margin: 0 auto; padding: 76px 24px 120px; }
+section { margin-bottom: 72px; }
+h2 { font-family: 'Noto Serif SC', serif; font-size: 30px; font-weight: 700; margin-bottom: 20px; padding-top: 8px; }
+h2::before { content: ''; display: inline-block; width: 32px; height: 3px; background: linear-gradient(90deg, var(--prism-3), var(--prism)); border-radius: 2px; vertical-align: middle; margin-right: 12px; transform: translateY(-6px); }
+h3 { font-size: 20px; font-weight: 600; margin: 32px 0 12px; color: var(--ink-2); }
+p { margin-bottom: 16px; color: var(--ink-2); }
+p code, li code, td code { font-family: 'JetBrains Mono', monospace; font-size: .93em; padding: 2px 6px; background: var(--cream); border: 1px solid var(--line); border-radius: 4px; color: var(--prism); font-weight: 500; }
+strong { color: var(--ink); font-weight: 600; }
+ul, ol { margin: 0 0 20px 24px; color: var(--ink-2); }
+li { margin-bottom: 8px; }
+
+.verse-inline { padding: 18px 22px; margin: 22px 0; background: linear-gradient(90deg, #fff8ee 0%, transparent 60%); border-left: 3px solid var(--prism-3); border-radius: 0 var(--radius) var(--radius) 0; font-family: 'Noto Serif SC', serif; font-style: italic; color: var(--ink-3); }
+.verse-inline cite { display: block; margin-top: 6px; font-style: normal; font-size: 13px; color: var(--mute); }
+
+/* ledger (recap) */
+.ledger { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; margin: 22px 0 26px; }
+.led { padding: 16px 15px; border-radius: var(--radius); border: 1px solid var(--line); background: linear-gradient(180deg, var(--paper), var(--cream)); }
+.led .n { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--mute); letter-spacing: .08em; margin-bottom: 4px; }
+.led .t { font-size: 15px; font-weight: 600; color: var(--ink); margin-bottom: 4px; }
+.led .d { font-size: 13px; color: var(--ink-3); line-height: 1.55; }
+
+/* flow diagram */
+.flow { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin: 24px 0; }
+.step { padding: 18px 14px; border-radius: var(--radius); border: 1px solid var(--line); background: var(--paper); position: relative; text-align: center; }
+.step .k { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--prism); letter-spacing: .08em; text-transform: uppercase; margin-bottom: 6px; }
+.step .v { font-size: 14px; color: var(--ink-2); line-height: 1.5; }
+.step .big { font-family: 'JetBrains Mono', monospace; font-size: 20px; font-weight: 600; color: var(--ink); }
+.step::after { content: '→'; position: absolute; right: -13px; top: 50%; transform: translateY(-50%); color: var(--mute); font-weight: 600; background: var(--paper); padding: 2px; z-index: 2; }
+.step:last-child::after { display: none; }
+
+/* Code */
+.code { margin: 22px 0; background: var(--code-bg); border-radius: var(--radius); overflow: hidden; box-shadow: 0 4px 24px rgba(15,20,32,.08); border: 1px solid #1c1f2e; }
+.code-header { padding: 10px 16px; background: #0a0d15; border-bottom: 1px solid #1c1f2e; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.code-lang { font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: .1em; color: var(--prism-2); text-transform: uppercase; font-weight: 600; }
+.code-file { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--mute); }
+.code pre { padding: 20px 22px; overflow-x: auto; font-family: 'JetBrains Mono', monospace; font-size: 13.5px; line-height: 1.65; color: var(--code-fg); }
+
+.tk-kw   { color: #c57bff; font-weight: 500; }
+.tk-decl { color: #e08aff; font-weight: 600; }
+.tk-name { color: #ffffff; font-weight: 500; }
+.tk-dir  { color: #7ee8d8; font-weight: 500; }
+.tk-typ  { color: #4ad6b4; }
+.tk-prim { color: #79dfff; }
+.tk-rf   { color: #ffd479; font-weight: 500; }
+.tk-rw   { color: #b8a0e0; }
+.tk-stor { color: #4ad6b4; font-weight: 600; }
+.tk-sf   { color: #c5b890; }
+.tk-sv   { color: #8ab4f8; }
+.tk-op   { color: #ff8a4c; }
+.tk-num  { color: #79b8ff; }
+.tk-hex  { color: #ffb86b; }
+.tk-com  { color: #6c7488; font-style: italic; }
+.tk-ann  { color: #ff79c6; }
+.tk-fn   { color: #4ad6b4; }
+.tk-str  { color: #ffd479; }
+
+.term { margin: 18px 0; background: #060810; border-radius: var(--radius); overflow: hidden; border: 1px solid #1c1f2e; font-family: 'JetBrains Mono', monospace; font-size: 12.5px; line-height: 1.7; }
+.term-header { padding: 8px 14px; background: #10131c; border-bottom: 1px solid #1c1f2e; color: var(--mute); font-size: 11px; letter-spacing: .1em; }
+.term-body { padding: 16px 20px; color: #c5cbd8; overflow-x: auto; white-space: pre; }
+.term-ok { color: #6fe8a5; }
+.term-hint { color: var(--mute); font-style: italic; }
+
+.tbl-wrap { margin: 20px 0; overflow-x: auto; border-radius: var(--radius); border: 1px solid var(--line); }
+table { width: 100%; border-collapse: collapse; font-size: 14.5px; }
+th { background: var(--cream); text-align: left; padding: 11px 14px; font-weight: 600; border-bottom: 2px solid var(--line); }
+td { padding: 11px 14px; border-bottom: 1px solid var(--line); color: var(--ink-2); vertical-align: top; }
+td:first-child { font-family: 'JetBrains Mono', monospace; color: var(--prism-3); font-weight: 500; white-space: nowrap; }
+td .check { color: var(--ok); font-weight: 600; }
+
+.callout { padding: 18px 22px; background: var(--cream); border-left: 3px solid var(--prism); border-radius: 0 var(--radius) var(--radius) 0; margin: 24px 0; font-size: 15.5px; }
+.callout-title { font-weight: 600; color: var(--ink); margin-bottom: 6px; display: block; }
+.callout.warn { border-left-color: var(--prism-3); background: #fff5ec; }
+
+.pn { display: flex; justify-content: space-between; gap: 12px; padding: 16px 0 32px; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); margin-bottom: 56px; font-size: 14px; color: var(--mute); }
+.pn a { color: var(--prism); text-decoration: none; font-weight: 500; }
+
+footer { padding: 40px 24px; background: var(--code-bg); color: var(--mute); text-align: center; font-size: 14px; }
+footer a { color: var(--prism-2); text-decoration: none; }
+footer .next { display: block; margin-bottom: 12px; font-family: 'Noto Serif SC', serif; color: var(--code-fg); font-size: 15px; }
+
+@media (max-width: 640px) {
+  main { padding: 48px 20px 80px; }
+  .hero { padding: 60px 20px 52px; }
+  h2 { font-size: 24px; }
+  .step::after { display: none; }
+}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="hero-inner">
+    <div class="hero-eyebrow">七日创造 · 第一日 · 光 · 第 4 集</div>
+    <h1>让光打出去<br><em>一台会说话的最小 SoC</em></h1>
+    <p class="subtitle">前三集给了语言、模块、组装。这一集<strong>不写新代码</strong>——只把已经造好的东西推上电：CPU 跑自己的固件、经一根<strong>真的串口线</strong>把字节发回宿主、RTL 过 yosys 综合。看完你应该会说一句：<strong>这门语言真的能造芯片</strong>。</p>
+
+    <div class="verse">
+      "天地万物都造齐了。到第七日，神造物的工已经完毕，就在第七日歇了他一切的工，安息了。"
+      <cite>—— 《创世记》 2:1–3</cite>
+    </div>
+
+    <figure class="hero-figure">
+      <svg viewBox="0 0 720 250" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="CPU 经 UART 串口把字节送回宿主">
+        <defs>
+          <linearGradient id="cpu" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#5b4bff" stop-opacity=".35"/>
+            <stop offset="100%" stop-color="#a678ff" stop-opacity=".25"/>
+          </linearGradient>
+          <linearGradient id="host" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#ff8a4c" stop-opacity=".32"/>
+            <stop offset="100%" stop-color="#ffd479" stop-opacity=".22"/>
+          </linearGradient>
+          <marker id="a4" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+            <path d="M0,0 L10,5 L0,10 z" fill="#c9d6f0"/>
+          </marker>
+        </defs>
+
+        <rect x="24" y="70" width="190" height="100" rx="12" fill="url(#cpu)" stroke="#a678ff" stroke-width="1.5"/>
+        <text x="119" y="106" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="15" font-weight="600" fill="#e9e2ff">Whitebow SoC</text>
+        <text x="119" y="126" text-anchor="middle" font-family="Noto Serif SC, serif" font-size="11" fill="rgba(255,255,255,.55)">五级流水 CPU</text>
+        <text x="119" y="143" text-anchor="middle" font-family="Noto Serif SC, serif" font-size="11" fill="rgba(255,255,255,.55)">ROM 固件 · SRAM · UART</text>
+
+        <!-- wire path -->
+        <line x1="214" y1="105" x2="470" y2="105" stroke="#c9d6f0" stroke-width="2" marker-end="url(#a4)"/>
+        <line x1="470" y1="140" x2="214" y2="140" stroke="#c9d6f0" stroke-width="2" marker-end="url(#a4)"/>
+        <text x="342" y="96" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="12" fill="#8ab4f8">tx_pin · 8N1 · 1 根线</text>
+        <text x="342" y="162" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="12" fill="#ffd479">rx_pin</text>
+
+        <rect x="470" y="70" width="200" height="100" rx="12" fill="url(#host)" stroke="#ff8a4c" stroke-width="1.5"/>
+        <text x="570" y="106" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="15" font-weight="600" fill="#ffeada">宿主 / 终端</text>
+        <text x="570" y="126" text-anchor="middle" font-family="Noto Serif SC, serif" font-size="11" fill="rgba(255,255,255,.55)">喂 HI\n</text>
+        <text x="570" y="143" text-anchor="middle" font-family="Noto Serif SC, serif" font-size="11" fill="rgba(255,255,255,.55)">收 HI\n</text>
+
+        <text x="24" y="220" font-family="Noto Serif SC, serif" font-size="12" fill="rgba(255,255,255,.35)">CPU 跑的是自己 ROM 里的 10 条指令；串口线是比特级的，不是总线直连</text>
+      </svg>
+      <figcaption>这一集的全部：CPU 驱动一根串口线，宿主在另一头听见它</figcaption>
+    </figure>
+  </div>
+</header>
+
+<main>
+
+<div class="pn">
+  <a href="03-cpu-top.html">← 第 3 集 · 从模块到 CPU</a>
+  <span>第一日完 · 下一日 · 空气与水</span>
+</div>
+
+<section id="s1">
+  <h2>第一日，已经造出了什么</h2>
+  <p>回头看这四集走过的路——</p>
+
+  <div class="ledger">
+    <div class="led">
+      <div class="n">EP 1</div>
+      <div class="t">语言本身</div>
+      <div class="d">一份源码 → RTL + TLM + golden；三下降逐拍对撞</div>
+    </div>
+    <div class="led">
+      <div class="n">EP 2</div>
+      <div class="t">一颗模块</div>
+      <div class="d">分层 · 类型 · 组合 / 时序 · fsm；<code>sat_counter</code></div>
+    </div>
+    <div class="led">
+      <div class="n">EP 3</div>
+      <div class="t">多颗模块</div>
+      <div class="d"><code>connect</code> / <code>wire</code> / <code>expose</code>；Interface / Composer</div>
+    </div>
+    <div class="led">
+      <div class="n">EP 4</div>
+      <div class="t">让它说话</div>
+      <div class="d">这一步</div>
+    </div>
+  </div>
+
+  <p>语言有了，模块有了，组装方式有了。剩下的问题只有一个：<strong>把它们推上电，会动吗？</strong></p>
+  <p>这一集不写新代码。我要做的是——把已经存在的那台机器<strong>开起来给你看</strong>：白虹（Whitebow）最小 SoC。</p>
+</section>
+
+<section id="s2">
+  <h2>这台机器跑什么</h2>
+  <p><code>soc.prism</code> 一共 197 行，组装六颗实例：一颗五级流水的 CPU 核、一块取指 ROM、一块数据 SRAM、以及 UART 的收发两半加一个 MMIO 寄存器面。</p>
+
+  <div class="code">
+    <div class="code-header"><span class="code-lang">prism</span><span class="code-file">soc.prism · design 段（节选）</span></div>
+<pre><span class="tk-decl">design</span> <span class="tk-name">whitebow_soc</span> {
+    <span class="tk-name">u_cpu</span>  : <span class="tk-name">Whitebow</span>
+    <span class="tk-name">u_rom</span>  : <span class="tk-name">soc_rom</span>
+    <span class="tk-name">u_dm</span>   : <span class="tk-name">sram</span>
+    <span class="tk-name">u_tx</span>   : <span class="tk-name">uart_tx</span>&lt;CLOCK_FREQ = <span class="tk-num">1000000</span>, BAUD_RATE = <span class="tk-num">100000</span>&gt;
+    <span class="tk-name">u_rx</span>   : <span class="tk-name">uart_rx</span>&lt;CLOCK_FREQ = <span class="tk-num">1000000</span>, BAUD_RATE = <span class="tk-num">100000</span>&gt;
+    <span class="tk-name">u_regs</span> : <span class="tk-name">uart_regs</span>
+
+    <span class="tk-com">// 取指：核 → ROM（组合读，同拍出指令）</span>
+    <span class="tk-kw">connect</span> { u_cpu.im_addr <span class="tk-op">-></span> u_rom.addr
+              u_rom.rdata   <span class="tk-op">-></span> u_cpu.im_rdata }
+
+    <span class="tk-com">// 数据口解码：字 0..2047 → dm；2048..2051 → UART 寄存器；其余读 0 不写</span>
+    <span class="tk-kw">wire</span> <span class="tk-name">dm_in_sram</span>  : <span class="tk-prim">u1</span>  = u_cpu.dm_addr[<span class="tk-num">11</span>] == <span class="tk-num">0</span>
+    <span class="tk-kw">wire</span> <span class="tk-name">uart_hit</span>    : <span class="tk-prim">u1</span>  = (u_cpu.dm_addr[<span class="tk-num">11</span>] == <span class="tk-num">1</span>) &amp; (u_cpu.dm_addr[<span class="tk-num">10</span>:<span class="tk-num">2</span>] == <span class="tk-num">0</span>)
+    <span class="tk-kw">wire</span> <span class="tk-name">dm_rdata</span>    : <span class="tk-prim">u32</span> = dm_in_sram ? u_dm.rdata : (uart_hit ? u_regs.rd_data : <span class="tk-num">0</span>)
+    <span class="tk-com">…  全文 13 根 wire / 6 颗实例</span>
+}</pre>
+  </div>
+
+  <p>关键在于 <code>u_rom</code> 里那段<strong>真的 RISC-V 机器码</strong>——10 条指令的固件，干一件事：<strong>把收到的字节原样发回去</strong>。</p>
+
+  <div class="code">
+    <div class="code-header"><span class="code-lang">prism</span><span class="code-file">soc_rom 的内建固件（逐条手写机器码）</span></div>
+<pre>    <span class="tk-stor">mem</span> ram : [<span class="tk-num">2048</span>] <span class="tk-prim">u32</span> = [
+        <span class="tk-hex">0x000020B7</span>,   <span class="tk-com">//  0: lui  x1, 0x2       x1 = 0x2000（MMIO 基址）</span>
+        <span class="tk-hex">0x0080A183</span>,   <span class="tk-com">//  4: lw   x3, 8(x1)     pol: x3 = STATUS</span>
+        <span class="tk-hex">0x0011F193</span>,   <span class="tk-com">//  8: andi x3, x3, 1     ready?</span>
+        <span class="tk-hex">0xFE018CE3</span>,   <span class="tk-com">// 12: beq  x3, x0, -8    未就绪回 4</span>
+        <span class="tk-hex">0x0040A103</span>,   <span class="tk-com">// 16: lw   x2, 4(x1)     x2 = RXDATA（读走清 ready）</span>
+        <span class="tk-hex">0x0080A183</span>,   <span class="tk-com">// 20: lw   x3, 8(x1)     wai: x3 = STATUS</span>
+        <span class="tk-hex">0x0021F193</span>,   <span class="tk-com">// 24: andi x3, x3, 2     tx_busy?</span>
+        <span class="tk-hex">0xFE019CE3</span>,   <span class="tk-com">// 28: bne  x3, x0, -8    忙则回 20</span>
+        <span class="tk-hex">0x0020A023</span>,   <span class="tk-com">// 32: sw   x2, 0(x1)     TXDATA = x2</span>
+        <span class="tk-hex">0xFE1FF06F</span>    <span class="tk-com">// 36: jal  x0, -32       回 4（无限回显）</span>
+    ]</pre>
+  </div>
+
+  <p>轮询 <code>ready</code> → 读走 <code>RXDATA</code> → 等 <code>!tx_busy</code> → 写回 <code>TXDATA</code> → 跳回开头。<strong>这是固件在轮询 MMIO，不是硬件直连</strong>——CPU 真的在跑一个程序。</p>
+</section>
+
+<section id="s3">
+  <h2>让它跑起来</h2>
+  <p>跑这台 SoC 的 <code>run</code> 块里有一件新东西：<code>host</code> 绑定。它把芯片上的两根引脚（<code>tx_pin</code> / <code>rx_pin</code>）接到<strong>真实的宿主字节流</strong>上——不是总线，是一根比特级的串口线，8N1 编码，采样率是波特率的 10 倍：</p>
+
+  <div class="code">
+    <div class="code-header"><span class="code-lang">prism</span><span class="code-file">soc.prism · run 段</span></div>
+<pre><span class="tk-decl">run</span> <span class="tk-name">whitebow_soc_console</span> <span class="tk-rw">of</span> <span class="tk-name">whitebow_soc</span> {
+    <span class="tk-sf">clock</span> : <span class="tk-num">100</span> <span class="tk-sv">MHz</span>
+    <span class="tk-sf">host</span>  : {
+        <span class="tk-name">console</span> = <span class="tk-fn">uart_8n1</span>(tx = u_tx.tx_pin, rx = u_rx.rx_pin, divisor = <span class="tk-num">10</span>)
+    }
+    <span class="tk-rf">until</span> : console.tx.count &gt;= <span class="tk-num">3</span>
+    <span class="tk-rf">show</span>  : { pcv, retire_pc, retire_rd, retire_wen,
+              console.rx.count, console.rx.last, console.tx.count, console.tx.last }
+}</pre>
+  </div>
+
+  <p>注意 <code>until</code> 那一行：<strong>停机条件是"宿主已经听到 3 个字节"</strong>——不是"跑了多少拍"，不是"CPU 到哪个 PC"。程序停在哪由<strong>外部世界</strong>决定。</p>
+
+  <div class="code">
+    <div class="code-header"><span class="code-lang">bash</span><span class="code-file">喂三个字节，听三个字节</span></div>
+<pre>printf <span class="tk-str">'HI\n'</span> &gt; /tmp/rt.rx
+prism run soc.prism --host console=file:/tmp/rt
+od -c /tmp/rt.tx</pre>
+  </div>
+
+  <div class="term">
+    <div class="term-header">▸ 真实输出</div>
+    <div class="term-body">cycle  pcv  retire_pc  retire_rd  retire_wen  rx.count  rx.last  tx.count  tx.last
+  395    12        16          2          0           3       10         2       73
+  397    16         4          3          1           3       10         2       73
+  400     8        12         25          0           3       10         2       73
+  405     4         8          3          1           3       10         2       73
+  411     4         8          3          1           3       10         2       73
+  417     4         8          3          1           3       10         2       73
+  423     4         8          3          1           3       10         3       10
+<span class="term-hint"># run: whitebow_soc_console  424 拍 golden 直跑完成</span></div>
+  </div>
+
+  <div class="term">
+    <div class="term-header">▸ 宿主收到的字节（od -c）</div>
+    <div class="term-body">0000000    H   I  \n
+0000003</div>
+  </div>
+
+  <p>喂进去 <code>H</code> <code>I</code> <code>\n</code>，拿回来 <code>H</code> <code>I</code> <code>\n</code>——<strong>逐字节相同</strong>。这一路上发生过什么：宿主的字节 → 串口线比特流 → <code>uart_rx</code> 的采样状态机 → MMIO 寄存器 → CPU 轮询读走 → 写回 TXDATA → <code>uart_tx</code> 的发送状态机 → 串口线比特流 → 宿主。</p>
+
+  <div class="callout">
+    <span class="callout-title">这一集为什么值得单独写</span>
+    <p style="margin:0;">前面三集所有的验证都是"我喂激励，我读表格"。而这一条链路上，<strong>CPU 与宿主之间没有任何共享状态</strong>——只有一根线，和两边各自对"什么是一个 8N1 帧"的理解。这已经是一台<strong>会跟外界说话</strong>的机器了。</p>
+  </div>
+</section>
+
+<section id="s4">
+  <h2>光打到板上：从源码到门</h2>
+  <p>这条链路的最后一段是出 RTL。三条命令、三个数字：</p>
+
+  <div class="flow">
+    <div class="step">
+      <div class="k">source</div>
+      <div class="v"><code>soc.prism</code><br><span class="big">197</span> 行<br>+ 3 个 import</div>
+    </div>
+    <div class="step">
+      <div class="k">gen-rtl</div>
+      <div class="v">SystemVerilog<br><span class="big">2156</span> 行</div>
+    </div>
+    <div class="step">
+      <div class="k">yosys</div>
+      <div class="v">综合后门级<br><span class="big">4876</span> 个单元<br>17 个子模块</div>
+    </div>
+  </div>
+
+  <div class="term">
+    <div class="term-header">▸ yosys -p "read_verilog -sv soc.sv; synth -top whitebow_soc_top; stat"</div>
+    <div class="term-body">=== whitebow_soc_top ===
+     4459 wires
+     8956 wire bits
+     4876 cells
+      212   $_ANDNOT_
+     1293   $_AND_
+      663   $_MUX_
+     1430   $_NAND_
+      137   $_NOR_
+        8   $_NOT_
+      292   $_ORNOT_
+      500   $_OR_
+      196   $_XNOR_
+      145   $_XOR_
+       17 submodules (alu_rtl, csr_rtl, decoder_rtl, …)</div>
+  </div>
+
+  <p>四千八百个门、十七个子模块——这个规模已经能进 Lattice ECP5 这类小 FPGA 了。再往下就是纯工程：<code>nextpnr</code> 布局布线 → 出 bitfile → 上板。<strong>那一步留给第七日</strong>——那时我们会把一段不属于我们的固件（OpenSBI）放进去，让机器自己起来。</p>
+
+  <div class="callout warn">
+    <span class="callout-title">诚实边界</span>
+    <p style="margin:0;">这一集我只放了<strong>跑通过的</strong>东西：SoC 仿真、串口往返、yosys 综合。FPGA 上板与 OpenSBI 启动<strong>还没发生</strong>——它们是第七日的目标，不是今天的战果。博客里写的每个数字，都能在你自己机器上重跑出来。</p>
+  </div>
+</section>
+
+<section id="s5">
+  <h2>第一日完</h2>
+  <p>这一日只有一句话：<strong>光存在了</strong>。一门为硬件而生的语言，从动机写到语法，从一颗模块写到一台会说话的机器，最后过了综合器。</p>
+
+  <div class="verse-inline">
+    "天地万物都造齐了。到第七日，神造物的工已经完毕，就在第七日歇了他一切的工，安息了。"
+    <cite>—— 《创世记》 2:1–3</cite>
+  </div>
+
+  <p>但注意——<strong>这才第一日</strong>。这一集是"预告片"：把整条弧线的终点（机器自转）提前演了一遍。接下来的六日，会把这条线上的每一段<strong>重新长一遍</strong>，而且长得更结实：</p>
+
+  <table class="tbl-wrap">
+    <thead><tr><th>日</th><th>造什么</th></tr></thead>
+    <tbody>
+      <tr><td>第二日 · 空气与水</td><td>四颗器官：<code>pc</code> 心跳 / 记忆 / <code>ALU</code> / <code>decoder</code>——每颗独立能测</td></tr>
+      <tr><td>第三日 · 旱地与植物</td><td>把四颗放进同一具身体；跑真程序；<strong>反证与变异扫描</strong></td></tr>
+      <tr><td>第四日 · 天上光体</td><td><code>Composer</code>；五级流水线、冒险与前递、RV64I</td></tr>
+      <tr><td>第五日 · 有生命的活物</td><td>会疼（异常）· 会躲（中断 + PMP）· 会做事（真程序 + 独立 ISS）</td></tr>
+      <tr><td>第六日 · 照着形象造人</td><td>把它放大成一台完整的 SoC，管理自己的世界</td></tr>
+      <tr><td>第七日 · 安息</td><td>OpenSBI 起来；作者停手，机器自转</td></tr>
+    </tbody>
+  </table>
+
+  <p><strong>第一日之后不再讲语法</strong>——每一日只回答一个问题：下一步该造什么。</p>
+</section>
+
+<section id="s6">
+  <h2>练习</h2>
+  <ol>
+    <li>把宿主喂的字节改成别的内容（比如 <code>printf 'abc'</code>），<code>until : console.tx.count &gt;= 3</code> 要跟着改吗？如果把 <code>until</code> 改成 <code>console.tx.count &gt;= 5</code> 却只喂 3 个字节——判据永远等不到，想想 Prism 应该怎么办（提示：<code>run</code> 的判据形态是有拍数上限的——判据不可达时报错退出，而不是无限跑）。</li>
+    <li>把 <code>divisor</code> 从 <code>10</code> 改成 <code>9</code>——采样点偏离波特率中心。跑一次，看接收端是否还能解出字节，失败时 <code>rx_error</code> 会不会置起来。</li>
+    <li>用 <code>prism gen-rtl soc.prism -o /tmp/soc.sv</code> 自己出一份 RTL，再跑一遍上面那条 yosys 命令。<strong>对比你机器上的单元数与本集是否一致</strong>——不一致说明工具版本不同，这本身也是个值得知道的工程事实。</li>
+  </ol>
+</section>
+
+<section id="s7">
+  <h2>复现本集</h2>
+  <div class="code">
+    <div class="code-header"><span class="code-lang">bash</span><span class="code-file">reproduce</span></div>
+<pre>pip install prism-hdl
+brew install icarus-verilog yosys   <span class="tk-com"># macOS</span>
+
+git clone https://github.com/prism-hdl/riscv-prism
+cd riscv-prism
+
+<span class="tk-com"># ① 让 CPU 与宿主对一次话</span>
+printf <span class="tk-str">'HI\n'</span> &gt; /tmp/rt.rx
+prism run soc.prism --host console=file:/tmp/rt
+od -c /tmp/rt.tx                 <span class="tk-com"># 应看到 H I \n</span>
+
+<span class="tk-com"># ② 出 RTL 并过综合器</span>
+prism gen-rtl soc.prism -o /tmp/soc.sv
+yosys -p <span class="tk-str">"read_verilog -sv /tmp/soc.sv; synth -top whitebow_soc_top; stat"</span></pre>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <span class="next">第二日 · 空气与水 · 四颗器官：心跳 / 记忆 / 活动 / 理解世界</span>
+  七日创造 · 第一日 · 光 · 第 4 集 · <a href="../../README.md">返回</a>
+</footer>
+
+</body>
+</html>

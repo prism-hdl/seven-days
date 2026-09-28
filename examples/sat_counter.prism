@@ -1,0 +1,77 @@
+module sat_counter {
+    in  en    : Signal<u1>          // 使能：非零即真
+    in  clr   : Signal<u1>          // 清零：回 IDLE 并把 count 归零
+    out q     : Signal<u4>          // 计数输出（4 位无符号，0..15）
+    out full  : Signal<u1>          // 饱和标志
+    out state : Signal<u2>          // 观测态序号
+
+    fsm ctrl {
+        states : IDLE, RUN, TOP
+        reset  : IDLE
+
+        IDLE: en     -> RUN
+        IDLE: _      -> IDLE
+        RUN:  clr    -> IDLE
+        RUN:  full   -> TOP
+        RUN:  _      -> RUN
+        TOP:  clr    -> IDLE
+        TOP:  _      -> TOP
+    }
+
+    reg count : u4
+
+    on clock {
+        count' = clr ? 0 : (full ? count : ((ctrl.is(RUN) & en) ? count + 1 : count))
+    }
+
+    q     = count
+    full  = (count == 15) ? 1 : 0
+    state = match { ctrl.is(IDLE) => 0,
+                    ctrl.is(RUN)  => 1,
+                    _             => 2 }
+}
+
+@schedule sat_counter {
+    bitwidth  : { data:4 }
+    pipeline  : 1 stage
+    storage   : count = reg, width = 4
+    interface : en, clr, q, full, state = Signal
+    reset     : async_low
+    clock     : 100 MHz, domain = single
+    resource  : none
+    latency   : 1 cycle
+}
+
+design sat_counter_top {
+    dut : sat_counter
+}
+
+run sat_counter_check of sat_counter_top {
+    stim : {
+        en, clr, [q, full, state] = {
+            1, 0, [ 0, 0, 1],
+            1, 0, [ 1, 0, 1],
+            1, 0, [ 2, 0, 1],
+            1, 0, [ 3, 0, 1],
+            1, 0, [ 4, 0, 1],
+            1, 0, [ 5, 0, 1],
+            1, 0, [ 6, 0, 1],
+            1, 0, [ 7, 0, 1],
+            1, 0, [ 8, 0, 1],
+            1, 0, [ 9, 0, 1],
+            1, 0, [10, 0, 1],
+            1, 0, [11, 0, 1],
+            1, 0, [12, 0, 1],
+            1, 0, [13, 0, 1],
+            1, 0, [14, 0, 1],
+            1, 0, [15, 1, 1],
+            1, 0, [15, 1, 2],
+            0, 0, [15, 1, 2],
+            0, 1, [ 0, 0, 0],
+            1, 0, [ 0, 0, 1],
+            1, 0, [ 1, 0, 1],
+        }
+    }
+    until : end of stim
+    show  : { en, clr, q, full, state }
+}

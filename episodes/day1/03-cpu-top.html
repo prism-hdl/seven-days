@@ -1,0 +1,493 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 3 集 · 从模块到 CPU：组装与抽象 · 创世记 · 第一日 · 光</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&family=Noto+Serif+SC:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #0f1420; --ink-2: #1c2333; --ink-3: #4a5468; --mute: #8892a6;
+  --line: #e5e8ef; --paper: #ffffff; --cream: #fbf9f4;
+  --prism: #5b4bff; --prism-2: #a678ff; --prism-3: #ff8a4c;
+  --ok: #12a060; --warn: #d84a4a;
+  --code-bg: #10131c; --code-fg: #d6d9e0; --radius: 10px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body { font-family: 'Inter', 'Noto Serif SC', -apple-system, sans-serif; color: var(--ink); background: var(--paper); line-height: 1.7; font-size: 17px; -webkit-font-smoothing: antialiased; }
+
+.hero { position: relative; padding: 90px 24px 72px; background: radial-gradient(ellipse 900px 480px at 30% 35%, rgba(74,120,255,.30) 0%, transparent 55%), radial-gradient(ellipse 700px 420px at 72% 62%, rgba(255,138,76,.20) 0%, transparent 55%), #06080f; color: #fff; overflow: hidden; }
+.hero-inner { max-width: 900px; margin: 0 auto; position: relative; z-index: 2; }
+.hero-eyebrow { display: inline-block; padding: 6px 14px; border-radius: 999px; background: rgba(255,255,255,.08); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,.16); font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: .08em; margin-bottom: 22px; color: #cfe0ff; }
+.hero h1 { font-family: 'Noto Serif SC', serif; font-weight: 700; font-size: clamp(32px, 5.2vw, 52px); line-height: 1.2; margin-bottom: 20px; letter-spacing: -0.01em; }
+.hero h1 em { font-style: normal; background: linear-gradient(120deg, #ffffff 0%, #b8d0ff 55%, #4a78ff 100%); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.hero .subtitle { font-size: 19px; font-weight: 300; color: rgba(255,255,255,.82); margin-bottom: 40px; max-width: 660px; line-height: 1.75; }
+.hero .subtitle strong { color: #ffffff; font-weight: 600; text-shadow: 0 0 14px rgba(74,120,255,.55); }
+.hero .verse { border-left: 2px solid rgba(74,120,255,.6); padding-left: 16px; margin-bottom: 34px; font-family: 'Noto Serif SC', serif; font-style: italic; color: rgba(255,255,255,.65); font-size: 16px; line-height: 1.85; }
+.hero .verse cite { display: block; margin-top: 6px; font-style: normal; font-size: 13px; color: rgba(255,255,255,.4); }
+.hero-figure { padding: 22px 18px; background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.08); border-radius: 16px; }
+.hero-figure svg { width: 100%; height: auto; display: block; }
+.hero-figure figcaption { text-align: center; margin-top: 12px; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: rgba(255,255,255,.55); letter-spacing: .04em; }
+
+main { max-width: 780px; margin: 0 auto; padding: 76px 24px 120px; }
+section { margin-bottom: 72px; }
+h2 { font-family: 'Noto Serif SC', serif; font-size: 30px; font-weight: 700; margin-bottom: 20px; padding-top: 8px; }
+h2::before { content: ''; display: inline-block; width: 32px; height: 3px; background: linear-gradient(90deg, var(--prism), var(--prism-3)); border-radius: 2px; vertical-align: middle; margin-right: 12px; transform: translateY(-6px); }
+h3 { font-size: 20px; font-weight: 600; margin: 32px 0 12px; color: var(--ink-2); }
+p { margin-bottom: 16px; color: var(--ink-2); }
+p code, li code, td code { font-family: 'JetBrains Mono', monospace; font-size: .93em; padding: 2px 6px; background: var(--cream); border: 1px solid var(--line); border-radius: 4px; color: var(--prism); font-weight: 500; }
+strong { color: var(--ink); font-weight: 600; }
+ul, ol { margin: 0 0 20px 24px; color: var(--ink-2); }
+li { margin-bottom: 8px; }
+
+.verse-inline { padding: 18px 22px; margin: 22px 0; background: linear-gradient(90deg, #f2f6ff 0%, transparent 60%); border-left: 3px solid #4a78ff; border-radius: 0 var(--radius) var(--radius) 0; font-family: 'Noto Serif SC', serif; font-style: italic; color: var(--ink-3); }
+.verse-inline cite { display: block; margin-top: 6px; font-style: normal; font-size: 13px; color: var(--mute); }
+
+/* tool cards */
+.tools { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin: 22px 0 26px; }
+.tool { padding: 18px 16px; border-radius: var(--radius); border: 1px solid var(--line); background: linear-gradient(180deg, var(--paper), var(--cream)); }
+.tool .name { font-family: 'JetBrains Mono', monospace; font-weight: 600; font-size: 14px; margin-bottom: 6px; }
+.tool .what { font-size: 13.5px; color: var(--ink-3); line-height: 1.6; }
+.tool.c1 { border-left: 3px solid #4a78ff; } .tool.c1 .name { color: #4a78ff; }
+.tool.c2 { border-left: 3px solid var(--prism-2); } .tool.c2 .name { color: var(--prism-2); }
+.tool.c3 { border-left: 3px solid var(--prism-3); } .tool.c3 .name { color: var(--prism-3); }
+
+/* Code */
+.code { margin: 22px 0; background: var(--code-bg); border-radius: var(--radius); overflow: hidden; box-shadow: 0 4px 24px rgba(15,20,32,.08); border: 1px solid #1c1f2e; }
+.code-header { padding: 10px 16px; background: #0a0d15; border-bottom: 1px solid #1c1f2e; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.code-lang { font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: .1em; color: var(--prism-2); text-transform: uppercase; font-weight: 600; }
+.code-file { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--mute); }
+.code pre { padding: 20px 22px; overflow-x: auto; font-family: 'JetBrains Mono', monospace; font-size: 13.5px; line-height: 1.65; color: var(--code-fg); }
+
+.tk-kw   { color: #c57bff; font-weight: 500; }
+.tk-decl { color: #e08aff; font-weight: 600; }
+.tk-name { color: #ffffff; font-weight: 500; }
+.tk-dir  { color: #7ee8d8; font-weight: 500; }
+.tk-typ  { color: #4ad6b4; }
+.tk-prim { color: #79dfff; }
+.tk-rf   { color: #ffd479; font-weight: 500; }
+.tk-rw   { color: #b8a0e0; }
+.tk-stor { color: #4ad6b4; font-weight: 600; }
+.tk-sf   { color: #c5b890; }
+.tk-sv   { color: #8ab4f8; }
+.tk-op   { color: #ff8a4c; }
+.tk-num  { color: #79b8ff; }
+.tk-com  { color: #6c7488; font-style: italic; }
+.tk-ann  { color: #ff79c6; }
+.tk-fn   { color: #4ad6b4; }
+.tk-str  { color: #ffd479; }
+
+.term { margin: 18px 0; background: #060810; border-radius: var(--radius); overflow: hidden; border: 1px solid #1c1f2e; font-family: 'JetBrains Mono', monospace; font-size: 12.5px; line-height: 1.7; }
+.term-header { padding: 8px 14px; background: #10131c; border-bottom: 1px solid #1c1f2e; color: var(--mute); font-size: 11px; letter-spacing: .1em; }
+.term-body { padding: 16px 20px; color: #c5cbd8; overflow-x: auto; white-space: pre; }
+.term-ok { color: #6fe8a5; }
+.term-hint { color: var(--mute); font-style: italic; }
+
+.tbl-wrap { margin: 20px 0; overflow-x: auto; border-radius: var(--radius); border: 1px solid var(--line); }
+table { width: 100%; border-collapse: collapse; font-size: 14.5px; }
+th { background: var(--cream); text-align: left; padding: 11px 14px; font-weight: 600; border-bottom: 2px solid var(--line); }
+td { padding: 11px 14px; border-bottom: 1px solid var(--line); color: var(--ink-2); vertical-align: top; }
+td:first-child { font-family: 'JetBrains Mono', monospace; color: #4a78ff; font-weight: 500; white-space: nowrap; }
+td .check { color: var(--ok); font-weight: 600; }
+
+.callout { padding: 18px 22px; background: var(--cream); border-left: 3px solid var(--prism); border-radius: 0 var(--radius) var(--radius) 0; margin: 24px 0; font-size: 15.5px; }
+.callout-title { font-weight: 600; color: var(--ink); margin-bottom: 6px; display: block; }
+.callout.warn { border-left-color: var(--warn); background: #fdf4f4; }
+
+.pn { display: flex; justify-content: space-between; gap: 12px; padding: 16px 0 32px; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); margin-bottom: 56px; font-size: 14px; color: var(--mute); }
+.pn a { color: var(--prism); text-decoration: none; font-weight: 500; }
+
+footer { padding: 40px 24px; background: var(--code-bg); color: var(--mute); text-align: center; font-size: 14px; }
+footer a { color: var(--prism-2); text-decoration: none; }
+footer .next { display: block; margin-bottom: 12px; font-family: 'Noto Serif SC', serif; color: var(--code-fg); font-size: 15px; }
+
+@media (max-width: 640px) {
+  main { padding: 48px 20px 80px; }
+  .hero { padding: 60px 20px 52px; }
+  h2 { font-size: 24px; }
+}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="hero-inner">
+    <div class="hero-eyebrow">七日创造 · 第一日 · 光 · 第 3 集</div>
+    <h1>聚在一处<br><em>从模块到 CPU</em></h1>
+    <p class="subtitle">前两集只做了一颗模块。但 <strong>CPU 从来不是一颗模块</strong>——它是六颗模块加几十根线。这一集讲第三组语法：怎么把散落的零件<strong>聚成一体</strong>，以及当零件多到六个时，为什么必须再往上抽象一层。</p>
+
+    <div class="verse">
+      "神说，天下的水要聚在一处，使旱地露出来。事就这样成了。<br>神称旱地为地，称水的聚处为海。神看着是好的。"
+      <cite>—— 《创世记》 1:9–10</cite>
+    </div>
+
+    <figure class="hero-figure">
+      <svg viewBox="0 0 720 280" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="三颗模块用 wire 串成一条数据通路">
+        <defs>
+          <linearGradient id="mod" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#4a78ff" stop-opacity=".30"/>
+            <stop offset="100%" stop-color="#5b4bff" stop-opacity=".22"/>
+          </linearGradient>
+          <linearGradient id="mod2" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#a678ff" stop-opacity=".30"/>
+            <stop offset="100%" stop-color="#8a5bff" stop-opacity=".22"/>
+          </linearGradient>
+          <linearGradient id="mod3" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#ff8a4c" stop-opacity=".30"/>
+            <stop offset="100%" stop-color="#ff6b2c" stop-opacity=".22"/>
+          </linearGradient>
+          <marker id="a3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+            <path d="M0,0 L10,5 L0,10 z" fill="#c9d6f0"/>
+          </marker>
+        </defs>
+
+        <!-- module boxes -->
+        <rect x="30" y="100" width="150" height="76" rx="10" fill="url(#mod)" stroke="#4a78ff" stroke-width="1.5"/>
+        <text x="105" y="132" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="15" font-weight="600" fill="#dce8ff">ticker</text>
+        <text x="105" y="153" text-anchor="middle" font-family="Noto Serif SC, serif" font-size="11" fill="rgba(255,255,255,.5)">心跳 · 每拍 +1</text>
+
+        <rect x="285" y="100" width="150" height="76" rx="10" fill="url(#mod2)" stroke="#a678ff" stroke-width="1.5"/>
+        <text x="360" y="132" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="15" font-weight="600" fill="#ece2ff">doubler</text>
+        <text x="360" y="153" text-anchor="middle" font-family="Noto Serif SC, serif" font-size="11" fill="rgba(255,255,255,.5)">组合 · ×2</text>
+
+        <rect x="540" y="100" width="150" height="76" rx="10" fill="url(#mod3)" stroke="#ff8a4c" stroke-width="1.5"/>
+        <text x="615" y="132" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="15" font-weight="600" fill="#ffe2cf">thresh</text>
+        <text x="615" y="153" text-anchor="middle" font-family="Noto Serif SC, serif" font-size="11" fill="rgba(255,255,255,.5)">比较 · ≥16 ?</text>
+
+        <!-- wires -->
+        <line x1="180" y1="138" x2="281" y2="138" stroke="#c9d6f0" stroke-width="2" marker-end="url(#a3)"/>
+        <text x="230" y="128" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="12" fill="#8ab4f8">step</text>
+        <text x="230" y="158" text-anchor="middle" font-family="Noto Serif SC, serif" font-size="10" fill="rgba(255,255,255,.4)">= t.c + 1</text>
+
+        <line x1="435" y1="138" x2="536" y2="138" stroke="#c9d6f0" stroke-width="2" marker-end="url(#a3)"/>
+        <text x="485" y="128" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="12" fill="#8ab4f8">res</text>
+        <text x="485" y="158" text-anchor="middle" font-family="Noto Serif SC, serif" font-size="10" fill="rgba(255,255,255,.4)">= d.y</text>
+
+        <!-- expose tap -->
+        <line x1="105" y1="176" x2="105" y2="228" stroke="#ffd479" stroke-width="1.5" stroke-dasharray="4 4" marker-end="url(#a3)"/>
+        <text x="118" y="214" font-family="JetBrains Mono, monospace" font-size="12" fill="#ffd479">expose t.cnt as ticks</text>
+        <text x="105" y="256" text-anchor="middle" font-family="Noto Serif SC, serif" font-size="10" fill="rgba(255,255,255,.4)">内部状态引到顶层观测</text>
+
+        <!-- label -->
+        <text x="30" y="60" font-family="Noto Serif SC, serif" font-size="13" fill="rgba(255,255,255,.5)">design mini_cpu —— 三颗实例 · 两根 wire · 一条 expose</text>
+      </svg>
+      <figcaption>本集的 runnable 样例：三颗模块用两根具名 <tspan font-family="JetBrains Mono, monospace">wire</tspan> 串成一条数据通路</figcaption>
+    </figure>
+  </div>
+</header>
+
+<main>
+
+<div class="pn">
+  <a href="02-layered.html">← 第 2 集 · 分层与语法骨架</a>
+  <a href="04-let-there-be-light.html">第 4 集 · 让光打出去 →</a>
+</div>
+
+<section id="s1">
+  <h2>零件不等于身体</h2>
+  <p>第 1 集的加法器、第 2 集的饱和计数器——都是<strong>一颗</strong>模块。一颗模块能做一件事：加两个数、数到饱和。但一台计算机不是"一颗做很多事的模块"，而是<strong>许多颗各做一件事的模块，被线连起来</strong>。</p>
+
+  <p>Prism 在这里有第三组语法，专门回答一个问题：<strong>零件怎么聚成身体</strong>。</p>
+
+  <div class="tools">
+    <div class="tool c1">
+      <div class="name">connect</div>
+      <div class="what">端口对端口，直连。最直白的一种接线。</div>
+    </div>
+    <div class="tool c2">
+      <div class="name">wire</div>
+      <div class="what">把一段表达式落到<strong>具名网线</strong>上，再推给下游端口。名字可以观测、可以复用。</div>
+    </div>
+    <div class="tool c3">
+      <div class="name">expose</div>
+      <div class="what">把实例<strong>内部</strong>的 reg / mem 引到顶层做观测端口——不改叶子模块一根端口。</div>
+    </div>
+  </div>
+</section>
+
+<section id="s2">
+  <h2>三种连接手段</h2>
+
+  <h3><code>connect</code> · 端口对端口</h3>
+  <p>最朴素的一种。左端必须是被驱动的（输出 / inout），右端是被注入的（输入 / inout）：</p>
+  <div class="code">
+    <div class="code-header"><span class="code-lang">prism</span><span class="code-file">design 体内</span></div>
+<pre><span class="tk-decl">design</span> <span class="tk-name">cpu</span> {
+    <span class="tk-name">s</span> : <span class="tk-name">src</span>
+    <span class="tk-name">k</span> : <span class="tk-name">sink</span>
+    <span class="tk-kw">connect</span> s.q <span class="tk-op">-></span> k.d
+}</pre>
+  </div>
+
+  <h3><code>wire</code> · 表达式落到具名网线</h3>
+  <p>当两端之间不只是"直连"、还想给这根线<strong>起个名字</strong>时用它。一行可以写全，也可以拆开写：</p>
+  <div class="code">
+    <div class="code-header"><span class="code-lang">prism</span><span class="code-file">三种 wire 形态</span></div>
+<pre><span class="tk-com">// ① 一行全包：声明 + 驱动 + 推送</span>
+<span class="tk-kw">wire</span> <span class="tk-name">step</span> : <span class="tk-prim">u8</span> = t.c + <span class="tk-num">1</span> <span class="tk-op">-></span> d.x
+
+<span class="tk-com">// ② 只声明 + 驱动：值可被 show 观测，口子另接</span>
+<span class="tk-kw">wire</span> <span class="tk-name">res</span>  : <span class="tk-prim">u8</span> = d.y
+
+<span class="tk-com">// ③ 只声明：驱动与推送都后置（大网表里把线集中在一处画）</span>
+<span class="tk-kw">wire</span> <span class="tk-name">cause</span> : <span class="tk-prim">u8</span>
+<span class="tk-name">cause</span> = <span class="tk-kw">match</span> { illegal =&gt; <span class="tk-num">2</span>, ebreak =&gt; <span class="tk-num">3</span>, _ =&gt; <span class="tk-num">0</span> }
+<span class="tk-name">cause</span> <span class="tk-op">-></span> ctrl.trap_cause</pre>
+  </div>
+
+  <h3><code>expose</code> · 把内部状态引出来</h3>
+  <p>叶子模块保持"干净的 7 个端口"，观测点不加在它身上——加在顶层：</p>
+  <div class="code">
+    <div class="code-header"><span class="code-lang">prism</span><span class="code-file">design 体内</span></div>
+<pre><span class="tk-kw">expose</span> rf.regs[1] <span class="tk-kw">as</span> x1     <span class="tk-com">// mem 元素</span>
+<span class="tk-kw">expose</span> pc.addr    <span class="tk-kw">as</span> pc_obs <span class="tk-com">// reg</span></pre>
+  </div>
+  <div class="callout">
+    <span class="callout-title">为什么需要 expose？</span>
+    <p style="margin:0;">一个寄存器堆为了能把 <code>x1..x30</code> 露出来做仿真观测，传统写法要把它撑成 32 端口模块（<code>dbg_x1</code> … <code>dbg_x30</code>）；每加一个观测点就得改叶子模块 + 改它的 <code>@schedule interface</code>。有了 <code>expose</code>，<strong>regfile 保持干净，观测归顶层</strong>。</p>
+  </div>
+</section>
+
+<section id="s3">
+  <h2>拼一条迷你数据通路</h2>
+  <p>三颗模块：一颗<strong>心跳</strong>（每拍 +1）、一颗<strong>倍法器</strong>（×2）、一颗<strong>比较器</strong>（≥16 报 1）。它们之间用两根 <code>wire</code> 连起来——形状已经很像 CPU 的取指→执行→判分支。</p>
+
+  <div class="code">
+    <div class="code-header"><span class="code-lang">prism</span><span class="code-file">mini_cpu.prism · 模块部分</span></div>
+<pre><span class="tk-decl">module</span> <span class="tk-name">ticker</span> {
+    <span class="tk-dir">in</span>  <span class="tk-name">en</span>  : <span class="tk-typ">Signal</span>&lt;<span class="tk-prim">u1</span>&gt;
+    <span class="tk-dir">out</span> <span class="tk-name">c</span>   : <span class="tk-typ">Signal</span>&lt;<span class="tk-prim">u7</span>&gt;
+    <span class="tk-stor">reg</span> cnt : <span class="tk-prim">u7</span>
+    <span class="tk-stor">on</span> <span class="tk-stor">clock</span> { cnt<span class="tk-op">'</span> = en ? cnt + <span class="tk-num">1</span> : cnt }
+    c = cnt
+}
+
+<span class="tk-decl">module</span> <span class="tk-name">doubler</span> {
+    <span class="tk-dir">in</span>  <span class="tk-name">x</span> : <span class="tk-typ">Signal</span>&lt;<span class="tk-prim">u8</span>&gt;
+    <span class="tk-dir">out</span> <span class="tk-name">y</span> : <span class="tk-typ">Signal</span>&lt;<span class="tk-prim">u8</span>&gt;
+    y = x + x
+}
+
+<span class="tk-decl">module</span> <span class="tk-name">thresh</span> {
+    <span class="tk-dir">in</span>  <span class="tk-name">x</span>   : <span class="tk-typ">Signal</span>&lt;<span class="tk-prim">u8</span>&gt;
+    <span class="tk-dir">out</span> <span class="tk-name">hit</span> : <span class="tk-typ">Signal</span>&lt;<span class="tk-prim">u1</span>&gt;
+    hit = (x &gt;= <span class="tk-num">16</span>) ? <span class="tk-num">1</span> : <span class="tk-num">0</span>
+}
+
+<span class="tk-decl">design</span> <span class="tk-name">mini_cpu</span> {
+    <span class="tk-name">t</span> : <span class="tk-name">ticker</span>
+    <span class="tk-name">d</span> : <span class="tk-name">doubler</span>
+    <span class="tk-name">h</span> : <span class="tk-name">thresh</span>
+
+    <span class="tk-kw">wire</span> <span class="tk-name">step</span> : <span class="tk-prim">u8</span> = t.c + <span class="tk-num">1</span> <span class="tk-op">-></span> d.x
+    <span class="tk-kw">wire</span> <span class="tk-name">res</span>  : <span class="tk-prim">u8</span> = d.y     <span class="tk-op">-></span> h.x
+
+    <span class="tk-kw">expose</span> t.cnt <span class="tk-kw">as</span> ticks
+}</pre>
+  </div>
+
+  <p>三颗模块各自<strong>还能单独跑</strong>——这是模块化的硬指标。<code>design</code> 层只写"谁接谁"，不写任何计算。</p>
+</section>
+
+<section id="s4">
+  <h2>跑起来：一条通路，三处观测</h2>
+  <div class="code">
+    <div class="code-header"><span class="code-lang">prism</span><span class="code-file">mini_cpu.prism · run 段</span></div>
+<pre><span class="tk-decl">run</span> <span class="tk-name">mini_cpu_check</span> <span class="tk-rw">of</span> <span class="tk-name">mini_cpu</span> {
+    <span class="tk-rf">stim</span> : {
+        <span class="tk-name">t.en</span>, [<span class="tk-name">ticks</span>, <span class="tk-name">step</span>, <span class="tk-name">res</span>, <span class="tk-name">h.hit</span>] <span class="tk-op">=</span> {
+            <span class="tk-num">1</span>, [ <span class="tk-num">1</span>,  <span class="tk-num">2</span>,  <span class="tk-num">4</span>, <span class="tk-num">0</span>],
+            <span class="tk-num">1</span>, [ <span class="tk-num">2</span>,  <span class="tk-num">3</span>,  <span class="tk-num">6</span>, <span class="tk-num">0</span>],
+            <span class="tk-com">…（中间略）</span>
+            <span class="tk-num">1</span>, [ <span class="tk-num">7</span>,  <span class="tk-num">8</span>, <span class="tk-num">16</span>, <span class="tk-num">1</span>],   <span class="tk-com">// res 越过 16，hit 起效</span>
+            <span class="tk-num">1</span>, [<span class="tk-num">10</span>, <span class="tk-num">11</span>, <span class="tk-num">22</span>, <span class="tk-num">1</span>],
+        }
+    }
+    <span class="tk-rf">until</span> : <span class="tk-rw">end</span> <span class="tk-rw">of</span> <span class="tk-rf">stim</span>
+    <span class="tk-rf">show</span>  : { <span class="tk-name">t.en</span>, <span class="tk-name">ticks</span>, <span class="tk-name">step</span>, <span class="tk-name">res</span>, <span class="tk-name">h.hit</span> }
+}</pre>
+  </div>
+
+  <div class="term">
+    <div class="term-header">▸ prism run examples/mini_cpu.prism</div>
+    <div class="term-body">cycle   t_en   ticks   step   res   h_hit
+0       1      1       2      4     0
+1       1      2       3      6     0
+2       1      3       4      8     0
+3       1      4       5      10    0
+4       1      5       6      12    0
+5       1      6       7      14    0
+6       1      7       8      16    1        <span class="term-hint"># res 越过 16</span>
+7       1      8       9      18    1
+8       1      9       10     20    1
+9       1      10      11     22    1
+<span class="term-ok"># expect: 10/10 拍有断言 · 4 列 · 全等 ✅</span>
+<span class="term-ok">[run --cosim] ✅ PASS: mini_cpu_check golden == RTL 仿真（10 拍 × 5 列全等）</span>
+<span class="term-ok">[tlm]         ✅ PASS: mini_cpu_check SystemC/TLM == golden（10 拍 × 5 列全等）</span></div>
+  </div>
+
+  <p>注意观测列里同时出现了三种东西：<code>t.en</code> 是<strong>没被占用的顶层输入</strong>、<code>ticks</code> 是 <code>expose</code> 出来的<strong>实例内部寄存器</strong>、<code>step</code> / <code>res</code> 是<strong>具名 wire</strong>。<code>h.hit</code> 则是没被连走的输出端口。</p>
+</section>
+
+<section id="s5">
+  <h2>编译器给的是什么</h2>
+  <p><code>prism gen-rtl</code> 把上面那份 <code>design</code> 下降成顶层网表。以下是我机器上的真实产物（节选）：</p>
+
+  <div class="code">
+    <div class="code-header"><span class="code-lang">systemverilog</span><span class="code-file">mini_cpu.sv · 顶层网表</span></div>
+<pre><span class="tk-kw">module</span> <span class="tk-typ">mini_cpu_top</span> (
+  <span class="tk-kw">input</span>  <span class="tk-kw">logic</span> clk, rst_n,
+  <span class="tk-kw">input</span>  <span class="tk-kw">logic</span> [<span class="tk-num">1</span><span class="tk-op">-</span><span class="tk-num">1</span>:<span class="tk-num">0</span>] t_en,
+  <span class="tk-kw">output</span> <span class="tk-kw">logic</span> [<span class="tk-num">1</span><span class="tk-op">-</span><span class="tk-num">1</span>:<span class="tk-num">0</span>] h_hit,
+  <span class="tk-kw">output</span> <span class="tk-kw">logic</span> [<span class="tk-num">7</span><span class="tk-op">-</span><span class="tk-num">1</span>:<span class="tk-num">0</span>] ticks
+);
+
+  <span class="tk-com">// design-level wire 声明</span>
+  <span class="tk-kw">logic</span>  [<span class="tk-num">7</span>:<span class="tk-num">0</span>] step;
+  <span class="tk-kw">logic</span>  [<span class="tk-num">7</span>:<span class="tk-num">0</span>] res;
+
+  <span class="tk-com">// 内部连线（connect 生成）</span>
+  <span class="tk-kw">logic</span>  [<span class="tk-num">7</span><span class="tk-op">-</span><span class="tk-num">1</span>:<span class="tk-num">0</span>] w_t_c;
+  <span class="tk-kw">logic</span>  [<span class="tk-num">8</span><span class="tk-op">-</span><span class="tk-num">1</span>:<span class="tk-num">0</span>] w_d_y;
+
+  <span class="tk-com">// expose 观测线（子模块输出端口引出，非层次引用）</span>
+  <span class="tk-kw">logic</span> [<span class="tk-num">7</span><span class="tk-op">-</span><span class="tk-num">1</span>:<span class="tk-num">0</span>] w_xpose_t_cnt;
+
+  <span class="tk-com">// 子模块例化（clk/rst_n 分发）</span>
+  <span class="tk-typ">ticker_rtl</span> t (.clk(clk), .rst_n(rst_n), .en(t_en), .c(w_t_c), .xpose_cnt(w_xpose_t_cnt));
+  <span class="tk-typ">doubler_rtl</span> d (.clk(clk), .rst_n(rst_n), .x(step), .y(w_d_y));
+  <span class="tk-typ">thresh_rtl</span> h (.clk(clk), .rst_n(rst_n), .x(res), .hit(h_hit));
+
+  <span class="tk-com">// design-level 组合 assign</span>
+  <span class="tk-kw">assign</span> step <span class="tk-op">=</span> (w_t_c + <span class="tk-num">1</span>);
+  <span class="tk-kw">assign</span> res  <span class="tk-op">=</span> w_d_y;
+
+  <span class="tk-com">// 观测 assign（expose，走子模块输出端口）</span>
+  <span class="tk-kw">assign</span> ticks <span class="tk-op">=</span> w_xpose_t_cnt;
+<span class="tk-kw">endmodule</span></pre>
+  </div>
+
+  <p>三件值得注意的事：</p>
+  <ul>
+    <li><strong><code>clk</code> / <code>rst_n</code> 自动分发</strong>——三颗子模块各接一根，不用你写第三遍。</li>
+    <li><strong>被 <code>connect</code> 占用的端口会生成中间线</strong>（<code>w_t_c</code> / <code>w_d_y</code>），顶层模块的端口表因此只留<strong>没被连走的</strong>那些（<code>t_en</code> / <code>h_hit</code>）。</li>
+    <li><strong><code>expose</code> 不下跨层次引用</strong>——它给子模块加一个 <code>xpose_cnt</code> 输出端口，再在顶层 <code>assign</code> 出来。为什么绕这一下？因为 yosys 不解析 SV 的跨层次路径引用，直接写 <code>t.cnt</code> 会<strong>静默产出无驱动的网表</strong>。</li>
+  </ul>
+</section>
+
+<section id="s6">
+  <h2>当零件变成六个</h2>
+  <p>三颗模块手连两根线，很轻松。真实的 CPU 是什么规模？这是<strong>白虹（Whitebow）单周期 CPU</strong> 的顶层——一颗能跑 RV32I / RV64I 双模的真核：</p>
+
+  <div class="code">
+    <div class="code-header"><span class="code-lang">prism</span><span class="code-file">whitebow_sc.prism · design 段（节选）</span></div>
+<pre><span class="tk-decl">design</span> <span class="tk-name">whitebow_sc</span> {
+    <span class="tk-com">// ==== 实例化子系统（Composer）====</span>
+    <span class="tk-name">ctrl</span> : <span class="tk-name">ControlPath</span>&lt;T=<span class="tk-prim">i64</span>, Dec=<span class="tk-name">decoder</span>, CSR=<span class="tk-name">csr</span>, Imm=<span class="tk-name">immgen</span>&gt;
+    <span class="tk-name">exec</span> : <span class="tk-name">ExecutionPath</span>&lt;T=<span class="tk-prim">i64</span>, ALU=<span class="tk-name">alu</span>, MD=<span class="tk-name">muldiv</span>&gt;
+
+    <span class="tk-com">// ==== 独立模块 ====</span>
+    <span class="tk-name">pc</span>   : <span class="tk-name">pc</span>&lt;T=<span class="tk-prim">i64</span>&gt;
+    <span class="tk-name">im</span>   : <span class="tk-name">sram</span>              <span class="tk-com">// 指令存储器（可替换为 ROM/DDR）</span>
+    <span class="tk-name">dm</span>   : <span class="tk-name">sram</span>              <span class="tk-com">// 数据存储器（可替换为 DDR）</span>
+    <span class="tk-name">rf</span>   : <span class="tk-name">regfile</span>&lt;T=<span class="tk-prim">i64</span>&gt;
+
+    <span class="tk-com">// ============ design-level wire 声明 ============</span>
+    <span class="tk-kw">wire</span> <span class="tk-name">mode32</span>  : <span class="tk-prim">u1</span> = ctrl.mode32 <span class="tk-op">-></span> exec.mode32
+    <span class="tk-kw">wire</span> <span class="tk-name">iaddr</span>   : <span class="tk-prim">u8</span> = pc.addr[<span class="tk-num">9</span>:<span class="tk-num">2</span>] <span class="tk-op">-></span> im.addr
+    <span class="tk-kw">wire</span> <span class="tk-name">rf_wen_eff</span> : <span class="tk-prim">u1</span> = ctrl.rf_wen &amp; legal <span class="tk-op">-></span> rf.wen
+    <span class="tk-com">…  全文共 45 根 wire / 2 个 Composer / 1 条 import 链</span>
+}</pre>
+  </div>
+
+  <p>六颗实例（2 个 Composer + 4 个独立模块）、45 根具名 wire。规模一上来，"平铺"就不够了——于是有了上层的抽象手段：</p>
+
+  <table class="tbl-wrap">
+    <thead><tr><th>手段</th><th>解决什么</th></tr></thead>
+    <tbody>
+      <tr><td>Interface</td><td><strong>契约</strong>：一组端口的集合，写成类型。模块实现某个 <code>interface</code>，就保证端口集合齐全——可替换、可复用。<code>interface Decodable { in instr : Signal&lt;u32&gt; … }</code></td></tr>
+      <tr><td>Composer</td><td><strong>封装</strong>：把紧耦合的几颗模块封成一个子系统，内部连线收在 <code>composer</code> 体里；顶层只看见一组端口，不必重复画那批线。<code>ControlPath</code> 就封装了 <code>decoder</code> + <code>csr</code> + <code>immgen</code>，替顶层省掉 ~15 条手动连线。</td></tr>
+      <tr><td>import</td><td><strong>切分</strong>：把工程拆到多个 <code>.prism</code> 文件。白虹用 1 条 <code>import "iu/interfaces.prism"</code> 起头，串起 8 个部件。</td></tr>
+      <tr><td>blackbox</td><td><strong>逃逸</strong>：外部 SystemVerilog IP 作为原语例化进来——Prism 只按端口清单生成例化连线，不生成模块体。<strong>复合总线协议（AXI / DDR 控制器）由此绕过 Prism 语法</strong>，而不是硬塞进语言。</td></tr>
+    </tbody>
+  </table>
+
+  <div class="code">
+    <div class="code-header"><span class="code-lang">prism</span><span class="code-file">blackbox 例化外部 IP</span></div>
+<pre><span class="tk-kw">blackbox</span> <span class="tk-name">ext_core</span> {
+    <span class="tk-sf">verilog</span>  : <span class="tk-str">"vendor/extcore/extcore.sv"</span>
+    <span class="tk-sf">filelist</span> : <span class="tk-str">"vendor/extcore/extcore_rtl.fl"</span>
+    <span class="tk-kw">in</span>  <span class="tk-name">clk</span>        : <span class="tk-typ">Signal</span>&lt;<span class="tk-prim">i1</span>&gt;
+    <span class="tk-kw">out</span> <span class="tk-name">retire0</span>    : <span class="tk-typ">Signal</span>&lt;<span class="tk-prim">i1</span>&gt;
+    <span class="tk-kw">out</span> <span class="tk-name">retire0_pc</span> : <span class="tk-typ">Signal</span>&lt;<span class="tk-prim">i40</span>&gt;
+}
+
+<span class="tk-decl">design</span> <span class="tk-name">tb_top</span> {
+    <span class="tk-name">core</span> : <span class="tk-name">ext_core</span>
+    <span class="tk-name">sink</span> : <span class="tk-name">trace_sink</span>
+    <span class="tk-kw">connect</span> core.retire0    <span class="tk-op">-></span> sink.retire_in
+    <span class="tk-kw">connect</span> core.retire0_pc <span class="tk-op">-></span> sink.retire_pc_in
+}</pre>
+  </div>
+
+  <div class="callout warn">
+    <span class="callout-title">blackbox 的边界是诚实的</span>
+    <p style="margin:0;">blackbox 只在 <strong>RTL 后端</strong>可用：TLM 后端编译期报错（外部 SV 没有 SystemC 语义），golden 后端也报错（没有 Python 求值语义、不可参与 cosim）。<strong>拒绝静默降级</strong>——不会给你一个"少了这块"的模型让你过。</p>
+  </div>
+</section>
+
+<section id="s7">
+  <h2>小结 · 第一日的三件兵器到齐</h2>
+  <p>把三日连起来看：</p>
+  <ul>
+    <li><strong>第 1 集</strong>给了动机——两层黑暗，Prism 用一份源码三下降回应。</li>
+    <li><strong>第 2 集</strong>给了<strong>一颗</strong>模块的写法——分层、类型、组合与时序、状态机。</li>
+    <li><strong>第 3 集</strong>给了<strong>多颗</strong>模块的写法——<code>connect</code> / <code>wire</code> / <code>expose</code> 把零件聚成身体，<code>Interface</code> / <code>Composer</code> / <code>import</code> / <code>blackbox</code> 让规模可控。</li>
+  </ul>
+
+  <div class="verse-inline">
+    "神称旱地为地，称水的聚处为海。神看着是好的。"
+    <cite>—— 《创世记》 1:10</cite>
+  </div>
+
+  <p>下一集是第一天最后一集——<strong>让光打出去</strong>。不写新代码，只把这些东西的真实产物摆出来：<code>gen-rtl</code> 出的 SV、送上 FPGA 的 bitfile、串口打出来的 OpenSBI banner。看完你会知道：<strong>这门语言真的能造芯片</strong>。</p>
+</section>
+
+<section id="s8">
+  <h2>练习</h2>
+  <ol>
+    <li>把 <code>wire step : u8 = t.c + 1</code> 里的 <code>+ 1</code> 改成 <code>+ 3</code>——<code>stim</code> 表的期望要怎么改？改完三次下降是否仍全绿？（这一题想让你体会：<strong>改一条 wire 就是改一条数据通路</strong>，不用碰任何叶子模块。）</li>
+    <li>把 <code>expose t.cnt as ticks</code> 改成 <code>expose d.y as ...</code>——试试 expose 一个<strong>组合信号</strong>会报什么错（实测：<code>'y' 不是 reg（origin=local）；mem 需写 'inst.y[i]'</code>）。这能帮你记住：<code>expose</code> 只服务 <strong>reg / mem</strong> 这类<strong>状态</strong>，不是万能探针。</li>
+    <li>删掉 <code>wire res</code> 行的 <code>-&gt; h.x</code>，改成一条单独的 <code>connect d.y -&gt; h.x</code>——两种写法都跑得通，但生成的 RTL 不同：<code>h.x</code> 的驱动源从 <code>res</code> 变成了 <code>w_d_y</code>，而 <code>res</code> 退化成<strong>一根只为观测存在的线</strong>。<strong>"连线"与"观测"是两件事，可以分开。</strong></li>
+  </ol>
+</section>
+
+<section id="s9">
+  <h2>复现本集</h2>
+  <div class="code">
+    <div class="code-header"><span class="code-lang">bash</span><span class="code-file">reproduce</span></div>
+<pre>pip install prism-hdl
+brew install icarus-verilog systemc   <span class="tk-com"># macOS</span>
+
+git clone https://github.com/prism-hdl/seven-days
+cd seven-days
+
+prism run examples/mini_cpu.prism              <span class="tk-com"># golden</span>
+prism run examples/mini_cpu.prism --cosim      <span class="tk-com"># RTL</span>
+prism tlm examples/mini_cpu.prism              <span class="tk-com"># TLM</span>
+prism gen-rtl examples/mini_cpu.prism -o /tmp/mini_cpu.sv   <span class="tk-com"># 看顶层网表</span></pre>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <span class="next">第 4 集 · 让光打出去：从 CPU 到跑起 OpenSBI</span>
+  七日创造 · 第一日 · 光 · 第 3 集 · <a href="../../README.md">返回</a>
+</footer>
+
+</body>
+</html>

@@ -74,7 +74,8 @@ seven-days/
 
 - **主大纲** 已定稿（`outline.md`，创世记版 · 27 集）
 - **番外** 保留（`outline-nvwa.md`，女娲版 · 25 集）——不发布，仅供写作时借"引绳于泥中，举以为人"给 `Composer` 那一集做点睛
-- **正文** 未发布——旧的两篇草稿（`_archive/01-adder.html`、`_archive/02-types.html`）是重构前的版本，需要按新大纲重写才能贴出来。
+- **第一日 · 光 四集写完**：`episodes/day1/` 下 `01-why-prism` / `02-layered` / `03-cpu-top` / `04-let-there-be-light`，配套样例在 `examples/`（`adder` / `sat_counter` / `mini_cpu`，三条下降全绿）
+- **第二日起** 未动笔
 
 ---
 
