@@ -6,3 +6,8 @@ out/
 *.vcd
 *.sv.tmp
 *.out
+
+# 文档站构建产物与托管工具本地状态
+web/
+.edgeone/
+*.qoder.site
