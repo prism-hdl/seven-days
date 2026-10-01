@@ -267,7 +267,7 @@ footer .next { display:block; margin-bottom:12px; font-family:'Noto Serif SC',se
   <h2>跑起来：九条指令，九次"理解"</h2>
 
   <div class="term">
-    <div class="term-header">▸ prism run examples/day2/decoder.prism</div>
+    <div class="term-header">▸ prism run examples/day2/decoder.prism --show --util</div>
     <div class="term-body">cycle  instr        rd  alu_op  alu_src  reg_wen  mem_ren  mem_wen  imm          is_branch  is_jal  is_illegal
 0      0x00500093   1   0       1        1        0        0        5            0          0       0      <span class="term-hint"># addi x1, x0, 5</span>
 1      0x002081b3   3   0       0        1        0        0        0            0          0       0      <span class="term-hint"># add  x3, x1, x2</span>
@@ -280,22 +280,22 @@ footer .next { display:block; margin-bottom:12px; font-family:'Noto Serif SC',se
 8      0xff800593   11  0       1        1        0        0        -8           0          0       0      <span class="term-hint"># addi x11, x0, -8 —— 负立即数</span>
 9      0x0000007f   0   0       0        0        0        0        0            0          0       1      <span class="term-hint"># 不存在的 opcode → illegal</span>
 <span class="term-ok"># expect: 10/10 拍有断言 · 8 列 · 全等 ✅</span>
-<span class="term-ok">[run --cosim] ✅ PASS: decoder_check golden == RTL 仿真（10 拍 × 11 列全等）</span></div>
+<span class="term-ok">[run --cosim] ✅ PASS: decoder_check golden == RTL 仿真（10 拍 × 11 列全等；golden stop: end of stim (10 cycles)）</span></div>
   </div>
 
   <p>逐条看几处关键：</p>
   <ul>
     <li><strong>拍 2（sub）</strong>：<code>funct3=0</code> 和 add 一样，靠 <code>funct7 == 0x20</code> 才分出 <code>alu_op=1</code>。<strong>同一格 opcode 里的两条指令，靠另一个字段区分。</strong></li>
     <li><strong>拍 4（sw）</strong>：<code>mem_wen=1</code>、<code>reg_wen=0</code>、<code>imm=8</code>——它是 store，不写寄存器，但立即数照样解析出来（地址偏移）。</li>
-    <li><strong>拍 6（beq）</strong>：<code>is_branch=1</code>、<code>reg_wen=0</code>、<code>imm=16</code>——分支不带写回，但它的立即数是<strong>跳转偏移</strong>，第三日会接到 PC 的 <code>target</code>。</li>
+    <li><strong>拍 6（beq）</strong>：<code>is_branch=1</code>、<code>reg_wen=0</code>、<code>imm=16</code>——分支不带写回，但它的立即数是<strong>跳转偏移</strong>，等四颗合体时它会接到 PC 的 <code>target</code>。</li>
     <li><strong>拍 8</strong>：<code>imm = -8</code>——负立即数。这一行是后补的，也正是它逮出了上面那个 bug。</li>
     <li><strong>拍 9</strong>：<code>opcode=0x7f</code> 不认识 → <code>is_illegal=1</code>。<strong>理解不了就说"我不懂"</strong>，而不是猜一个动作出来。</li>
   </ul>
 
   <div class="callout">
     <span class="callout-title"><code>is_illegal</code> 只是一个位，谁来用它？</span>
-    <p style="margin:0;">decoder 只负责"举手报告"，<strong>怎么处置是 CPU 顶层的事</strong>：第三日的 <code>cpu_top</code> 会把 <code>is_illegal</code> 当门，把写使能全掐掉。白虹真核里的写法是
-    <code>wire rf_wen_eff : u1 = ctrl.rf_wen &amp; legal -&gt; rf.wen</code>——<strong>一条线把"非法"翻译成"这一拍什么都不许落地"</strong>。第五日还会再加一层：非法指令同时触发异常，跳到 <code>mtvec</code>。</p>
+    <p style="margin:0;">decoder 只负责"举手报告"，<strong>怎么处置是 CPU 顶层的事</strong>：合体成 <code>cpu_top</code> 时会把 <code>is_illegal</code> 当门，把写使能全掐掉。白虹单周期核里的写法是
+    <code>wire rf_wen_eff : i1 = dec.reg_write_eff &amp; legal -&gt; rf.wen</code>——<strong>一条线把"非法"翻译成"这一拍什么都不许落地"</strong>。第五日还会再加一层：非法指令同时触发异常，跳到 <code>mtvec</code>。</p>
   </div>
 </section>
 
@@ -303,7 +303,7 @@ footer .next { display:block; margin-bottom:12px; font-family:'Noto Serif SC',se
   <h2>小结</h2>
   <p>四颗器官造齐了。回头看它们各自把"水"分在了哪里：</p>
   <div class="stack">
-    <div class="stk"><div class="k">pc</div><div class="t">控制 → 数据</div><div class="d">入：en / load / target；出：addr</div></div>
+    <div class="stk"><div class="k">pc</div><div class="t">控制 → 数据</div><div class="d">入：load / target；出：addr</div></div>
     <div class="stk"><div class="k">regfile</div><div class="t">地址 / 使能 vs 值</div><div class="d">raddr / waddr / wen 是控制，rdata / wdata 是数据</div></div>
     <div class="stk"><div class="k">alu</div><div class="t">op vs a / b</div><div class="d">选路信号从不参与运算</div></div>
     <div class="stk"><div class="k">decoder</div><div class="t">整颗都是控制</div><div class="d">数据只在 instr 里路过</div></div>
@@ -333,7 +333,7 @@ footer .next { display:block; margin-bottom:12px; font-family:'Noto Serif SC',se
 <pre>git clone https://github.com/prism-hdl/seven-days
 cd seven-days
 
-prism run examples/day2/decoder.prism --cosim</pre>
+prism run examples/day2/decoder.prism --cosim --show --util</pre>
   </div>
 </section>
 

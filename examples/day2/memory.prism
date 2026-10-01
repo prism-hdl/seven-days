@@ -54,8 +54,6 @@ module ram<SIZE: int> {
 @schedule regfile {
     bitwidth  : { data:64 }
     pipeline  : 1 stage
-    storage   : regs = reg_array, depth = 32, width = param(T)
-    interface : raddr1, raddr2, waddr, wdata, wen, rdata1, rdata2 = Signal
     reset     : async_low
     clock     : 100 MHz, domain = single
     resource  : none
@@ -65,8 +63,6 @@ module ram<SIZE: int> {
 @schedule ram {
     bitwidth  : { data:32 }
     pipeline  : 1 stage
-    storage   : mem = reg_array, depth = 64, width = 32
-    interface : addr, wdata, rdata, wen, ren = Signal
     reset     : async_low
     clock     : 100 MHz, domain = single
     resource  : none

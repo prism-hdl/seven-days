@@ -155,9 +155,9 @@ footer .next { display:block; margin-bottom:12px; font-family:'Noto Serif SC',se
 
 <section id="s1">
   <h2>四颗器官，为什么从它开始</h2>
-  <p>第一日最后那台会说话的 SoC，是一颗完整的五级流水 CPU。但那是<strong>几万行源码一次摆在你面前</strong>——看得见结果，看不见因果。</p>
+  <p>第一日给了你语言、组装手段和一整套工具——但你还没用它造过一台机器。而直接看成品，是<strong>几万行源码一次摆在你面前</strong>：看得见结果，看不见因果。</p>
 
-  <p>第二日换个走法：把 CPU 拆成四颗器官，一颗一颗造。<strong>每一颗都能单独跑、单独测</strong>，四颗都在自己内部把"数据"与"控制"两条水分开一次。等四颗都活了，第三日再把它们放进同一具身体。</p>
+  <p>换个走法：把一台处理器拆成四颗器官，一颗一颗造。<strong>每一颗都能单独跑、单独测</strong>，四颗都在自己内部把"数据"与"控制"两条水分开一次。等四颗都活了，再把它们合进同一具身体——就在这一天的末尾。</p>
 
   <div class="stack">
     <div class="stk"><div class="k">EP 5</div><div class="t">pc · 心跳</div><div class="d">自己会走的那一颗</div></div>
@@ -167,6 +167,8 @@ footer .next { display:block; margin-bottom:12px; font-family:'Noto Serif SC',se
   </div>
 
   <p>从 <code>pc</code> 开始，因为它是四颗里<strong>唯一会自己动的</strong>。其余三颗都要等别人给输入才动——pc 不用，时钟一到它就往前走。</p>
+
+  <p>而且它不陌生——<strong>第一集那颗计数器就是 pc 的胚胎</strong>：同一个 <code>reg</code>、同一个 <code>on clock</code>；这一集只是给它长出 <code>+4</code> 与一条 <code>load</code> 岔路。</p>
 </section>
 
 <section id="s2">
@@ -204,8 +206,8 @@ footer .next { display:block; margin-bottom:12px; font-family:'Noto Serif SC',se
 
   <div class="callout warn">
     <span class="callout-title">为什么这里没有"冻住"？</span>
-    <p style="margin:0;">真核里的 pc 有一个 <code>en</code> 端口（<code>en=0</code> 时整拍不动），但那是<strong>给五级流水的取指停顿用的</strong>。单周期核每拍都要往前走，<code>en</code> 会恒接 1——那就不该有这根线。<br><br>
-    白虹的对照版就是这么分的：单周期文件里写的是 <code>1 -&gt; pc.en</code>（注释："冻住只有流水线用"），流水线文件里才是 <code>pc_en -&gt; pc.en</code>。<strong>等第五日做流水线，这颗模块会为它长出一根新端口</strong>——接口是长出来的，不是提前留的。</p>
+    <p style="margin:0;">冻住（一个 <code>en</code> 端口，<code>en=0</code> 时整拍不动）是<strong>流水线的取指停顿才需要的事</strong>。单周期核每拍都要往前走，<code>en</code> 会恒接 1——那就不该有这根线。<br><br>
+    白虹的单周期核（我们对照的那份）里，<code>pc.prism</code> 就只有 <code>load</code> / <code>target</code> / <code>addr</code> 三个信号，没有 <code>en</code>。<strong>等做流水线那天，这颗模块才会为它长出一根新端口</strong>——接口是长出来的，不是提前留的。</p>
   </div>
 </section>
 
@@ -230,7 +232,7 @@ footer .next { display:block; margin-bottom:12px; font-family:'Noto Serif SC',se
   </div>
 
   <div class="term">
-    <div class="term-header">▸ prism run examples/day2/pc.prism</div>
+    <div class="term-header">▸ prism run examples/day2/pc.prism --show --util</div>
     <div class="term-body">cycle   dut_load   dut_target   dut_addr
 0       0          0            4
 1       0          0            8
@@ -238,7 +240,7 @@ footer .next { display:block; margin-bottom:12px; font-family:'Noto Serif SC',se
 3       0          0            104
 4       1          0            0
 <span class="term-ok"># expect: 5/5 拍有断言 · 1 列 · 全等 ✅</span>
-<span class="term-ok">[run --cosim] ✅ PASS: pc_check golden == RTL 仿真（5 拍 × 3 列全等）</span></div>
+<span class="term-ok">[run --cosim] ✅ PASS: pc_check golden == RTL 仿真（5 拍 × 3 列全等；golden stop: end of stim (5 cycles)）</span></div>
   </div>
 
   <p>两点值得看：</p>
@@ -255,7 +257,7 @@ footer .next { display:block; margin-bottom:12px; font-family:'Noto Serif SC',se
     <div class="stk"><div class="k">控制面</div><div class="t">load · target</div><div class="d">决定"跳不跳"和"跳到哪"</div></div>
     <div class="stk"><div class="k">数据面</div><div class="t">addr</div><div class="d">唯一的输出，流向指令存储器</div></div>
   </div>
-  <p>第三日把它们串起来时，这条 <code>addr</code> 线会接到指令存储器的地址口；<code>target</code> 会来自 ALU 算出的跳转目标；<code>load</code> 会来自"这一条是分支且条件成立"。<strong>一颗 pc 的接线图，就是整个控制流的形状。</strong></p>
+  <p>等它们合体时，这条 <code>addr</code> 线会接到指令存储器的地址口；<code>target</code> 会来自 ALU 算出的跳转目标；<code>load</code> 会来自"这一条是分支且条件成立"。<strong>一颗 pc 的接线图，就是整个控制流的形状。</strong></p>
 </section>
 
 <section id="s5">
@@ -294,7 +296,7 @@ brew install icarus-verilog
 git clone https://github.com/prism-hdl/seven-days
 cd seven-days
 
-prism run examples/day2/pc.prism --cosim</pre>
+prism run examples/day2/pc.prism --cosim --show --util</pre>
   </div>
 </section>
 

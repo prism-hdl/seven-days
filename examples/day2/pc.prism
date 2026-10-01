@@ -28,8 +28,6 @@ module pc<T: bits> {
 @schedule pc {
     bitwidth  : { data:64 }
     pipeline  : 1 stage
-    storage   : pc = reg, width = param(T)
-    interface : load, target, addr = Signal
     reset     : async_low
     clock     : 100 MHz, domain = single
     resource  : adder = parallel(1)

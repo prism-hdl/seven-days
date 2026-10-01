@@ -196,12 +196,12 @@ footer .next { display: block; margin-bottom: 12px; font-family: 'Noto Serif SC'
 
 <div class="pn">
   <a href="01-why-prism.html">← 第 1 集 · 一道裂缝</a>
-  <a href="03-cpu-top.html">第 3 集 · 从模块到 CPU →</a>
+  <a href="03-cpu-top.html">第 3 集 · 聚在一处 →</a>
 </div>
 
 <section id="s1">
   <h2>同一颗电路，两层写法</h2>
-  <p>Prism 的第一条设计线是<strong>分层</strong>：<code>module</code> 只写"做什么"（数据流函数），<code>@schedule</code> 才谈"怎么做"（位宽、流水、存储、时钟、复位）。二者不共享语法，也不允许混。</p>
+  <p>Prism 的第一条设计线是<strong>分层</strong>：<code>module</code> 只写"做什么"（数据流函数），<code>@schedule</code> 才谈"怎么做"（位宽、流水、时钟、复位）。二者不共享语法，也不允许混。</p>
 
   <div class="layers">
     <div class="layer algo">
@@ -212,7 +212,7 @@ footer .next { display: block; margin-bottom: 12px; font-family: 'Noto Serif SC'
     <div class="layer sched">
       <div class="name">@schedule</div>
       <div class="role">调度层 · "怎么做"</div>
-      <div class="body">位宽、流水级数、存储声明、时钟频率、复位极性、资源约束、延迟。<strong>只有它知道微架构</strong>——算法层不碰。</div>
+      <div class="body">位宽、流水级数、时钟频率、复位极性、资源约束、延迟；存储与接口能推断，可省。<strong>只有它知道微架构</strong>——算法层不碰。</div>
     </div>
   </div>
 
@@ -286,8 +286,8 @@ footer .next { display: block; margin-bottom: 12px; font-family: 'Noto Serif SC'
 </section>
 
 <section id="s3">
-  <h2>调度层：八行说清微架构</h2>
-  <p>同一颗模块的算法写完，微架构还没着落。下面这八行把它补上——一行不多，一行不少：</p>
+  <h2>调度层：六行说清微架构</h2>
+  <p>同一颗模块的算法写完，微架构还没着落。下面这六行把它补上——一行不多，一行不少：</p>
 
   <table class="fields">
     <thead>
@@ -296,8 +296,6 @@ footer .next { display: block; margin-bottom: 12px; font-family: 'Noto Serif SC'
     <tbody>
       <tr><td>bitwidth</td><td>数据通路位宽（可用什么精度算）</td><td><code>{ data:4 }</code> — 4 位</td></tr>
       <tr><td>pipeline</td><td>几级流水</td><td><code>1 stage</code> — 一拍算完</td></tr>
-      <tr><td>storage</td><td><strong>哪些信号真的是寄存器</strong>、几位宽</td><td><code>count = reg, width = 4</code></td></tr>
-      <tr><td>interface</td><td>端口绑定什么协议</td><td><code>en, clr, q, full, state = Signal</code>（裸电平，无握手）</td></tr>
       <tr><td>reset</td><td>复位极性</td><td><code>async_low</code> — 低电平异步复位</td></tr>
       <tr><td>clock</td><td>时钟频率与域</td><td><code>100 MHz, domain = single</code></td></tr>
       <tr><td>resource</td><td>资源约束（对 PPA 有影响）</td><td><code>none</code></td></tr>
@@ -305,7 +303,7 @@ footer .next { display: block; margin-bottom: 12px; font-family: 'Noto Serif SC'
     </tbody>
   </table>
 
-  <p>注意 <code>storage</code> 那一行：算法层写了 <code>reg count : u4</code>，调度层又写了一遍 <code>count = reg, width = 4</code>。这不是重复——<strong>算法层说的是"这是一份跨拍状态"，调度层说的是"它占 4 个触发器"</strong>。第一种是语义，第二种是微架构。</p>
+  <p>还有两个字段没出现在这六行里：<code>storage</code>（哪些信号真的是寄存器、几位宽）与 <code>interface</code>（端口绑定什么协议）。<strong>它们能从模块体推断</strong>——算法层写了 <code>reg count : u4</code>，那就是 4 个触发器；端口本来就在模块头上——所以整条可以省略，语言自己推。真需要钉死微架构的时候，再写。</p>
 </section>
 
 <section id="s4">
@@ -337,10 +335,12 @@ footer .next { display: block; margin-bottom: 12px; font-family: 'Noto Serif SC'
   </div>
 
   <div class="term">
-    <div class="term-header">▸ prism run examples/sat_counter.prism</div>
+    <div class="term-header">▸ prism run examples/sat_counter.prism --show --util</div>
     <div class="term-body">cycle   en   clr   q      full   state
 0       1    0     0      0      1
+<span class="term-hint">…（1–7：每拍 +1，略）</span>
 8       1    0     8      0      1
+<span class="term-hint">…（9–13：每拍 +1，略）</span>
 14      1    0     14     0      1
 15      1    0     15     1      1
 16      1    0     15     1      2      <span class="term-hint"># FSM 进 TOP，计数停住</span>
@@ -353,8 +353,8 @@ footer .next { display: block; margin-bottom: 12px; font-family: 'Noto Serif SC'
 
   <p>三条通路仍然全绿：</p>
   <div class="term">
-    <div class="term-header">▸ prism run --cosim / prism tlm</div>
-    <div class="term-body"><span class="term-ok">[run --cosim] ✅ PASS: sat_counter_check golden == RTL 仿真（21 拍 × 5 列全等）</span>
+    <div class="term-header">▸ prism run --cosim --show ・ prism tlm</div>
+    <div class="term-body"><span class="term-ok">[run --cosim] ✅ PASS: sat_counter_check golden == RTL 仿真（21 拍 × 5 列全等；golden stop: end of stim (21 cycles)）</span>
 <span class="term-ok">[tlm]         ✅ PASS: sat_counter_check SystemC/TLM == golden（21 拍 × 5 列全等）</span></div>
   </div>
 </section>
@@ -403,7 +403,7 @@ footer .next { display: block; margin-bottom: 12px; font-family: 'Noto Serif SC'
   <h2>小结 · 第一日的语法到此讲完</h2>
   <p>这一集只有一件事：<strong>空气与水要分开</strong>。</p>
   <ul>
-    <li><strong>算法与调度分开</strong>——<code>module</code> 说"做什么"，<code>@schedule</code> 说"怎么做"；<code>bitwidth</code> / <code>storage</code> / <code>pipeline</code> 这些微架构信息只在调度层出现。</li>
+    <li><strong>算法与调度分开</strong>——<code>module</code> 说"做什么"，<code>@schedule</code> 说"怎么做"；<code>bitwidth</code> / <code>pipeline</code> 这些微架构信息只在调度层出现——存储、接口能推断，可以不写。</li>
     <li><strong>组合与时序分开</strong>——<code>x = expr</code> 是本拍函数，<code>on clock { x' = expr }</code> 是跨拍更新；唯一的时序写法，没有阻塞/非阻塞陷阱。</li>
     <li><strong>状态与编码分开</strong>——<code>fsm</code> 写转移表，<code>ctrl.is(S)</code> 是编码无关谓词；怎么编、编几位，归调度层。</li>
   </ul>
@@ -413,14 +413,14 @@ footer .next { display: block; margin-bottom: 12px; font-family: 'Noto Serif SC'
     <cite>—— 《创世记》 1:8</cite>
   </div>
 
-  <p><strong>第一日的语法讲完了。</strong>从下一集起，我们开始造物——第三集：把 <code>regfile</code> / <code>im</code> / <code>pc</code> / <code>decoder</code> / <code>alu</code> / <code>dm</code> 六颗独立的模块拼成一颗真正的 CPU，跑起第一段汇编程序。</p>
+  <p><strong>第一日的语法讲完了。</strong>下一集收尾：把三颗模块用两根 <code>wire</code> 拼成一条会动的数据通路，再看零件多起来之后，语言给出的规矩与更大的零件（<code>interface</code> / <code>composer</code> / <code>import</code> / <code>blackbox</code>）。</p>
 </section>
 
 <section id="s8">
   <h2>练习</h2>
   <ol>
     <li>把饱和点从 15 改成 3——改 <code>full = (count == 15) ? 1 : 0</code> 里的判等值即可，同时把 <code>stim</code> 的期望也改成"数到 3 就停"。跑一次：FSM 在第 4 拍进 TOP，之后原地保持。三次下降全绿。</li>
-    <li>删掉 <code>IDLE: _ -&gt; IDLE</code> 这条兜底边，跑 <code>prism run</code>——会报 <code>fsm 'ctrl' 的态 'IDLE' 缺 `_ -&gt; &lt;态&gt;` 兜底转移（最后一条须为兜底，否则该态的 guard 集不完备 → 状态卡死）</code>。<strong>兜底不是可选项</strong>：谓词集不完备时状态机可能没有出口。</li>
+    <li>删掉 <code>IDLE: _ -&gt; IDLE</code> 这条兜底边，跑 <code>prism run examples/sat_counter.prism</code>——会报 <code>fsm 'ctrl' 的态 'IDLE' 缺 `_ -&gt; &lt;态&gt;` 兜底转移（最后一条须为兜底，否则该态的 guard 集不完备 → 状态卡死）</code>。<strong>兜底不是可选项</strong>：谓词集不完备时状态机可能没有出口。</li>
     <li>加一个第四态 <code>ERR</code>：<code>en &amp; clr</code> 同时为 1 时进 <code>ERR</code> 并停住（<code>ERR: _ -&gt; ERR</code>）。跑一次会看到一件有意思的事：<code>state</code> 走进 3 之后原地不动，但 <code>q</code> 仍然被 <code>clr</code> 清零了——<strong>清零走的是数据通路，与 FSM 无关</strong>。这正是"控制管什么时候、数据管哪个值"的又一次体现。</li>
   </ol>
 </section>
@@ -438,16 +438,16 @@ brew install icarus-verilog systemc   <span class="tk-com"># macOS</span>
 git clone https://github.com/prism-hdl/seven-days
 cd seven-days
 
-prism run examples/sat_counter.prism              <span class="tk-com"># golden</span>
-prism run examples/sat_counter.prism --cosim      <span class="tk-com"># RTL</span>
-prism tlm examples/sat_counter.prism              <span class="tk-com"># TLM</span></pre>
+prism run examples/sat_counter.prism --show --util        <span class="tk-com"># golden</span>
+prism run examples/sat_counter.prism --cosim --show --util  <span class="tk-com"># RTL</span>
+prism tlm examples/sat_counter.prism                      <span class="tk-com"># TLM</span></pre>
   </div>
 </section>
 
 </main>
 
 <footer>
-  <span class="next">第 3 集 · 从模块到 CPU：组装与抽象</span>
+  <span class="next">第 3 集 · 聚在一处：组装与抽象</span>
   七日创造 · 第一日 · 光 · 第 2 集 · <a href="../index.html">返回首页</a>
 </footer>
 

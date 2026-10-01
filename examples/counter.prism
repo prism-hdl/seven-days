@@ -1,0 +1,45 @@
+// =============================================================================
+// counter.prism —— 第一集样例：最小的一束光。
+//
+// 一颗 8 位计数器：reg + on clock，整个模块的行为就一句 cnt' = cnt + 1。
+// 它会在第二日长成 pc（+4 与 load 从这里长出来）。
+// =============================================================================
+
+module counter {
+    out q   : Signal<u8>
+    reg cnt : u8
+
+    on clock {
+        cnt' = cnt + 1
+    }
+
+    q = cnt
+}
+
+@schedule counter {
+    bitwidth  : { data:8 }
+    pipeline  : 1 stage
+    reset     : async_low
+    clock     : 100 MHz, domain = single
+    resource  : none
+    latency   : 1 cycle
+}
+
+design counter_top {
+    dut : counter
+}
+
+run counter_check of counter_top {
+    stim : {
+        [q] = {
+             [1],
+             [2],
+             [3],
+             [4],
+             [5],
+             [6],
+        }
+    }
+    until : end of stim
+    show  : { q }
+}

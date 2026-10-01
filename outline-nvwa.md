@@ -25,7 +25,7 @@
 
 鸡是清晨的第一声。CPU 的第一声是 `pc` 的跳动——它不识字、不算术、不记事，只是**一步一拍往前走**。第一日把工具与心跳一起立起来。
 
-- **第 1 集 · 抔土与一束光：为什么要有 Prism** — RTL 与 TLM 两条路各写一遍的痛；Prism 把一束算法折射成三道棱面（SV / TLM / Python golden）；最小示例 `module adder { a, b, sum : Signal<u32>; sum = a + b }` + `run --cosim`。
+- **第 1 集 · 抔土与一束光：为什么要有 Prism** — RTL 与 TLM 两条路各写一遍的痛；Prism 把一束算法折射成三道棱面（SV / TLM / Python golden）；最小示例：一颗 8 位计数器（`cnt' = cnt + 1`）+ `run --cosim`。
 - **第 2 集 · 语法的骨架** — `module` 只写"做什么"、`@schedule` 补"怎么做"；`reg` / `mem` / `fsm` / `match` / 三元 / 泛型 `<T: Bits>` / `Stream<T>` 一次摆完；一颗带 `fsm` 的饱和计数器把所有语法点各演示一次。
 - **第 3 集 · 会打鸣的 `pc`** — `reg pc : i32` + `on clock { pc' = mux(en, pc + 4, pc) }`；`reset` 把 `pc` 拉回 `boot_addr`；分支与跳转第一次拽开 `pc`。**CPU 有了节律。**
 - **第 4 集 · 观察心跳** — 每一颗器官独立 `run` + `stim` + `show` + `until`；`expose` 把内部 `pc` / `regs[x]` / `state` 引到顶层；`--cosim` 让 golden 与 SV 逐拍对撞；`stim` 表行尾 `[v1, v2, ...]` 手算期望钉死终态。
@@ -89,7 +89,7 @@
 - **第 17 集 · CSR 框架** — M / S / U 三态；`mstatus` / `mie` / `mip` / `mtvec` / `mscratch` / `mepc`；WARL 掩码；`expose` 让每一位都能观测。
 - **第 18 集 · 异常处理 · 会疼** — 非法指令、EBREAK、ECALL、访存未对齐；`mcause` / `mtval` / `mret`；精确 trap。
 - **第 19 集 · 中断与 PMP · 会躲** — 软件 / 定时器 / 外部中断、使能与优先级；PMP 地址匹配与权限检查；与取指 / 访存集成。
-- **第 20 集 · 独立 ISS 四方对撞 · 会做事** — `rv32i_iss.py` 与 Prism 前端零共享；封住"golden / RTL / TLM 三方从同一棵 AST 下降、前端共性 bug 互查不出"的死角；Fibonacci / 冒泡 / memcpy 三方 + 独立 ISS 四方逐拍对撞。**CPU 会做事，且有人从旁边盯着它做。**
+- **第 20 集 · 独立参照四方对撞 · 会做事** — 先写自研独立 ISS（与 Prism 前端零共享），封住"golden / RTL / TLM 三方从同一棵 AST 下降、前端共性 bug 互查不出"的死角；再引官方 sail 规范模型接管，当场抓出同表掩护下漏掉的编码错误；Fibonacci / 冒泡 / memcpy 三方 + 独立参照逐拍对撞。**CPU 会做事，且有人从旁边盯着它做。**
 
 ---
 

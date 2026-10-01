@@ -105,7 +105,7 @@ footer .next { display:block; margin-bottom:12px; font-family:'Noto Serif SC',se
 
 <div class="pn">
   <a href="08-decoder.html">← 第 8 集 · decoder</a>
-  <a href="../day3/10-cpu-top.html">第二日完 · 第 10 集 · 四颗器官，一具身体 →</a>
+  <a href="../day3/10-cpu-top.html">下一集 · 第 10 集 · 四颗器官，一具身体 →</a>
 </div>
 
 <section id="s1">
@@ -119,7 +119,7 @@ footer .next { display:block; margin-bottom:12px; font-family:'Noto Serif SC',se
     <div class="stk"><div class="k">EP 8</div><div class="t">decoder</div><div class="d">九条真指令逐条译；含一条非法</div></div>
   </div>
 
-  <p>每一颗都单独跑通了 <code>--cosim</code>（golden 与 RTL 逐拍全等）。<strong>四颗器官此刻都各自活着——但它们还不是一个生命。</strong>把它们连起来是第三日的事。</p>
+  <p>每一颗都单独跑通了 <code>--cosim</code>（golden 与 RTL 逐拍全等）。<strong>四颗器官此刻都各自活着——但它们还不是一个生命。</strong>把它们连起来，就在这一天的末尾。</p>
 
   <p>这一集只做一件事：<strong>校验这些验证本身有没有牙。</strong></p>
 </section>
@@ -245,18 +245,18 @@ footer .next { display:block; margin-bottom:12px; font-family:'Noto Serif SC',se
 cd seven-days
 
 <span class="tk-com"># 四颗器官，各自跑一遍（golden + RTL 对撞）</span>
-prism run examples/day2/pc.prism      --cosim
-prism run examples/day2/memory.prism  --run regfile_check --cosim
-prism run examples/day2/memory.prism  --run ram_check     --cosim
-prism run examples/day2/alu.prism     --cosim
-prism run examples/day2/decoder.prism --cosim</pre>
+prism run examples/day2/pc.prism      --cosim --show --util
+prism run examples/day2/memory.prism  --run regfile_check --cosim --show --util
+prism run examples/day2/memory.prism  --run ram_check     --cosim --show --util
+prism run examples/day2/alu.prism     --cosim --show --util
+prism run examples/day2/decoder.prism --cosim --show --util</pre>
   </div>
 </section>
 
 </main>
 
 <footer>
-  <span class="next">第三日 · 旱地与植物 · 把四颗器官放进同一具身体</span>
+  <span class="next">下一集 · cpu_top · 把四颗器官放进同一具身体</span>
   七日创造 · 第二日 · 空气与水 · 第 9 集 · <a href="../index.html">返回首页</a>
 </footer>
 

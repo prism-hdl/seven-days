@@ -133,8 +133,6 @@ module decoder {
 @schedule decoder {
     bitwidth  : { data:32 }
     pipeline  : 1 stage
-    storage   : none
-    interface : instr, rd, rs1, rs2, alu_op, alu_src, imm, reg_wen, mem_ren, mem_wen, is_branch, is_jal, is_jalr, is_illegal = Signal
     reset     : async_low
     clock     : 100 MHz, domain = single
     resource  : none

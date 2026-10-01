@@ -222,7 +222,7 @@ footer .next { display:block; margin-bottom:12px; font-family:'Noto Serif SC',se
   </div>
 
   <div class="term">
-    <div class="term-header">▸ prism run examples/day2/alu.prism</div>
+    <div class="term-header">▸ prism run examples/day2/alu.prism --show --util</div>
     <div class="term-body">cycle   dut_a   dut_b   dut_op   dut_result
 0       5       10      0        15
 1       10      5       1        5
@@ -236,7 +236,7 @@ footer .next { display:block; margin-bottom:12px; font-family:'Noto Serif SC',se
 9       -8      1       9        0
 10      7       7       15       0             <span class="term-hint"># 越界防御</span>
 <span class="term-ok"># expect: 11/11 拍有断言 · 1 列 · 全等 ✅</span>
-<span class="term-ok">[run --cosim] ✅ PASS: alu_check golden == RTL 仿真（11 拍 × 4 列全等）</span></div>
+<span class="term-ok">[run --cosim] ✅ PASS: alu_check golden == RTL 仿真（11 拍 × 4 列全等；golden stop: end of stim (11 cycles)）</span></div>
   </div>
 
   <p>第 7、8 两行放在一起看：<strong>同样的 <code>a=-8, b=1</code>，只换了 <code>op</code>，结果从 -4 变成 2147483644</strong>。这不是"算错了"，这是两种不同的右移。<em>符号性不是装饰，它决定电路怎么接。</em></p>
@@ -290,7 +290,7 @@ footer .next { display:block; margin-bottom:12px; font-family:'Noto Serif SC',se
 <pre>git clone https://github.com/prism-hdl/seven-days
 cd seven-days
 
-prism run examples/day2/alu.prism --cosim</pre>
+prism run examples/day2/alu.prism --cosim --show --util</pre>
   </div>
 </section>
 

@@ -190,7 +190,7 @@ footer .next { display:block; margin-bottom:12px; font-family:'Noto Serif SC',se
 
 <div class="pn">
   <a href="../day2/09-observe.html">← 第 9 集 · 观察它们的心跳</a>
-  <a href="../index.html#day3">第 11 集 · 跑一段真程序 · 待写 →</a>
+  <a href="../index.html#day2">第 11 集 · 跑一段冒泡排序 · 待写 →</a>
 </div>
 
 <section id="s1">
@@ -413,8 +413,9 @@ footer .next { display:block; margin-bottom:12px; font-family:'Noto Serif SC',se
   </div>
 
   <div class="term">
-    <div class="term-header">▸ prism run examples/day3/cpu.prism</div>
-    <div class="term-body"># run: cpu_check  design: cpu_top  stop: for 24 cycles
+    <div class="term-header">▸ prism run examples/day3/cpu.prism --show --util</div>
+    <div class="term-body">[run] cpu_check: 24 拍 golden 直跑完成
+# run: cpu_check  design: cpu_top  stop: for 24 cycles
 cycle	pcv	x1	x2
 0	4	0	0
 1	8	0	5
@@ -439,8 +440,7 @@ cycle	pcv	x1	x2
 20	20	15	0
 21	20	15	0
 22	20	15	0
-23	20	15	0
-[run] cpu_check: 24 拍 golden 直跑完成</div>
+23	20	15	0</div>
   </div>
 
   <p>读这张表的方法：<strong>看 pc 的锯齿</strong>。</p>
@@ -456,8 +456,8 @@ cycle	pcv	x1	x2
 
   <div class="term">
     <div class="term-header">▸ 三次下降，逐拍对撞</div>
-    <div class="term-body"><span class="term-dim">$</span> prism run examples/day3/cpu.prism --cosim
-<span class="term-ok">[run --cosim] ✅ PASS: cpu_check golden == RTL 仿真（24 拍 × 3 列全等）</span>
+    <div class="term-body"><span class="term-dim">$</span> prism run examples/day3/cpu.prism --cosim --show --util
+<span class="term-ok">[run --cosim] ✅ PASS: cpu_check golden == RTL 仿真（24 拍 × 3 列全等；golden stop: for 24 cycles）</span>
 
 <span class="term-dim">$</span> prism tlm examples/day3/cpu.prism
 <span class="term-ok">[tlm] ✅ PASS: cpu_check SystemC/TLM == golden（24 拍 × 3 列全等）</span></div>
@@ -470,7 +470,7 @@ cycle	pcv	x1	x2
   <h2>三个值得看的细节</h2>
 
   <h3>① 越界不报错，回绕</h3>
-  <p>跑的时候编译器给了两条警告，都长这样：</p>
+  <p>这种回绕，写作时的检查器会报两条警告（后来口径修正：加法的进位保护位不再报——只有值真正装不下才报）；当时它们长这样：</p>
 
   <div class="term">
     <div class="term-header">▸ prism run 的 stderr（节选）</div>
@@ -480,7 +480,7 @@ cycle	pcv	x1	x2
 
   <p>为什么是 33 位？<code>pc.addr + ctl.imm</code> 是两个 32 位数相加——<strong>加法会进位</strong>，位宽推导老实算出 33 位。但 <code>pc_target</code> 声明的是 <code>i32</code>，于是最高位被切掉。</p>
 
-  <p>这不是 bug，是<strong>32 位机器的物理事实</strong>：PC 加到头就回绕。真正的 <code>whitebow</code> 工程里同样有 12 条这样的警告，位置也都在加法上。Prism 的处理方式是：<strong>不猜</strong>——按你声明的宽度截断，然后<strong>告诉你</strong>。截断合法（语言规范明文规定），但绝不会静默。</p>
+  <p>这不是 bug，是<strong>32 位机器的物理事实</strong>：PC 加到头就回绕。真正的白虹工程把这件事办得更干净——数据通路放在 64 位上，RV32 模式下的回绕交给<strong>显式声明的截断</strong>去管：回绕不是错误，是设计者选定的事实。Prism 对截断的态度始终是<strong>不猜</strong>——按你声明的宽度截断：真正装不下的绝不静默；写明了的物理事实，不唠叨。截断在语言规范里是明文合法的行为。</p>
 
   <h3>② 一层今天不承重的门</h3>
   <p><code>rf_wen_eff = ctl.reg_wen &amp; legal</code> 这条线写着"非法指令不许写寄存器"。但如果把 <code>&amp; legal</code> 删掉，<code>--cosim</code> <strong>照样全绿</strong>——我试过了。</p>
@@ -538,7 +538,7 @@ cycle	pcv	x1	x2
 cd seven-days
 
 <span class="tk-com"># 三路对撞：Python 参考 / SystemVerilog / SystemC</span>
-prism run examples/day3/cpu.prism --cosim
+prism run examples/day3/cpu.prism --cosim --show --util
 prism tlm examples/day3/cpu.prism
 
 <span class="tk-com"># 出可综合的 SystemVerilog（471 行、7 个模块）</span>
@@ -550,7 +550,7 @@ yosys -p "read_verilog -sv out/cpu_top.sv; hierarchy -top cpu_top_top; proc; opt
 </main>
 
 <footer>
-  <span class="next">第 11 集 · 跑一段真程序</span>
+  <span class="next">第 11 集 · 跑一段冒泡排序</span>
   七日创造 · 第三日 · 旱地与植物 · 第 10 集 · <a href="../index.html">返回首页</a>
 </footer>
 

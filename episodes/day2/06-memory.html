@@ -195,7 +195,7 @@ footer .next { display:block; margin-bottom:12px; font-family:'Noto Serif SC',se
 
   <div class="callout">
     <span class="callout-title">为什么两道都要？</span>
-    <p style="margin:0;">RISC-V 规定 <code>x0</code> 恒为 0。有的人把这条规矩放在 decoder 里（"译码时发现 rd=0 就不发写使能"）。但那是把 <strong>寄存器堆自己的不变式</strong>外包给了别人——只要有任何一条路径绕过 decoder 直接驱动 <code>waddr=0, wen=1</code>，x0 就被写坏了。<strong>谁的状态谁负责</strong>：读口给 0、写口拒收，两道焊在 regfile 内部。第三日你会看到，decoder 那边<em>还</em>有一道门——但那是冗余的第二层，不是唯一的一层。</p>
+    <p style="margin:0;">RISC-V 规定 <code>x0</code> 恒为 0。有的人把这条规矩放在 decoder 里（"译码时发现 rd=0 就不发写使能"）。但那是把 <strong>寄存器堆自己的不变式</strong>外包给了别人——只要有任何一条路径绕过 decoder 直接驱动 <code>waddr=0, wen=1</code>，x0 就被写坏了。<strong>谁的状态谁负责</strong>：读口给 0、写口拒收，两道焊在 regfile 内部。等合体之后你会看到，decoder 那边<em>还</em>有一道门——但那是冗余的第二层，不是唯一的一层。</p>
   </div>
 </section>
 
@@ -247,7 +247,7 @@ footer .next { display:block; margin-bottom:12px; font-family:'Noto Serif SC',se
   </div>
 
   <div class="term">
-    <div class="term-header">▸ prism run examples/day2/memory.prism --run regfile_check</div>
+    <div class="term-header">▸ prism run examples/day2/memory.prism --run regfile_check --show --util</div>
     <div class="term-body">cycle  raddr1  raddr2  waddr  wdata  wen  rdata1  rdata2  x0_raw
 0      5       0       5      100    1    100     0       0
 1      5       6       0      0      0    100     0       0
@@ -262,7 +262,7 @@ footer .next { display:block; margin-bottom:12px; font-family:'Noto Serif SC',se
 
   <h3>字阵列：写三个字、读回来</h3>
   <div class="term">
-    <div class="term-header">▸ prism run examples/day2/memory.prism --run ram_check</div>
+    <div class="term-header">▸ prism run examples/day2/memory.prism --run ram_check --show --util</div>
     <div class="term-body">cycle  addr  wdata  wen  ren  rdata
 0      10    1111   1    1    1111       <span class="term-hint"># 写与读同拍：异步读口已看到新值</span>
 1      10    0      0    1    1111
@@ -272,7 +272,8 @@ footer .next { display:block; margin-bottom:12px; font-family:'Noto Serif SC',se
 5      0     0      0    1    3333
 6      12    0      0    1    0          <span class="term-hint"># 没写过的地址读到复位值</span>
 <span class="term-ok"># expect: 7/7 拍有断言 · 1 列 · 全等 ✅</span>
-<span class="term-ok">[run --cosim] ✅ PASS: 两个 run 均与 RTL 仿真逐拍全等</span></div>
+<span class="term-ok">[run --cosim] ✅ PASS: regfile_check golden == RTL 仿真（6 拍 × 8 列全等；golden stop: end of stim (6 cycles)）</span>
+<span class="term-ok">[run --cosim] ✅ PASS: ram_check golden == RTL 仿真（7 拍 × 5 列全等；golden stop: end of stim (7 cycles)）</span></div>
   </div>
 </section>
 
@@ -281,7 +282,7 @@ footer .next { display:block; margin-bottom:12px; font-family:'Noto Serif SC',se
   <p>RISC-V 常见两种组织：冯·诺依曼（指令与数据共用一块存储器）和哈佛（分开两块）。<strong>在 Prism 里这不是两个模块，而是同一个 <code>ram</code> 例化两次</strong>：</p>
 
   <div class="code">
-    <div class="code-header"><span class="code-lang">prism</span><span class="code-file">第三日 cpu_top 里的样子（预告）</span></div>
+    <div class="code-header"><span class="code-lang">prism</span><span class="code-file">合体后 cpu_top 里的样子（预告）</span></div>
 <pre><span class="tk-decl">design</span> <span class="tk-name">cpu_top</span> {
     <span class="tk-name">pc</span> : <span class="tk-name">pc</span>&lt;T = <span class="tk-prim">i32</span>&gt;
     <span class="tk-name">im</span> : <span class="tk-name">ram</span>&lt;SIZE = <span class="tk-num">64</span>&gt;    <span class="tk-com">// 指令侧</span>
@@ -290,7 +291,7 @@ footer .next { display:block; margin-bottom:12px; font-family:'Noto Serif SC',se
 }</pre>
   </div>
 
-  <p>白虹的真核就是这么写的——它 <code>import</code> 了一份 <code>iu/sram.prism</code>，在顶层例化出 <code>im</code> 与 <code>dm</code> 两颗。<strong>"哈佛"不是多写一份代码，是多画一次实例。</strong></p>
+  <p>白虹的单周期核也是这个形状——只不过它是<strong>两颗各司其职的存储模块</strong>：<code>im.prism</code>（指令 ROM，复位时预载程序镜像、只读）与 <code>dm.prism</code>（泛型数据存储器，组合读 + 时序写），顶层各例化一颗。<strong>"哈佛"不是多一段控制逻辑，是多摆一颗存储、多接一根地址线。</strong></p>
 
   <div class="callout">
     <span class="callout-title">回看：为什么第一集要讲"信息注入"</span>
@@ -320,7 +321,7 @@ footer .next { display:block; margin-bottom:12px; font-family:'Noto Serif SC',se
   <ol>
     <li>把 regfile 写侧的 <code>(waddr != 0)</code> 条件删掉，跑 <code>regfile_check</code>——哪一列先喊？（提示：不是 <code>rdata1</code>，是 <code>x0_raw</code>。想想为什么。）</li>
     <li>把 <code>rdata = ren ? mem[addr] : 0</code> 里的 <code>ren ? … : 0</code> 去掉（直接 <code>rdata = mem[addr]</code>），跑 <code>ram_check</code>——第 5 拍（cycle 4）会变成什么？为什么这个"泄漏"在接上外设时很危险？</li>
-    <li>给 <code>ram</code> 加一个 <code>size</code> 形参之外的第二个实例 <code>im</code>，并用 <code>mem mem : [SIZE] u32 = [...]</code> 塞几条指令进去（常量列表）——这就是第三日要跑的程序的雏形。</li>
+    <li>给 <code>ram</code> 加一个 <code>size</code> 形参之外的第二个实例 <code>im</code>，并用 <code>mem mem : [SIZE] u32 = [...]</code> 塞几条指令进去（常量列表）——这就是合体后要跑的程序的雏形。</li>
   </ol>
 </section>
 
@@ -331,8 +332,8 @@ footer .next { display:block; margin-bottom:12px; font-family:'Noto Serif SC',se
 <pre>git clone https://github.com/prism-hdl/seven-days
 cd seven-days
 
-prism run examples/day2/memory.prism --run regfile_check --cosim
-prism run examples/day2/memory.prism --run ram_check     --cosim</pre>
+prism run examples/day2/memory.prism --run regfile_check --cosim --show --util
+prism run examples/day2/memory.prism --run ram_check     --cosim --show --util</pre>
   </div>
 </section>
 

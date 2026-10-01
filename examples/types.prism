@@ -42,8 +42,6 @@ module hex_lit {
 @schedule u8_add {
     bitwidth  : { data:8 }
     pipeline  : 1 stage
-    storage   : none
-    interface : a, b, sum = Signal
     reset     : async_low
     clock     : 100 MHz, domain = single
     resource  : none
@@ -53,8 +51,6 @@ module hex_lit {
 @schedule i8_add {
     bitwidth  : { data:8 }
     pipeline  : 1 stage
-    storage   : none
-    interface : a, b, sum = Signal
     reset     : async_low
     clock     : 100 MHz, domain = single
     resource  : none
@@ -64,8 +60,6 @@ module hex_lit {
 @schedule wide_add {
     bitwidth  : { data:8, sum:9 }
     pipeline  : 1 stage
-    storage   : none
-    interface : a, b, sum = Signal
     reset     : async_low
     clock     : 100 MHz, domain = single
     resource  : none
@@ -75,8 +69,6 @@ module hex_lit {
 @schedule i1_gate {
     bitwidth  : { data:1 }
     pipeline  : 1 stage
-    storage   : none
-    interface : a, b, y = Signal
     reset     : async_low
     clock     : 100 MHz, domain = single
     resource  : none
@@ -86,8 +78,6 @@ module hex_lit {
 @schedule bool_flag {
     bitwidth  : { data:8 }
     pipeline  : 1 stage
-    storage   : none
-    interface : en, x, y = Signal
     reset     : async_low
     clock     : 100 MHz, domain = single
     resource  : none
@@ -97,8 +87,6 @@ module hex_lit {
 @schedule hex_lit {
     bitwidth  : { data:16 }
     pipeline  : 1 stage
-    storage   : none
-    interface : x, y = Signal
     reset     : async_low
     clock     : 100 MHz, domain = single
     resource  : none

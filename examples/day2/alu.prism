@@ -35,8 +35,6 @@ module alu<T: bits> {
 @schedule alu {
     bitwidth  : { data:64 }
     pipeline  : 1 stage
-    storage   : none
-    interface : a, b, op, result = Signal
     reset     : async_low
     clock     : 100 MHz, domain = single
     resource  : adder = parallel(1)

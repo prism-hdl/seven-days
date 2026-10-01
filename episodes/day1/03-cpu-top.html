@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>第 3 集 · 从模块到 CPU：组装与抽象 · 创世记 · 第一日 · 光</title>
+<title>第 3 集 · 聚在一处：组装与抽象 · 创世记 · 第一日 · 光</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&family=Noto+Serif+SC:wght@400;600;700&display=swap" rel="stylesheet">
@@ -116,8 +116,8 @@ footer .next { display: block; margin-bottom: 12px; font-family: 'Noto Serif SC'
 <header class="hero">
   <div class="hero-inner">
     <div class="hero-eyebrow">七日创造 · 第一日 · 光 · 第 3 集</div>
-    <h1>聚在一处<br><em>从模块到 CPU</em></h1>
-    <p class="subtitle">前两集只做了一颗模块。但 <strong>CPU 从来不是一颗模块</strong>——它是六颗模块加几十根线。这一集讲第三组语法：怎么把散落的零件<strong>聚成一体</strong>，以及当零件多到六个时，为什么必须再往上抽象一层。</p>
+    <h1>聚在一处<br><em>组装与抽象</em></h1>
+    <p class="subtitle">前两集只做了一颗模块。可一具能动的东西从来不是"一颗做很多事的模块"——它是<strong>许多颗各做一件事的模块，被线连起来</strong>。这一集讲第三组语法，写法只有一个逻辑：<strong>遇到了什么麻烦，于是就有了什么</strong>。</p>
 
     <div class="verse">
       "神说，天下的水要聚在一处，使旱地露出来。事就这样成了。<br>神称旱地为地，称水的聚处为海。神看着是好的。"
@@ -188,22 +188,22 @@ footer .next { display: block; margin-bottom: 12px; font-family: 'Noto Serif SC'
 
 <section id="s1">
   <h2>零件不等于身体</h2>
-  <p>第 1 集的加法器、第 2 集的饱和计数器——都是<strong>一颗</strong>模块。一颗模块能做一件事：加两个数、数到饱和。但一台计算机不是"一颗做很多事的模块"，而是<strong>许多颗各做一件事的模块，被线连起来</strong>。</p>
+  <p>第 1 集的计数器、第 2 集的饱和计数器——都是<strong>一颗</strong>模块。一颗模块能做一件事：数着自己往前走、数到饱和。但一具能动的东西不是"一颗做很多事的模块"，而是<strong>许多颗各做一件事的模块，被线连起来</strong>。</p>
 
-  <p>Prism 在这里有第三组语法，专门回答一个问题：<strong>零件怎么聚成身体</strong>。</p>
+  <p>于是 Prism 有第三组语法，专门回答一个问题：<strong>零件怎么聚成身体</strong>。这一组里每个手段都不是凭空设计的——都是被一个具体的麻烦逼出来的：</p>
 
   <div class="tools">
     <div class="tool c1">
       <div class="name">connect</div>
-      <div class="what">端口对端口，直连。最直白的一种接线。</div>
+      <div class="what">两个零件要接上——于是有了最直白的接线：端口对端口。</div>
     </div>
     <div class="tool c2">
       <div class="name">wire</div>
-      <div class="what">把一段表达式落到<strong>具名网线</strong>上，再推给下游端口。名字可以观测、可以复用。</div>
+      <div class="what">中间算出来的值要有名字——于是有了具名网线：可观测、可复用。</div>
     </div>
     <div class="tool c3">
       <div class="name">expose</div>
-      <div class="what">把实例<strong>内部</strong>的 reg / mem 引到顶层做观测端口——不改叶子模块一根端口。</div>
+      <div class="what">要看见零件里面的状态——于是把它引到顶层，不改叶子模块一根端口。</div>
     </div>
   </div>
 </section>
@@ -211,19 +211,19 @@ footer .next { display: block; margin-bottom: 12px; font-family: 'Noto Serif SC'
 <section id="s2">
   <h2>三种连接手段</h2>
 
-  <h3><code>connect</code> · 端口对端口</h3>
-  <p>最朴素的一种。左端必须是被驱动的（输出 / inout），右端是被注入的（输入 / inout）：</p>
+  <h3><code>connect</code> · 两个端口要接上</h3>
+  <p>零件拼到一起，第一件事就是接线。两个端口一对一、中间不需要任何加工——这就是最小的一种连接。左端必须是被驱动的（输出 / inout），右端是被注入的（输入 / inout）：</p>
   <div class="code">
     <div class="code-header"><span class="code-lang">prism</span><span class="code-file">design 体内</span></div>
-<pre><span class="tk-decl">design</span> <span class="tk-name">cpu</span> {
+<pre><span class="tk-decl">design</span> <span class="tk-name">link</span> {
     <span class="tk-name">s</span> : <span class="tk-name">src</span>
     <span class="tk-name">k</span> : <span class="tk-name">sink</span>
     <span class="tk-kw">connect</span> s.q <span class="tk-op">-></span> k.d
 }</pre>
   </div>
 
-  <h3><code>wire</code> · 表达式落到具名网线</h3>
-  <p>当两端之间不只是"直连"、还想给这根线<strong>起个名字</strong>时用它。一行可以写全，也可以拆开写：</p>
+  <h3><code>wire</code> · 中间的值要有名字</h3>
+  <p>可线并不总是一对一的直连：有时中间要先算一步；有时这根线要被多处引用，还要出现在观测表里。于是有了 <code>wire</code>——把一段表达式落到一根<strong>具名网线</strong>上，再推给下游端口。一行可以写全，也可以拆开写：</p>
   <div class="code">
     <div class="code-header"><span class="code-lang">prism</span><span class="code-file">三种 wire 形态</span></div>
 <pre><span class="tk-com">// ① 一行全包：声明 + 驱动 + 推送</span>
@@ -238,8 +238,8 @@ footer .next { display: block; margin-bottom: 12px; font-family: 'Noto Serif SC'
 <span class="tk-name">cause</span> <span class="tk-op">-></span> ctrl.trap_cause</pre>
   </div>
 
-  <h3><code>expose</code> · 把内部状态引出来</h3>
-  <p>叶子模块保持"干净的 7 个端口"，观测点不加在它身上——加在顶层：</p>
+  <h3><code>expose</code> · 里面的状态要看得见</h3>
+  <p>接完线还有一件麻烦事：看不见它。线全在里面跑，你想确认"那颗计数器真的在跳"——总不能在叶子模块上凿一排调试端口。于是有了 <code>expose</code>：观测点不加在叶子身上，加在顶层：</p>
   <div class="code">
     <div class="code-header"><span class="code-lang">prism</span><span class="code-file">design 体内</span></div>
 <pre><span class="tk-kw">expose</span> rf.regs[1] <span class="tk-kw">as</span> x1     <span class="tk-com">// mem 元素</span>
@@ -253,7 +253,7 @@ footer .next { display: block; margin-bottom: 12px; font-family: 'Noto Serif SC'
 
 <section id="s3">
   <h2>拼一条迷你数据通路</h2>
-  <p>三颗模块：一颗<strong>心跳</strong>（每拍 +1）、一颗<strong>倍法器</strong>（×2）、一颗<strong>比较器</strong>（≥16 报 1）。它们之间用两根 <code>wire</code> 连起来——形状已经很像 CPU 的取指→执行→判分支。</p>
+  <p>三个手段都到手，拼一具小的试试。三颗模块：一颗<strong>心跳</strong>（每拍 +1）、一颗<strong>倍法器</strong>（×2）、一颗<strong>比较器</strong>（≥16 报 1）。它们之间用两根 <code>wire</code> 连起来——心跳驱动、逐级加工、末级判断，形状上已经是一条完整的链路。</p>
 
   <div class="code">
     <div class="code-header"><span class="code-lang">prism</span><span class="code-file">mini_cpu.prism · 模块部分</span></div>
@@ -294,6 +294,7 @@ footer .next { display: block; margin-bottom: 12px; font-family: 'Noto Serif SC'
 
 <section id="s4">
   <h2>跑起来：一条通路，三处观测</h2>
+  <p>设计写完了，说话要算数——跑一遍。喂激励、盯观测、定停机：</p>
   <div class="code">
     <div class="code-header"><span class="code-lang">prism</span><span class="code-file">mini_cpu.prism · run 段</span></div>
 <pre><span class="tk-decl">run</span> <span class="tk-name">mini_cpu_check</span> <span class="tk-rw">of</span> <span class="tk-name">mini_cpu</span> {
@@ -312,7 +313,7 @@ footer .next { display: block; margin-bottom: 12px; font-family: 'Noto Serif SC'
   </div>
 
   <div class="term">
-    <div class="term-header">▸ prism run examples/mini_cpu.prism</div>
+    <div class="term-header">▸ prism run examples/mini_cpu.prism --show --util</div>
     <div class="term-body">cycle   t_en   ticks   step   res   h_hit
 0       1      1       2      4     0
 1       1      2       3      6     0
@@ -379,41 +380,20 @@ footer .next { display: block; margin-bottom: 12px; font-family: 'Noto Serif SC'
 </section>
 
 <section id="s6">
-  <h2>当零件变成六个</h2>
-  <p>三颗模块手连两根线，很轻松。真实的 CPU 是什么规模？这是<strong>白虹（Whitebow）单周期 CPU</strong> 的顶层——一颗能跑 RV32I / RV64I 双模的真核：</p>
+  <h2>世界突然复杂了</h2>
+  <p>三颗模块、两根线，手写得起。可真实的工程不是三颗——是几十颗模块、上百根线。世界突然复杂了，于是 Prism 还得再往上给一层：<strong>立规矩，装更大的零件</strong>。还是同一个逻辑——遇到了什么麻烦，于是就有了什么。</p>
 
-  <div class="code">
-    <div class="code-header"><span class="code-lang">prism</span><span class="code-file">whitebow_sc.prism · design 段（节选）</span></div>
-<pre><span class="tk-decl">design</span> <span class="tk-name">whitebow_sc</span> {
-    <span class="tk-com">// ==== 实例化子系统（Composer）====</span>
-    <span class="tk-name">ctrl</span> : <span class="tk-name">ControlPath</span>&lt;T=<span class="tk-prim">i64</span>, Dec=<span class="tk-name">decoder</span>, CSR=<span class="tk-name">csr</span>, Imm=<span class="tk-name">immgen</span>&gt;
-    <span class="tk-name">exec</span> : <span class="tk-name">ExecutionPath</span>&lt;T=<span class="tk-prim">i64</span>, ALU=<span class="tk-name">alu</span>, MD=<span class="tk-name">muldiv</span>&gt;
+  <h3><code>interface</code> · 零件多了，得先立规矩</h3>
+  <p>零件一多，第一个问题不是"怎么连"，而是"<strong>怎么保证每个零件都长对了</strong>"。三颗模块可以靠眼睛对端口，三十颗就不行了。于是有了 <code>interface</code>：把"一组端口"写成<strong>契约</strong>；模块声称实现某个 interface，它的端口集合就必须齐全——契约之内可替换、可复用。规矩立在类型上，编译器替你守。</p>
 
-    <span class="tk-com">// ==== 独立模块 ====</span>
-    <span class="tk-name">pc</span>   : <span class="tk-name">pc</span>&lt;T=<span class="tk-prim">i64</span>&gt;
-    <span class="tk-name">im</span>   : <span class="tk-name">sram</span>              <span class="tk-com">// 指令存储器（可替换为 ROM/DDR）</span>
-    <span class="tk-name">dm</span>   : <span class="tk-name">sram</span>              <span class="tk-com">// 数据存储器（可替换为 DDR）</span>
-    <span class="tk-name">rf</span>   : <span class="tk-name">regfile</span>&lt;T=<span class="tk-prim">i64</span>&gt;
+  <h3><code>composer</code> · 几颗零件装成一颗更大的零件</h3>
+  <p>第二个麻烦：几颗零件总是绑在一起干活，你却每次都把它们之间的线重画一遍。于是有了 <code>composer</code>：把紧耦合的几颗模块封成<strong>一颗更大的零件</strong>——内部连线收在体里，外面只看见一组端口。这一步是纯编译期展平：RTL 里没有额外的包装模块。</p>
 
-    <span class="tk-com">// ============ design-level wire 声明 ============</span>
-    <span class="tk-kw">wire</span> <span class="tk-name">mode32</span>  : <span class="tk-prim">u1</span> = ctrl.mode32 <span class="tk-op">-></span> exec.mode32
-    <span class="tk-kw">wire</span> <span class="tk-name">iaddr</span>   : <span class="tk-prim">u8</span> = pc.addr[<span class="tk-num">9</span>:<span class="tk-num">2</span>] <span class="tk-op">-></span> im.addr
-    <span class="tk-kw">wire</span> <span class="tk-name">rf_wen_eff</span> : <span class="tk-prim">u1</span> = ctrl.rf_wen &amp; legal <span class="tk-op">-></span> rf.wen
-    <span class="tk-com">…  全文共 45 根 wire / 2 个 Composer / 1 条 import 链</span>
-}</pre>
-  </div>
+  <h3><code>import</code> · 工程大了，得分开装</h3>
+  <p>第三个麻烦在"装"这个字本身：一个文件塞不下几十颗零件。于是有了 <code>import</code>：把工程拆到多个 <code>.prism</code> 文件——每颗（或每组）零件一个文件，顶层一份 import 清单。文件边界就是检视边界：想知道一个子系统长什么样，去看它那个文件。</p>
 
-  <p>六颗实例（2 个 Composer + 4 个独立模块）、45 根具名 wire。规模一上来，"平铺"就不够了——于是有了上层的抽象手段：</p>
-
-  <table class="tbl-wrap">
-    <thead><tr><th>手段</th><th>解决什么</th></tr></thead>
-    <tbody>
-      <tr><td>Interface</td><td><strong>契约</strong>：一组端口的集合，写成类型。模块实现某个 <code>interface</code>，就保证端口集合齐全——可替换、可复用。<code>interface Decodable { in instr : Signal&lt;u32&gt; … }</code></td></tr>
-      <tr><td>Composer</td><td><strong>封装</strong>：把紧耦合的几颗模块封成一个子系统，内部连线收在 <code>composer</code> 体里；顶层只看见一组端口，不必重复画那批线。<code>ControlPath</code> 就封装了 <code>decoder</code> + <code>csr</code> + <code>immgen</code>，替顶层省掉 ~15 条手动连线。</td></tr>
-      <tr><td>import</td><td><strong>切分</strong>：把工程拆到多个 <code>.prism</code> 文件。白虹用 1 条 <code>import "iu/interfaces.prism"</code> 起头，串起 8 个部件。</td></tr>
-      <tr><td>blackbox</td><td><strong>逃逸</strong>：外部 SystemVerilog IP 作为原语例化进来——Prism 只按端口清单生成例化连线，不生成模块体。<strong>复合总线协议（AXI / DDR 控制器）由此绕过 Prism 语法</strong>，而不是硬塞进语言。</td></tr>
-    </tbody>
-  </table>
+  <h3><code>blackbox</code> · 有的零件根本不在 Prism 里</h3>
+  <p>最后一个麻烦最现实：总有一些零件不是你写的——厂商的 IP、别人的 Verilog。于是有了 <code>blackbox</code>：外部 SystemVerilog 作为<strong>原语</strong>例化进来，Prism 只按端口清单生成例化连线，不生成模块体。<strong>复合总线协议（AXI / DDR 控制器）由此绕过 Prism 语法</strong>，而不是硬塞进语言：</p>
 
   <div class="code">
     <div class="code-header"><span class="code-lang">prism</span><span class="code-file">blackbox 例化外部 IP</span></div>
@@ -445,7 +425,7 @@ footer .next { display: block; margin-bottom: 12px; font-family: 'Noto Serif SC'
   <ul>
     <li><strong>第 1 集</strong>给了动机——两层黑暗，Prism 用一份源码三下降回应。</li>
     <li><strong>第 2 集</strong>给了<strong>一颗</strong>模块的写法——分层、类型、组合与时序、状态机。</li>
-    <li><strong>第 3 集</strong>给了<strong>多颗</strong>模块的写法——<code>connect</code> / <code>wire</code> / <code>expose</code> 把零件聚成身体，<code>Interface</code> / <code>Composer</code> / <code>import</code> / <code>blackbox</code> 让规模可控。</li>
+    <li><strong>第 3 集</strong>给了<strong>多颗</strong>模块的写法——<code>connect</code> / <code>wire</code> / <code>expose</code> 把零件聚成身体，<code>interface</code> / <code>composer</code> / <code>import</code> / <code>blackbox</code> 让规模可控。</li>
   </ul>
 
   <div class="verse-inline">
@@ -453,7 +433,7 @@ footer .next { display: block; margin-bottom: 12px; font-family: 'Noto Serif SC'
     <cite>—— 《创世记》 1:10</cite>
   </div>
 
-  <p>下一集是第一天最后一集——<strong>让光打出去</strong>。不写新代码，只把这些东西的真实产物摆出来：<code>gen-rtl</code> 出的 SV、送上 FPGA 的 bitfile、串口打出来的 OpenSBI banner。看完你会知道：<strong>这门语言真的能造芯片</strong>。</p>
+  <p>下一集是第一天最后一集——<strong>让光打出去</strong>。不写新代码，只把 prism 命令行从头到尾走一遍：<code>check</code> / <code>typecheck</code> / <code>dump-ast</code> / <code>gen-rtl</code> / <code>run</code> / <code>cosim</code> / <code>tlm</code> / <code>deps</code> / <code>keywords</code>——全部真跑在这颗 <code>mini_cpu</code> 上。工具这半边，一次看全。</p>
 </section>
 
 <section id="s8">
@@ -475,8 +455,8 @@ brew install icarus-verilog systemc   <span class="tk-com"># macOS</span>
 git clone https://github.com/prism-hdl/seven-days
 cd seven-days
 
-prism run examples/mini_cpu.prism              <span class="tk-com"># golden</span>
-prism run examples/mini_cpu.prism --cosim      <span class="tk-com"># RTL</span>
+prism run examples/mini_cpu.prism --show --util    <span class="tk-com"># golden</span>
+prism run examples/mini_cpu.prism --cosim --show   <span class="tk-com"># RTL</span>
 prism tlm examples/mini_cpu.prism              <span class="tk-com"># TLM</span>
 prism gen-rtl examples/mini_cpu.prism -o /tmp/mini_cpu.sv   <span class="tk-com"># 看顶层网表</span></pre>
   </div>
@@ -485,7 +465,7 @@ prism gen-rtl examples/mini_cpu.prism -o /tmp/mini_cpu.sv   <span class="tk-com"
 </main>
 
 <footer>
-  <span class="next">第 4 集 · 让光打出去：从 CPU 到跑起 OpenSBI</span>
+  <span class="next">第 4 集 · 让光打出去：工具箱全开</span>
   七日创造 · 第一日 · 光 · 第 3 集 · <a href="../index.html">返回首页</a>
 </footer>
 

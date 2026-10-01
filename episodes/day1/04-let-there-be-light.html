@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>第 4 集 · 让光打出去：一台会说话的最小 SoC · 创世记 · 第一日 · 光</title>
+<title>第 4 集 · 让光打出去：工具箱全开 · 创世记 · 第一日 · 光</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&family=Noto+Serif+SC:wght@400;600;700&display=swap" rel="stylesheet">
@@ -43,24 +43,12 @@ strong { color: var(--ink); font-weight: 600; }
 ul, ol { margin: 0 0 20px 24px; color: var(--ink-2); }
 li { margin-bottom: 8px; }
 
-.verse-inline { padding: 18px 22px; margin: 22px 0; background: linear-gradient(90deg, #fff8ee 0%, transparent 60%); border-left: 3px solid var(--prism-3); border-radius: 0 var(--radius) var(--radius) 0; font-family: 'Noto Serif SC', serif; font-style: italic; color: var(--ink-3); }
-.verse-inline cite { display: block; margin-top: 6px; font-style: normal; font-size: 13px; color: var(--mute); }
-
 /* ledger (recap) */
 .ledger { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; margin: 22px 0 26px; }
 .led { padding: 16px 15px; border-radius: var(--radius); border: 1px solid var(--line); background: linear-gradient(180deg, var(--paper), var(--cream)); }
 .led .n { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--mute); letter-spacing: .08em; margin-bottom: 4px; }
 .led .t { font-size: 15px; font-weight: 600; color: var(--ink); margin-bottom: 4px; }
 .led .d { font-size: 13px; color: var(--ink-3); line-height: 1.55; }
-
-/* flow diagram */
-.flow { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin: 24px 0; }
-.step { padding: 18px 14px; border-radius: var(--radius); border: 1px solid var(--line); background: var(--paper); position: relative; text-align: center; }
-.step .k { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--prism); letter-spacing: .08em; text-transform: uppercase; margin-bottom: 6px; }
-.step .v { font-size: 14px; color: var(--ink-2); line-height: 1.5; }
-.step .big { font-family: 'JetBrains Mono', monospace; font-size: 20px; font-weight: 600; color: var(--ink); }
-.step::after { content: '→'; position: absolute; right: -13px; top: 50%; transform: translateY(-50%); color: var(--mute); font-weight: 600; background: var(--paper); padding: 2px; z-index: 2; }
-.step:last-child::after { display: none; }
 
 /* Code */
 .code { margin: 22px 0; background: var(--code-bg); border-radius: var(--radius); overflow: hidden; box-shadow: 0 4px 24px rgba(15,20,32,.08); border: 1px solid #1c1f2e; }
@@ -72,19 +60,8 @@ li { margin-bottom: 8px; }
 .tk-kw   { color: #c57bff; font-weight: 500; }
 .tk-decl { color: #e08aff; font-weight: 600; }
 .tk-name { color: #ffffff; font-weight: 500; }
-.tk-dir  { color: #7ee8d8; font-weight: 500; }
-.tk-typ  { color: #4ad6b4; }
-.tk-prim { color: #79dfff; }
-.tk-rf   { color: #ffd479; font-weight: 500; }
-.tk-rw   { color: #b8a0e0; }
-.tk-stor { color: #4ad6b4; font-weight: 600; }
-.tk-sf   { color: #c5b890; }
-.tk-sv   { color: #8ab4f8; }
-.tk-op   { color: #ff8a4c; }
 .tk-num  { color: #79b8ff; }
-.tk-hex  { color: #ffb86b; }
 .tk-com  { color: #6c7488; font-style: italic; }
-.tk-ann  { color: #ff79c6; }
 .tk-fn   { color: #4ad6b4; }
 .tk-str  { color: #ffd479; }
 
@@ -98,8 +75,6 @@ li { margin-bottom: 8px; }
 table { width: 100%; border-collapse: collapse; font-size: 14.5px; }
 th { background: var(--cream); text-align: left; padding: 11px 14px; font-weight: 600; border-bottom: 2px solid var(--line); }
 td { padding: 11px 14px; border-bottom: 1px solid var(--line); color: var(--ink-2); vertical-align: top; }
-td:first-child { font-family: 'JetBrains Mono', monospace; color: var(--prism-3); font-weight: 500; white-space: nowrap; }
-td .check { color: var(--ok); font-weight: 600; }
 
 .callout { padding: 18px 22px; background: var(--cream); border-left: 3px solid var(--prism); border-radius: 0 var(--radius) var(--radius) 0; margin: 24px 0; font-size: 15.5px; }
 .callout-title { font-weight: 600; color: var(--ink); margin-bottom: 6px; display: block; }
@@ -116,7 +91,6 @@ footer .next { display: block; margin-bottom: 12px; font-family: 'Noto Serif SC'
   main { padding: 48px 20px 80px; }
   .hero { padding: 60px 20px 52px; }
   h2 { font-size: 24px; }
-  .step::after { display: none; }
 }
 </style>
 </head>
@@ -125,49 +99,71 @@ footer .next { display: block; margin-bottom: 12px; font-family: 'Noto Serif SC'
 <header class="hero">
   <div class="hero-inner">
     <div class="hero-eyebrow">七日创造 · 第一日 · 光 · 第 4 集</div>
-    <h1>让光打出去<br><em>一台会说话的最小 SoC</em></h1>
-    <p class="subtitle">前三集给了语言、模块、组装。这一集<strong>不写新代码</strong>——只把已经造好的东西推上电：CPU 跑自己的固件、经一根<strong>真的串口线</strong>把字节发回宿主、RTL 过 yosys 综合。看完你应该会说一句：<strong>这门语言真的能造芯片</strong>。</p>
+    <h1>让光打出去<br><em>工具箱全开</em></h1>
+    <p class="subtitle">前三集给了语言、模块、组装。这一集<strong>不写新代码</strong>——把 prism 命令行从头到尾走一遍：静态检查、位宽推导、AST、出 RTL、三路对撞、环境自检。<strong>工具这半边，一次看全</strong>。</p>
 
     <div class="verse">
-      "天地万物都造齐了。到第七日，神造物的工已经完毕，就在第七日歇了他一切的工，安息了。"
-      <cite>—— 《创世记》 2:1–3</cite>
+      "神称光为昼，称暗为夜。有晚上，有早晨，这是头一日。"
+      <cite>—— 《创世记》 1:5</cite>
     </div>
 
     <figure class="hero-figure">
-      <svg viewBox="0 0 720 250" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="CPU 经 UART 串口把字节送回宿主">
+      <svg viewBox="0 0 960 320" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="mini_cpu 经 prism 工具箱的九件工具，产出位宽表、AST、SV、逐拍对撞与自检结果">
         <defs>
-          <linearGradient id="cpu" x1="0" y1="0" x2="1" y2="1">
+          <linearGradient id="src" x1="0" y1="0" x2="1" y2="1">
             <stop offset="0%" stop-color="#5b4bff" stop-opacity=".35"/>
-            <stop offset="100%" stop-color="#a678ff" stop-opacity=".25"/>
+            <stop offset="100%" stop-color="#a678ff" stop-opacity=".22"/>
           </linearGradient>
-          <linearGradient id="host" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stop-color="#ff8a4c" stop-opacity=".32"/>
-            <stop offset="100%" stop-color="#ffd479" stop-opacity=".22"/>
+          <linearGradient id="out" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#ff8a4c" stop-opacity=".3"/>
+            <stop offset="100%" stop-color="#ffd479" stop-opacity=".16"/>
           </linearGradient>
           <marker id="a4" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
             <path d="M0,0 L10,5 L0,10 z" fill="#c9d6f0"/>
           </marker>
         </defs>
 
-        <rect x="24" y="70" width="190" height="100" rx="12" fill="url(#cpu)" stroke="#a678ff" stroke-width="1.5"/>
-        <text x="119" y="106" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="15" font-weight="600" fill="#e9e2ff">Whitebow SoC</text>
-        <text x="119" y="126" text-anchor="middle" font-family="Noto Serif SC, serif" font-size="11" fill="rgba(255,255,255,.55)">五级流水 CPU</text>
-        <text x="119" y="143" text-anchor="middle" font-family="Noto Serif SC, serif" font-size="11" fill="rgba(255,255,255,.55)">ROM 固件 · SRAM · UART</text>
+        <!-- 源码 -->
+        <rect x="24" y="112" width="196" height="100" rx="12" fill="url(#src)" stroke="#a678ff" stroke-width="1.5"/>
+        <text x="122" y="148" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="14" font-weight="600" fill="#e9e2ff">mini_cpu.prism</text>
+        <text x="122" y="170" text-anchor="middle" font-family="Noto Serif SC, serif" font-size="11" fill="rgba(255,255,255,.55)">第三集的迷你数据通路</text>
+        <text x="122" y="190" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="10.5" fill="rgba(255,255,255,.42)">103 行 · 3 模块 + 1 design</text>
 
-        <!-- wire path -->
-        <line x1="214" y1="105" x2="470" y2="105" stroke="#c9d6f0" stroke-width="2" marker-end="url(#a4)"/>
-        <line x1="470" y1="140" x2="214" y2="140" stroke="#c9d6f0" stroke-width="2" marker-end="url(#a4)"/>
-        <text x="342" y="96" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="12" fill="#8ab4f8">tx_pin · 8N1 · 1 根线</text>
-        <text x="342" y="162" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="12" fill="#ffd479">rx_pin</text>
+        <!-- 入口箭头 -->
+        <line x1="220" y1="162" x2="298" y2="162" stroke="#c9d6f0" stroke-width="2" marker-end="url(#a4)"/>
+        <text x="259" y="150" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" fill="#8ab4f8">prism CLI</text>
 
-        <rect x="470" y="70" width="200" height="100" rx="12" fill="url(#host)" stroke="#ff8a4c" stroke-width="1.5"/>
-        <text x="570" y="106" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="15" font-weight="600" fill="#ffeada">宿主 / 终端</text>
-        <text x="570" y="126" text-anchor="middle" font-family="Noto Serif SC, serif" font-size="11" fill="rgba(255,255,255,.55)">喂 HI\n</text>
-        <text x="570" y="143" text-anchor="middle" font-family="Noto Serif SC, serif" font-size="11" fill="rgba(255,255,255,.55)">收 HI\n</text>
+        <!-- 工具箱 -->
+        <rect x="300" y="56" width="356" height="212" rx="14" fill="rgba(255,255,255,.035)" stroke="rgba(255,255,255,.22)"/>
+        <text x="478" y="84" text-anchor="middle" font-family="Noto Serif SC, serif" font-size="14" font-weight="600" fill="rgba(255,255,255,.85)">prism 工具箱 · 9 件工具</text>
+        <g font-family="JetBrains Mono, monospace" font-size="12" fill="#cbb8ff" text-anchor="middle">
+          <rect x="316" y="100" width="100" height="38" rx="8" fill="rgba(91,75,255,.16)" stroke="rgba(167,120,255,.35)"/><text x="366" y="124">check</text>
+          <rect x="428" y="100" width="100" height="38" rx="8" fill="rgba(91,75,255,.16)" stroke="rgba(167,120,255,.35)"/><text x="478" y="124">typecheck</text>
+          <rect x="540" y="100" width="100" height="38" rx="8" fill="rgba(91,75,255,.16)" stroke="rgba(167,120,255,.35)"/><text x="590" y="124">dump-ast</text>
+          <rect x="316" y="146" width="100" height="38" rx="8" fill="rgba(91,75,255,.16)" stroke="rgba(167,120,255,.35)"/><text x="366" y="170">gen-rtl</text>
+          <rect x="428" y="146" width="100" height="38" rx="8" fill="rgba(91,75,255,.16)" stroke="rgba(167,120,255,.35)"/><text x="478" y="170">run</text>
+          <rect x="540" y="146" width="100" height="38" rx="8" fill="rgba(91,75,255,.16)" stroke="rgba(167,120,255,.35)"/><text x="590" y="170">cosim</text>
+          <rect x="316" y="192" width="100" height="38" rx="8" fill="rgba(91,75,255,.16)" stroke="rgba(167,120,255,.35)"/><text x="366" y="216">tlm</text>
+          <rect x="428" y="192" width="100" height="38" rx="8" fill="rgba(91,75,255,.16)" stroke="rgba(167,120,255,.35)"/><text x="478" y="216">deps</text>
+          <rect x="540" y="192" width="100" height="38" rx="8" fill="rgba(91,75,255,.16)" stroke="rgba(167,120,255,.35)"/><text x="590" y="216">keywords</text>
+        </g>
 
-        <text x="24" y="220" font-family="Noto Serif SC, serif" font-size="12" fill="rgba(255,255,255,.35)">CPU 跑的是自己 ROM 里的 10 条指令；串口线是比特级的，不是总线直连</text>
+        <!-- 出口箭头 -->
+        <line x1="656" y1="162" x2="722" y2="162" stroke="#c9d6f0" stroke-width="2" marker-end="url(#a4)"/>
+
+        <!-- 产物 -->
+        <rect x="726" y="64" width="210" height="42" rx="8" fill="url(#out)" stroke="rgba(255,180,120,.4)"/>
+        <text x="831" y="90" text-anchor="middle" font-family="Noto Serif SC, serif" font-size="12.5" fill="rgba(255,255,255,.8)">位宽 7/8/1 · 编译期钉死</text>
+        <rect x="726" y="114" width="210" height="42" rx="8" fill="url(#out)" stroke="rgba(255,180,120,.4)"/>
+        <text x="831" y="140" text-anchor="middle" font-family="Noto Serif SC, serif" font-size="12.5" fill="rgba(255,255,255,.8)">AST 82 行 · SV 154 行</text>
+        <rect x="726" y="164" width="210" height="42" rx="8" fill="url(#out)" stroke="rgba(255,180,120,.4)"/>
+        <text x="831" y="190" text-anchor="middle" font-family="Noto Serif SC, serif" font-size="12.5" fill="rgba(255,255,255,.8)">逐拍表 · 三路全等 ✅</text>
+        <rect x="726" y="214" width="210" height="42" rx="8" fill="url(#out)" stroke="rgba(255,180,120,.4)"/>
+        <text x="831" y="240" text-anchor="middle" font-family="Noto Serif SC, serif" font-size="12.5" fill="rgba(255,255,255,.8)">自检全就绪 · 保留字 30</text>
+
+        <text x="480" y="300" text-anchor="middle" font-family="Noto Serif SC, serif" font-size="12" fill="rgba(255,255,255,.35)">一条不跳，全部真跑——本集每个数字都是命令的输出，不是形容</text>
       </svg>
-      <figcaption>这一集的全部：CPU 驱动一根串口线，宿主在另一头听见它</figcaption>
+      <figcaption>这一集的全部：一颗 mini_cpu，走完 prism 命令行的 9 件工具</figcaption>
     </figure>
   </div>
 </header>
@@ -175,13 +171,13 @@ footer .next { display: block; margin-bottom: 12px; font-family: 'Noto Serif SC'
 <main>
 
 <div class="pn">
-  <a href="03-cpu-top.html">← 第 3 集 · 从模块到 CPU</a>
+  <a href="03-cpu-top.html">← 第 3 集 · 聚在一处</a>
   <a href="../index.html#day2">第一日完 · 下一日 · 空气与水 →</a>
 </div>
 
 <section id="s1">
   <h2>第一日，已经造出了什么</h2>
-  <p>回头看这四集走过的路——</p>
+  <p>前三集各交出一件东西：一门语言的形状、一套语法、一颗能自己跑也能拼起来的小设计。</p>
 
   <div class="ledger">
     <div class="led">
@@ -197,225 +193,300 @@ footer .next { display: block; margin-bottom: 12px; font-family: 'Noto Serif SC'
     <div class="led">
       <div class="n">EP 3</div>
       <div class="t">多颗模块</div>
-      <div class="d"><code>connect</code> / <code>wire</code> / <code>expose</code>；Interface / Composer</div>
+      <div class="d"><code>connect</code> / <code>wire</code> / <code>expose</code>；Interface / Composer；拼出 mini_cpu</div>
     </div>
     <div class="led">
       <div class="n">EP 4</div>
-      <div class="t">让它说话</div>
+      <div class="t">工具箱全开</div>
       <div class="d">这一步</div>
     </div>
   </div>
 
-  <p>语言有了，模块有了，组装方式有了。剩下的问题只有一个：<strong>把它们推上电，会动吗？</strong></p>
-  <p>这一集不写新代码。我要做的是——把已经存在的那台机器<strong>开起来给你看</strong>：白虹（Whitebow）最小 SoC。</p>
+  <p>语言有了，模块有了，组装方式有了。剩下的问题只有一个：<strong>这套工具自己，经得起从头到尾用一遍吗？</strong></p>
+  <p>这一集不写新代码。我要做的是——把 prism 命令行<strong>一条不跳</strong>地走完：从最轻的 <code>check</code> 到最重的 <code>tlm</code>，全部跑在第三集那颗 <code>mini_cpu</code> 上。九件工具，九次真跑。</p>
 </section>
 
 <section id="s2">
-  <h2>这台机器跑什么</h2>
-  <p><code>soc.prism</code> 一共 197 行，组装六颗实例：一颗五级流水的 CPU 核、一块取指 ROM、一块数据 SRAM、以及 UART 的收发两半加一个 MMIO 寄存器面。</p>
+  <h2>最便宜的两道关：check 与 typecheck</h2>
+  <p>工具的第一步不是生成代码，是<strong>拦住你</strong>——而且要在最便宜的地方拦。</p>
 
   <div class="code">
-    <div class="code-header"><span class="code-lang">prism</span><span class="code-file">soc.prism · design 段（节选）</span></div>
-<pre><span class="tk-decl">design</span> <span class="tk-name">whitebow_soc</span> {
-    <span class="tk-name">u_cpu</span>  : <span class="tk-name">Whitebow</span>
-    <span class="tk-name">u_rom</span>  : <span class="tk-name">soc_rom</span>
-    <span class="tk-name">u_dm</span>   : <span class="tk-name">sram</span>
-    <span class="tk-name">u_tx</span>   : <span class="tk-name">uart_tx</span>&lt;CLOCK_FREQ = <span class="tk-num">1000000</span>, BAUD_RATE = <span class="tk-num">100000</span>&gt;
-    <span class="tk-name">u_rx</span>   : <span class="tk-name">uart_rx</span>&lt;CLOCK_FREQ = <span class="tk-num">1000000</span>, BAUD_RATE = <span class="tk-num">100000</span>&gt;
-    <span class="tk-name">u_regs</span> : <span class="tk-name">uart_regs</span>
-
-    <span class="tk-com">// 取指：核 → ROM（组合读，同拍出指令）</span>
-    <span class="tk-kw">connect</span> { u_cpu.im_addr <span class="tk-op">-></span> u_rom.addr
-              u_rom.rdata   <span class="tk-op">-></span> u_cpu.im_rdata }
-
-    <span class="tk-com">// 数据口解码：字 0..2047 → dm；2048..2051 → UART 寄存器；其余读 0 不写</span>
-    <span class="tk-kw">wire</span> <span class="tk-name">dm_in_sram</span>  : <span class="tk-prim">u1</span>  = u_cpu.dm_addr[<span class="tk-num">11</span>] == <span class="tk-num">0</span>
-    <span class="tk-kw">wire</span> <span class="tk-name">uart_hit</span>    : <span class="tk-prim">u1</span>  = (u_cpu.dm_addr[<span class="tk-num">11</span>] == <span class="tk-num">1</span>) &amp; (u_cpu.dm_addr[<span class="tk-num">10</span>:<span class="tk-num">2</span>] == <span class="tk-num">0</span>)
-    <span class="tk-kw">wire</span> <span class="tk-name">dm_rdata</span>    : <span class="tk-prim">u32</span> = dm_in_sram ? u_dm.rdata : (uart_hit ? u_regs.rd_data : <span class="tk-num">0</span>)
-    <span class="tk-com">…  全文 13 根 wire / 6 颗实例</span>
-}</pre>
+    <div class="code-header"><span class="code-lang">bash</span><span class="code-file">解析 + 可下降性</span></div>
+<pre>prism check examples/mini_cpu.prism</pre>
+  </div>
+  <div class="term">
+    <div class="term-header">▸ check · 轻量检查</div>
+    <div class="term-body">[OK] parse succeeded
+     modules=3 schedules=3 designs=1
+     [info] module 'ticker' 有 @schedule —— 可下降 RTL(CYCLE_EXACT)
+     [info] module 'doubler' 有 @schedule —— 可下降 RTL(CYCLE_EXACT)
+     [info] module 'thresh' 有 @schedule —— 可下降 RTL(CYCLE_EXACT)</div>
   </div>
 
-  <p>关键在于 <code>u_rom</code> 里那段<strong>真的 RISC-V 机器码</strong>——10 条指令的固件，干一件事：<strong>把收到的字节原样发回去</strong>。</p>
+  <p>它已经替你先回答了一个问题：三颗模块、三张 <code>@schedule</code>、一颗 design——<strong>全部可下降 RTL</strong>。接着把账算得更细：</p>
 
   <div class="code">
-    <div class="code-header"><span class="code-lang">prism</span><span class="code-file">soc_rom 的内建固件（逐条手写机器码）</span></div>
-<pre>    <span class="tk-stor">mem</span> ram : [<span class="tk-num">2048</span>] <span class="tk-prim">u32</span> = [
-        <span class="tk-hex">0x000020B7</span>,   <span class="tk-com">//  0: lui  x1, 0x2       x1 = 0x2000（MMIO 基址）</span>
-        <span class="tk-hex">0x0080A183</span>,   <span class="tk-com">//  4: lw   x3, 8(x1)     pol: x3 = STATUS</span>
-        <span class="tk-hex">0x0011F193</span>,   <span class="tk-com">//  8: andi x3, x3, 1     ready?</span>
-        <span class="tk-hex">0xFE018CE3</span>,   <span class="tk-com">// 12: beq  x3, x0, -8    未就绪回 4</span>
-        <span class="tk-hex">0x0040A103</span>,   <span class="tk-com">// 16: lw   x2, 4(x1)     x2 = RXDATA（读走清 ready）</span>
-        <span class="tk-hex">0x0080A183</span>,   <span class="tk-com">// 20: lw   x3, 8(x1)     wai: x3 = STATUS</span>
-        <span class="tk-hex">0x0021F193</span>,   <span class="tk-com">// 24: andi x3, x3, 2     tx_busy?</span>
-        <span class="tk-hex">0xFE019CE3</span>,   <span class="tk-com">// 28: bne  x3, x0, -8    忙则回 20</span>
-        <span class="tk-hex">0x0020A023</span>,   <span class="tk-com">// 32: sw   x2, 0(x1)     TXDATA = x2</span>
-        <span class="tk-hex">0xFE1FF06F</span>    <span class="tk-com">// 36: jal  x0, -32       回 4（无限回显）</span>
-    ]</pre>
+    <div class="code-header"><span class="code-lang">bash</span><span class="code-file">类型 + 位宽 + 级别</span></div>
+<pre>prism typecheck examples/mini_cpu.prism</pre>
+  </div>
+  <div class="term">
+    <div class="term-header">▸ typecheck · 位宽推导（节选）</div>
+    <div class="term-body">module ticker:
+  level       : CYCLE_EXACT
+  latency     : 1 cycles
+  can_lower_rtl: True
+  bitwidths   : cnt=7, c=7
+  signedness  : cnt=u, c=u
+module doubler:
+  bitwidths   : y=8
+module thresh:
+  bitwidths   : hit=1
+<span class="term-hint">…（每颗模块 + 每个 specialize 后的实例各一段）</span></div>
   </div>
 
-  <p>轮询 <code>ready</code> → 读走 <code>RXDATA</code> → 等 <code>!tx_busy</code> → 写回 <code>TXDATA</code> → 跳回开头。<strong>这是固件在轮询 MMIO，不是硬件直连</strong>——CPU 真的在跑一个程序。</p>
+  <p><code>cnt=7</code>、<code>y=8</code>、<code>hit=1</code>——没有一个数字是跑出来的，全是<strong>编译期推出来的</strong>。这就是第二集说的类型驱动：位宽的账在编译器里就算清了，不留给仿真。</p>
 </section>
 
 <section id="s3">
-  <h2>让它跑起来</h2>
-  <p>跑这台 SoC 的 <code>run</code> 块里有一件新东西：<code>host</code> 绑定。它把芯片上的两根引脚（<code>tx_pin</code> / <code>rx_pin</code>）接到<strong>真实的宿主字节流</strong>上——不是总线，是一根比特级的串口线，8N1 编码，采样率是波特率的 10 倍：</p>
+  <h2>编译器眼里的程序</h2>
+  <p>check 与 typecheck 都在验证"对不对"。换个视角：这颗设计在编译器眼里<strong>长什么样</strong>？</p>
 
   <div class="code">
-    <div class="code-header"><span class="code-lang">prism</span><span class="code-file">soc.prism · run 段</span></div>
-<pre><span class="tk-decl">run</span> <span class="tk-name">whitebow_soc_console</span> <span class="tk-rw">of</span> <span class="tk-name">whitebow_soc</span> {
-    <span class="tk-sf">clock</span> : <span class="tk-num">100</span> <span class="tk-sv">MHz</span>
-    <span class="tk-sf">host</span>  : {
-        <span class="tk-name">console</span> = <span class="tk-fn">uart_8n1</span>(tx = u_tx.tx_pin, rx = u_rx.rx_pin, divisor = <span class="tk-num">10</span>)
+    <div class="code-header"><span class="code-lang">bash</span><span class="code-file">AST 树</span></div>
+<pre>prism dump-ast examples/mini_cpu.prism</pre>
+  </div>
+  <div class="term">
+    <div class="term-header">▸ dump-ast · 节选（ticker 与 design 段）</div>
+    <div class="term-body">CompilationUnit {
+  module ticker&lt;&gt;  @L12 {
+    port in en: Signal&lt;u1&gt;
+    port out c: Signal&lt;u7&gt;
+    reg cnt: u7
+    on clock {
+      cnt' = (en ? (cnt + 1) : cnt)
     }
-    <span class="tk-rf">until</span> : console.tx.count &gt;= <span class="tk-num">3</span>
-    <span class="tk-rf">show</span>  : { pcv, retire_pc, retire_rd, retire_wen,
-              console.rx.count, console.rx.last, console.tx.count, console.tx.last }
-}</pre>
+    assign c = cnt
+  }
+  …
+  design mini_cpu  @L71 {
+    inst t = ticker&lt;&gt;
+    inst d = doubler&lt;&gt;
+    inst h = thresh&lt;&gt;
+    wire step : u8 = (t.c + 1)
+    connect __wire__.step -&gt; d.x
+    expose t.cnt -&gt; ticks
+  }
+}</div>
   </div>
 
-  <p>注意 <code>until</code> 那一行：<strong>停机条件是"宿主已经听到 3 个字节"</strong>——不是"跑了多少拍"，不是"CPU 到哪个 PC"。程序停在哪由<strong>外部世界</strong>决定。</p>
-
-  <div class="code">
-    <div class="code-header"><span class="code-lang">bash</span><span class="code-file">喂三个字节，听三个字节</span></div>
-<pre>printf <span class="tk-str">'HI\n'</span> &gt; /tmp/rt.rx
-prism run soc.prism --host console=file:/tmp/rt
-od -c /tmp/rt.tx</pre>
-  </div>
-
-  <div class="term">
-    <div class="term-header">▸ 真实输出</div>
-    <div class="term-body">cycle  pcv  retire_pc  retire_rd  retire_wen  rx.count  rx.last  tx.count  tx.last
-  395    12        16          2          0           3       10         2       73
-  397    16         4          3          1           3       10         2       73
-  400     8        12         25          0           3       10         2       73
-  405     4         8          3          1           3       10         2       73
-  411     4         8          3          1           3       10         2       73
-  417     4         8          3          1           3       10         2       73
-  423     4         8          3          1           3       10         3       10
-<span class="term-hint"># run: whitebow_soc_console  424 拍 golden 直跑完成</span></div>
-  </div>
-
-  <div class="term">
-    <div class="term-header">▸ 宿主收到的字节（od -c）</div>
-    <div class="term-body">0000000    H   I  \n
-0000003</div>
-  </div>
-
-  <p>喂进去 <code>H</code> <code>I</code> <code>\n</code>，拿回来 <code>H</code> <code>I</code> <code>\n</code>——<strong>逐字节相同</strong>。这一路上发生过什么：宿主的字节 → 串口线比特流 → <code>uart_rx</code> 的采样状态机 → MMIO 寄存器 → CPU 轮询读走 → 写回 TXDATA → <code>uart_tx</code> 的发送状态机 → 串口线比特流 → 宿主。</p>
-
-  <div class="callout">
-    <span class="callout-title">这一集为什么值得单独写</span>
-    <p style="margin:0;">前面三集所有的验证都是"我喂激励，我读表格"。而这一条链路上，<strong>CPU 与宿主之间没有任何共享状态</strong>——只有一根线，和两边各自对"什么是一个 8N1 帧"的理解。这已经是一台<strong>会跟外界说话</strong>的机器了。</p>
-  </div>
+  <p>整棵树 <strong>82 行</strong>，源码是 103 行——同一份东西的两种记法。源码里 <code>cnt' = en ? cnt + 1 : cnt</code> 那行，在树里就是 <code>on clock</code> 节点里的一个赋值；<code>expose t.cnt -&gt; ticks</code> 也没被吃掉，原样挂在 design 上。</p>
 </section>
 
 <section id="s4">
-  <h2>光打到板上：从源码到门</h2>
-  <p>这条链路的最后一段是出 RTL。三条命令、三个数字：</p>
+  <h2>出货：从 .prism 到可综合 SV</h2>
+  <p>检查全过、树也看过了——出货。</p>
 
-  <div class="flow">
-    <div class="step">
-      <div class="k">source</div>
-      <div class="v"><code>soc.prism</code><br><span class="big">197</span> 行<br>+ 3 个 import</div>
-    </div>
-    <div class="step">
-      <div class="k">gen-rtl</div>
-      <div class="v">SystemVerilog<br><span class="big">2156</span> 行</div>
-    </div>
-    <div class="step">
-      <div class="k">yosys</div>
-      <div class="v">综合后门级<br><span class="big">4876</span> 个单元<br>17 个子模块</div>
-    </div>
+  <div class="code">
+    <div class="code-header"><span class="code-lang">bash</span><span class="code-file">生成 SystemVerilog</span></div>
+<pre>prism gen-rtl examples/mini_cpu.prism -o mini_cpu.sv</pre>
   </div>
-
   <div class="term">
-    <div class="term-header">▸ yosys -p "read_verilog -sv soc.sv; synth -top whitebow_soc_top; stat"</div>
-    <div class="term-body">=== whitebow_soc_top ===
-     4459 wires
-     8956 wire bits
-     4876 cells
-      212   $_ANDNOT_
-     1293   $_AND_
-      663   $_MUX_
-     1430   $_NAND_
-      137   $_NOR_
-        8   $_NOT_
-      292   $_ORNOT_
-      500   $_OR_
-      196   $_XNOR_
-      145   $_XOR_
-       17 submodules (alu_rtl, csr_rtl, decoder_rtl, …)</div>
+    <div class="term-header">▸ gen-rtl · 三颗模块全部 RTL-ready</div>
+    <div class="term-body">[gen-rtl] wrote mini_cpu.sv (3069 bytes)
+           ticker@t: RTL-ready, widths={'cnt': 7, 'c': 7}
+           doubler@d: RTL-ready, widths={'y': 8}
+           thresh@h: RTL-ready, widths={'hit': 1}</div>
   </div>
 
-  <p>四千八百个门、十七个子模块——这个规模已经能进 Lattice ECP5 这类小 FPGA 了。再往下就是纯工程：<code>nextpnr</code> 布局布线 → 出 bitfile → 上板。<strong>那一步留给第七日</strong>——那时我们会把一段不属于我们的固件（OpenSBI）放进去，让机器自己起来。</p>
+  <p><strong>154 行</strong> SystemVerilog，四颗模块：<code>ticker_rtl</code> / <code>doubler_rtl</code> / <code>thresh_rtl</code> / <code>mini_cpu_top</code>。挑那颗 7 位计数器看看生成物长什么样：</p>
 
-  <div class="callout warn">
-    <span class="callout-title">诚实边界</span>
-    <p style="margin:0;">这一集我只放了<strong>跑通过的</strong>东西：SoC 仿真、串口往返、yosys 综合。FPGA 上板与 OpenSBI 启动<strong>还没发生</strong>——它们是第七日的目标，不是今天的战果。博客里写的每个数字，都能在你自己机器上重跑出来。</p>
+  <div class="code">
+    <div class="code-header"><span class="code-lang">systemverilog</span><span class="code-file">mini_cpu.sv · ticker_rtl（节选）</span></div>
+<pre><span class="tk-decl">module</span> <span class="tk-name">ticker_rtl</span> #(
+  parameter int DW = <span class="tk-num">32</span>
+)(
+  <span class="tk-decl">input</span>  logic clk,
+  <span class="tk-decl">input</span>  logic rst_n,
+  <span class="tk-decl">input</span>  logic [<span class="tk-num">1</span>-<span class="tk-num">1</span>:<span class="tk-num">0</span>] en,
+  <span class="tk-decl">output</span> logic [<span class="tk-num">7</span>-<span class="tk-num">1</span>:<span class="tk-num">0</span>] c,
+  <span class="tk-decl">output</span> logic [<span class="tk-num">7</span>-<span class="tk-num">1</span>:<span class="tk-num">0</span>] xpose_cnt
+);
+
+  <span class="tk-com">// 时序寄存器</span>
+  logic [<span class="tk-num">7</span>-<span class="tk-num">1</span>:<span class="tk-num">0</span>] cnt;
+
+  <span class="tk-com">// 时序更新（reset=async_low）</span>
+  <span class="tk-kw">always_ff</span> @(<span class="tk-fn">posedge</span> clk <span class="tk-kw">or</span> <span class="tk-fn">negedge</span> rst_n) <span class="tk-kw">begin</span>
+    <span class="tk-kw">if</span> (!rst_n) <span class="tk-kw">begin</span>
+      cnt &lt;= <span class="tk-num">'0</span>;
+    <span class="tk-kw">end</span> <span class="tk-kw">else</span> <span class="tk-kw">begin</span>
+      cnt &lt;= (en ? (cnt + <span class="tk-num">1</span>) : cnt);   <span class="tk-com">// cnt' = …</span>
+    <span class="tk-kw">end</span>
+  <span class="tk-kw">end</span>
+
+  <span class="tk-com">// 组合输出 / 局部 wire 赋值</span>
+  <span class="tk-kw">assign</span> c = cnt;
+
+  <span class="tk-com">// expose 观测端口驱动</span>
+  <span class="tk-kw">assign</span> xpose_cnt = cnt;
+
+<span class="tk-decl">endmodule</span></pre>
   </div>
+
+  <p>这不是"翻译腔"的展示品——<strong>丢给 yosys，综合出 35 个门级单元</strong>：10 个 AND、11 个 XOR、7 个 D 触发器、2 个 NOT……0.77 秒。上板与整机是后面几日的事；这里只钉一件事：<strong>语言写的东西，真的能变成门</strong>。</p>
 </section>
 
 <section id="s5">
-  <h2>第一日完</h2>
-  <p>这一日只有一句话：<strong>光存在了</strong>。一门为硬件而生的语言，从动机写到语法，从一颗模块写到一台会说话的机器，最后过了综合器。</p>
+  <h2>同一份源码，三条通路</h2>
+  <p>检查能拦错、树能读、SV 能出——但"<strong>跑对了吗</strong>"这三个字，谁说了算？让三台互不认识的执行者各自回答。</p>
 
-  <div class="verse-inline">
-    "天地万物都造齐了。到第七日，神造物的工已经完毕，就在第七日歇了他一切的工，安息了。"
-    <cite>—— 《创世记》 2:1–3</cite>
+  <h3>① golden 直跑：逐拍表 + 手算期望</h3>
+  <div class="code">
+    <div class="code-header"><span class="code-lang">bash</span><span class="code-file">Python 参考模型</span></div>
+<pre>prism run examples/mini_cpu.prism --show --util</pre>
+  </div>
+  <div class="term">
+    <div class="term-header">▸ golden · 解释 AST，逐拍出表</div>
+    <div class="term-body"># run: mini_cpu_check  design: mini_cpu  stop: end of stim (10 cycles)
+cycle   t_en    ticks   step    res     h_hit
+0       1       1       2       4       0
+1       1       2       3       6       0
+2       1       3       4       8       0
+3       1       4       5       10      0
+4       1       5       6       12      0
+5       1       6       7       14      0
+6       1       7       8       16      1
+7       1       8       9       18      1
+8       1       9       10      20      1
+9       1       10      11      22      1
+<span class="term-ok"># expect: 10/10 拍有断言 · 4 列 · 全等 ✅</span></div>
+  </div>
+  <p>表尾那行说的是：源码 stim 里<strong>手算的期望值</strong>逐拍全中——golden 一侧自己就能判定跑对没有。</p>
+
+  <h3>② RTL：iverilog 真仿真</h3>
+  <div class="code">
+    <div class="code-header"><span class="code-lang">bash</span><span class="code-file">golden vs 生成网表</span></div>
+<pre>prism cosim examples/mini_cpu.prism --vectors 16 --seed 7</pre>
+  </div>
+  <div class="term">
+    <div class="term-header">▸ cosim · RTL+TB 交给 iverilog，逐拍比对</div>
+    <div class="term-body">  [TB] cyc11 h_hit=0, ticks=4 exp=0, exp=4  PASS
+  [TB] cyc15 h_hit=0, ticks=5 exp=0, exp=5  PASS
+<span class="term-ok">===== result: PASS=16 FAIL=0 =====</span>
+<span class="term-ok">[cosim] ✅ PASS: 网表 RTL == golden（联立求解，逐拍一致），16 拍</span></div>
   </div>
 
-  <p>但注意——<strong>这才第一日</strong>。这一集是"预告片"：把整条弧线的终点（机器自转）提前演了一遍。接下来的六日，会把这条线上的每一段<strong>重新长一遍</strong>，而且长得更结实：</p>
+  <h3>③ TLM：SystemC 真跑</h3>
+  <div class="code">
+    <div class="code-header"><span class="code-lang">bash</span><span class="code-file">事务级模型</span></div>
+<pre>prism tlm examples/mini_cpu.prism</pre>
+  </div>
+  <div class="term">
+    <div class="term-header">▸ tlm · 下降成 SystemC，编译并真跑</div>
+    <div class="term-body">cycle   t_en    ticks   step    res     h_hit
+0       1       1       2       4       0
+<span class="term-hint">…（与 golden 同表，逐拍对照）</span>
+<span class="term-ok">[tlm] ✅ PASS: mini_cpu_check SystemC/TLM == golden（10 拍 × 5 列全等）</span></div>
+  </div>
+
+  <p>三条通路的共同语言只有那份 <code>.prism</code>：一条解释 AST，一条生成 SV 进 iverilog，一条生成 SystemC 进 g++。逐拍对撞全绿——<strong>工具的重头，就在这里</strong>。</p>
+</section>
+
+<section id="s6">
+  <h2>工具检查工具自己</h2>
+  <p>最后两件工具不碰设计——它们检查<strong>工具自己</strong>。</p>
+
+  <h3>环境自检：缺什么，怎么装</h3>
+  <div class="code">
+    <div class="code-header"><span class="code-lang">bash</span><span class="code-file">依赖与环境</span></div>
+<pre>prism deps</pre>
+  </div>
+  <div class="term">
+    <div class="term-header">▸ deps · 工具链自检</div>
+    <div class="term-body">[deps] 工具链自检：macOS（Homebrew）
+
+  <span class="term-ok">[ok] iverilog</span>：Icarus Verilog version 13.0 (stable) (v13_0)（/opt/homebrew/bin/iverilog）
+  <span class="term-ok">[ok] C++ 编译器</span>：/usr/bin/clang++
+  <span class="term-ok">[ok] SystemC</span>：/opt/homebrew/include/systemc.h
+
+全部就绪。golden 直跑（prism run）本就不需要外部工具；RTL 与 TLM 两条通路可用。</div>
+  </div>
+  <p>三件外部依赖全部到位。缺了也不慌：<code>prism deps --install</code> 会按操作系统把缺的补上。</p>
+
+  <h3>语法预算：保留字 30 个</h3>
+  <div class="code">
+    <div class="code-header"><span class="code-lang">bash</span><span class="code-file">保留字登记表</span></div>
+<pre>prism keywords</pre>
+  </div>
+  <div class="term">
+    <div class="term-header">▸ keywords · 保留字预算</div>
+    <div class="term-body">reserved=30 [attribute=2 control=2 encapsulation=1 expression=2 run_field=3 structure=14 timing=6]
+            | schedule_fields=8 | blackbox_fields=2 | …</div>
+  </div>
+  <p>一门语言最容易悄悄死在自己长出来的关键字上。这里给每个保留字记账：30 个、按族分类，连 <code>@schedule</code> 的字段和 fsm 的属性都单独计。（源码安装下 <code>prism keywords --check</code> 还会扫保留字漂移；pip 安装的包里没有源码，只有这份账本。）</p>
+</section>
+
+<section id="s7">
+  <h2>第一日完</h2>
+  <p>回看第一日：为什么要有 Prism（EP1）→ 语法骨架（EP2）→ 组装与抽象（EP3）→ 工具箱全开（EP4）。不造机器，只铺工具——<strong>工具这半边，到此为止</strong>。</p>
+
+  <div class="callout warn">
+    <span class="callout-title">诚实边界</span>
+    <p style="margin:0;">本集从头到尾只有工具，没有整机、没有外设、没有上板。SoC 与 OpenSBI 是后面几日的事——这一集的任务，只是把"你将用来造它们的那套东西"一次看全。</p>
+  </div>
+
+  <p>"看全"的意思是：出错时它拦你（check / typecheck）、你想看它陪你看（dump-ast）、要出货它出货（gen-rtl）、跑没跑对它拿三台机器对（run / cosim / tlm）、连它自己缺什么、有多少保留字都记账（deps / keywords）。</p>
 
   <table class="tbl-wrap">
     <thead><tr><th>日</th><th>造什么</th></tr></thead>
     <tbody>
-      <tr><td>第二日 · 空气与水</td><td>四颗器官：<code>pc</code> 心跳 / 记忆 / <code>ALU</code> / <code>decoder</code>——每颗独立能测</td></tr>
-      <tr><td>第三日 · 旱地与植物</td><td>把四颗放进同一具身体；跑真程序；<strong>反证与变异扫描</strong></td></tr>
+      <tr><td>第二日 · 空气与水</td><td>所有原料：四颗器官各自能测；合体后跑冒泡排序——一台会做事的处理器</td></tr>
+      <tr><td>第三日 ·（待重构）</td><td>原「旱地与植物」的内容已并入第二日；本日待重新规划</td></tr>
       <tr><td>第四日 · 天上光体</td><td><code>Composer</code>；五级流水线、冒险与前递、RV64I</td></tr>
       <tr><td>第五日 · 有生命的活物</td><td>会疼（异常）· 会躲（中断 + PMP）· 会做事（真程序 + 独立 ISS）</td></tr>
-      <tr><td>第六日 · 照着形象造人</td><td>把它放大成一台完整的 SoC，管理自己的世界</td></tr>
+      <tr><td>第六日 · 照着形象造人</td><td>CPU 挂上外设、开始"管理"世界——总线、SRAM、BootROM、UART</td></tr>
       <tr><td>第七日 · 安息</td><td>OpenSBI 起来；作者停手，机器自转</td></tr>
     </tbody>
   </table>
 
-  <p><strong>第一日之后不再讲语法</strong>——每一日只回答一个问题：下一步该造什么。</p>
+  <p><strong>第一日之后不再讲语法</strong>——每一日只回答一个问题：下一步该造什么。从第二日起，开始造物——第一件事，给机器一颗<strong>心跳</strong>。</p>
 </section>
 
-<section id="s6">
+<section id="s8">
   <h2>练习</h2>
   <ol>
-    <li>把宿主喂的字节改成别的内容（比如 <code>printf 'abc'</code>），<code>until : console.tx.count &gt;= 3</code> 要跟着改吗？如果把 <code>until</code> 改成 <code>console.tx.count &gt;= 5</code> 却只喂 3 个字节——判据永远等不到，想想 Prism 应该怎么办（提示：<code>run</code> 的判据形态是有拍数上限的——判据不可达时报错退出，而不是无限跑）。</li>
-    <li>把 <code>divisor</code> 从 <code>10</code> 改成 <code>9</code>——采样点偏离波特率中心。跑一次，看接收端是否还能解出字节，失败时 <code>rx_error</code> 会不会置起来。</li>
-    <li>用 <code>prism gen-rtl soc.prism -o /tmp/soc.sv</code> 自己出一份 RTL，再跑一遍上面那条 yosys 命令。<strong>对比你机器上的单元数与本集是否一致</strong>——不一致说明工具版本不同，这本身也是个值得知道的工程事实。</li>
+    <li>把 <code>thresh</code> 的 <code>@schedule</code> 删掉，再跑 <code>prism check</code> 与 <code>typecheck</code>——看可下降性检查在第几步喊、喊什么。</li>
+    <li>对 <code>examples/counter.prism</code> 跑同一套：<code>gen-rtl</code> 出来的 SV 是 56 行，mini_cpu 是 154 行——各长什么样？（提示：counter 只有一颗 <code>always_ff</code>，mini_cpu 是四颗模块拼成的 design。）</li>
+    <li>把 <code>--vectors 16</code> 加到 <code>--vectors 256</code>、再换个 <code>--seed</code>：比对表长了一截，结论不变——256 拍逐拍一致。</li>
   </ol>
 </section>
 
-<section id="s7">
+<section id="s9">
   <h2>复现本集</h2>
   <div class="code">
-    <div class="code-header"><span class="code-lang">bash</span><span class="code-file">reproduce</span></div>
+    <div class="code-header"><span class="code-lang">bash</span><span class="code-file">reproduce · 九件工具</span></div>
 <pre>pip install prism-hdl
-brew install icarus-verilog yosys   <span class="tk-com"># macOS</span>
+brew install icarus-verilog systemc   <span class="tk-com"># macOS</span>
 
-git clone https://github.com/prism-hdl/riscv-prism
-cd riscv-prism
+git clone https://github.com/prism-hdl/seven-days
+cd seven-days
 
-<span class="tk-com"># ① 让 CPU 与宿主对一次话</span>
-printf <span class="tk-str">'HI\n'</span> &gt; /tmp/rt.rx
-prism run soc.prism --host console=file:/tmp/rt
-od -c /tmp/rt.tx                 <span class="tk-com"># 应看到 H I \n</span>
-
-<span class="tk-com"># ② 出 RTL 并过综合器</span>
-prism gen-rtl soc.prism -o /tmp/soc.sv
-yosys -p <span class="tk-str">"read_verilog -sv /tmp/soc.sv; synth -top whitebow_soc_top; stat"</span></pre>
+prism check     examples/mini_cpu.prism
+prism typecheck examples/mini_cpu.prism
+prism dump-ast  examples/mini_cpu.prism
+prism gen-rtl   examples/mini_cpu.prism -o mini_cpu.sv
+prism run       examples/mini_cpu.prism --show --util
+prism cosim     examples/mini_cpu.prism --vectors 16
+prism tlm       examples/mini_cpu.prism
+prism deps
+prism keywords</pre>
   </div>
 </section>
 
 </main>
 
 <footer>
-  <span class="next">第二日 · 空气与水 · 四颗器官：心跳 / 记忆 / 活动 / 理解世界</span>
+  <span class="next">第二日 · 空气与水 · 原料 → 组装 → 跑一段冒泡排序</span>
   七日创造 · 第一日 · 光 · 第 4 集 · <a href="../index.html">返回首页</a>
 </footer>
 

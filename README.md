@@ -2,7 +2,7 @@
 
 > 一个软件工程师，七天，从"发明一门语言"开始，造出能跑操作系统的 RISC-V 处理器。
 
-《圣经·创世记》里神用七天创造天地万物。这个连载借它的骨架——七日、七层递进——讲另一件小事：**用一门新语言 Prism，把一颗 32 位加法器一路造到能启动 OpenSBI**。
+《圣经·创世记》里神用七天创造天地万物。这个连载借它的骨架——七日、七层递进——讲另一件小事：**用一门新语言 Prism，从一颗计数器一路造到能启动 OpenSBI**。
 
 作者是一个人，工具是自己造的，编译器随文开源。
 
@@ -78,7 +78,7 @@ seven-days/
 
 - **主大纲** 已定稿（`outline.md`，创世记版 · 27 集）
 - **番外** 保留（`outline-nvwa.md`，女娲版 · 25 集）——不发布，仅供写作时借"引绳于泥中，举以为人"给 `Composer` 那一集做点睛
-- **第一日 · 光 四集写完**：`episodes/day1/` 下 `01-why-prism` / `02-layered` / `03-cpu-top` / `04-let-there-be-light`，配套样例在 `examples/`（`adder` / `sat_counter` / `mini_cpu`）
+- **第一日 · 光 四集写完**：`episodes/day1/` 下 `01-why-prism` / `02-layered` / `03-cpu-top` / `04-let-there-be-light`，配套样例在 `examples/`（`counter` / `sat_counter` / `mini_cpu`）
 - **第二日 · 空气与水 五集写完**：`episodes/day2/` 下 `05-pc` / `06-memory` / `07-alu` / `08-decoder` / `09-observe`，配套样例在 `examples/day2/`（`pc` / `memory` / `alu` / `decoder`，五段 run 三条下降全等）
 - **第三日 · 旱地与植物 EP 10 写完**：`episodes/day3/10-cpu-top.html`，配套样例 `examples/day3/`（`iu.prism` 五颗器官 + `cpu.prism` 单周期 CPU，24 拍跑出 `x1 = 15`，golden / RTL / TLM 三方逐拍全等）
 - **第三日 EP 11–12 与第四日起** 未动笔

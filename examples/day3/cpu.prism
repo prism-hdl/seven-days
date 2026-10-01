@@ -43,8 +43,6 @@ module im {
 @schedule im {
     bitwidth  : { data:32 }
     pipeline  : 1 stage
-    storage   : mem = reg_array, depth = 64, width = 32
-    interface : addr, rdata = Signal
     reset     : async_low
     clock     : 100 MHz, domain = single
     resource  : none

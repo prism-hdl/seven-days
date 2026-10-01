@@ -146,7 +146,7 @@ footer .next { display: block; margin-bottom: 12px; font-family: 'Noto Serif SC'
     </div>
 
     <figure class="hero-figure">
-      <svg viewBox="0 0 720 320" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="一束白光经 Prism 棱镜折射为三道光谱">
+      <svg viewBox="0 0 1000 380" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="一束白光经 Prism 棱镜折射为三道光谱：第一道光 RTL、第二道光 TLM、第三道光 Golden">
         <defs>
           <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
             <feGaussianBlur stdDeviation="4" result="b"/>
@@ -169,39 +169,51 @@ footer .next { display: block; margin-bottom: 12px; font-family: 'Noto Serif SC'
           </linearGradient>
         </defs>
 
-        <!-- 入射白光：梯形，有体积感 -->
-        <polygon points="30,148 310,152 310,168 30,172" fill="rgba(255,255,255,.85)" filter="url(#glow)"/>
-        <text x="36" y="136" font-family="JetBrains Mono, monospace" font-size="13" fill="rgba(255,255,255,.7)">module adder { ... }</text>
-        <text x="36" y="192" font-family="Noto Serif SC, serif" font-size="12" fill="rgba(255,255,255,.4)">一份源码 · 算法 + 调度</text>
+        <!-- 入射白光：水平射向左斜面中央，末端沿斜面切齐 -->
+        <polygon points="44,172 291,173 282,187 44,188" fill="rgba(255,255,255,.85)" filter="url(#glow)"/>
+        <text x="48" y="152" font-family="JetBrains Mono, monospace" font-size="16" fill="rgba(255,255,255,.75)">module counter { ... }</text>
+        <text x="48" y="218" font-family="Noto Serif SC, serif" font-size="14" fill="rgba(255,255,255,.45)">一份源码 · 算法 + 调度</text>
 
-        <!-- 棱镜：大三角 + 玻璃质感 -->
-        <polygon points="310,55 470,285 150,285" fill="url(#glass)" stroke="rgba(255,255,255,.3)" stroke-width="1.5"/>
-        <!-- 内部折射路径（弯折） -->
-        <polygon points="310,152 395,168 395,178 310,168" fill="rgba(255,255,255,.2)"/>
+        <!-- 棱镜：三棱柱——后面三角 + 连接棱 + 前面三角，玻璃质感 -->
+        <polygon points="388,28 553,300 223,300" fill="rgba(255,255,255,.03)" stroke="rgba(255,255,255,.16)" stroke-width="1.2"/>
+        <line x1="350" y1="60" x2="388" y2="28" stroke="rgba(255,255,255,.18)" stroke-width="1.2"/>
+        <line x1="515" y1="332" x2="553" y2="300" stroke="rgba(255,255,255,.18)" stroke-width="1.2"/>
+        <line x1="185" y1="332" x2="223" y2="300" stroke="rgba(255,255,255,.1)" stroke-width="1.2"/>
+        <polygon points="350,60 515,332 185,332" fill="url(#glass)" stroke="rgba(255,255,255,.45)" stroke-width="1.5"/>
+        <!-- 棱内光路：进棱后向法线偏折（斜向底边），至出射面散开为三色 -->
+        <polygon points="291,173 472,206 474,220 282,187" fill="rgba(255,255,255,.22)"/>
         <!-- 棱镜标注 -->
-        <text x="290" y="248" font-family="Noto Serif SC, serif" font-size="20" font-weight="600" fill="rgba(255,255,255,.6)">Prism</text>
-        <text x="275" y="270" font-family="JetBrains Mono, monospace" font-size="11" fill="rgba(255,255,255,.35)">编译器 · 三棱折射</text>
+        <text x="350" y="290" text-anchor="middle" font-family="Noto Serif SC, serif" font-size="24" font-weight="600" fill="rgba(255,255,255,.6)">Prism</text>
+        <text x="350" y="316" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="12" fill="rgba(255,255,255,.35)">编译器 · 三棱折射</text>
 
         <!-- 出射扇形连续光谱（底层渐变） -->
-        <polygon points="395,162 700,60 700,270 395,178" fill="url(#spectrum)" filter="url(#glow2)" opacity=".5"/>
+        <polygon points="473,203 672,62 672,310 473,223" fill="url(#spectrum)" filter="url(#glow2)" opacity=".5"/>
 
-        <!-- 三条主光束（梯形有宽度） -->
-        <polygon points="395,160 700,78 700,100 395,166" fill="#d84a4a" opacity=".9" filter="url(#glow)"/>
-        <polygon points="395,166 700,155 700,177 395,172" fill="#ff8a4c" opacity=".9" filter="url(#glow)"/>
-        <polygon points="395,172 700,232 700,254 395,178" fill="#a678ff" opacity=".9" filter="url(#glow)"/>
+        <!-- 三条主光束（梯形有宽度，汇入右侧标签卡） -->
+        <polygon points="473,206 672,74 672,94 473,211" fill="#d84a4a" opacity=".9" filter="url(#glow)"/>
+        <polygon points="473,211 672,178 672,198 473,215" fill="#ff8a4c" opacity=".9" filter="url(#glow)"/>
+        <polygon points="473,215 672,276 672,296 473,220" fill="#a678ff" opacity=".9" filter="url(#glow)"/>
 
-        <!-- 光束标签 -->
-        <text x="530" y="72" font-family="JetBrains Mono, monospace" font-size="13" font-weight="600" fill="#ff8f8f">RTL · SystemVerilog</text>
-        <text x="530" y="90" font-family="Noto Serif SC, serif" font-size="11" fill="rgba(255,255,255,.45)">可综合 · 周期精确 · iverilog</text>
+        <!-- 第一道光：RTL -->
+        <rect x="672" y="58" width="316" height="54" rx="10" fill="rgba(255,255,255,.035)" stroke="rgba(255,255,255,.09)"/>
+        <rect x="680" y="66" width="4" height="38" rx="2" fill="#d84a4a"/>
+        <text x="696" y="84" font-family="JetBrains Mono, Noto Serif SC, monospace" font-size="17" font-weight="600" fill="#ff8f8f">第一道光：RTL · SystemVerilog</text>
+        <text x="696" y="104" font-family="Noto Serif SC, serif" font-size="13" fill="rgba(255,255,255,.5)">可综合 · 周期精确 · iverilog</text>
 
-        <text x="530" y="148" font-family="JetBrains Mono, monospace" font-size="13" font-weight="600" fill="#ffb48a">TLM · SystemC</text>
-        <text x="530" y="166" font-family="Noto Serif SC, serif" font-size="11" fill="rgba(255,255,255,.45)">事务级 · 架构探索 · g++</text>
+        <!-- 第二道光：TLM -->
+        <rect x="672" y="158" width="316" height="54" rx="10" fill="rgba(255,255,255,.035)" stroke="rgba(255,255,255,.09)"/>
+        <rect x="680" y="166" width="4" height="38" rx="2" fill="#ff8a4c"/>
+        <text x="696" y="184" font-family="JetBrains Mono, Noto Serif SC, monospace" font-size="17" font-weight="600" fill="#ffb48a">第二道光：TLM · SystemC</text>
+        <text x="696" y="204" font-family="Noto Serif SC, serif" font-size="13" fill="rgba(255,255,255,.5)">事务级 · 架构探索 · g++</text>
 
-        <text x="530" y="226" font-family="JetBrains Mono, monospace" font-size="13" font-weight="600" fill="#c9a8ff">Golden · Python</text>
-        <text x="530" y="244" font-family="Noto Serif SC, serif" font-size="11" fill="rgba(255,255,255,.45)">独立解释 AST · 第三方对撞</text>
+        <!-- 第三道光：Golden -->
+        <rect x="672" y="258" width="316" height="54" rx="10" fill="rgba(255,255,255,.035)" stroke="rgba(255,255,255,.09)"/>
+        <rect x="680" y="266" width="4" height="38" rx="2" fill="#a678ff"/>
+        <text x="696" y="284" font-family="JetBrains Mono, Noto Serif SC, monospace" font-size="17" font-weight="600" fill="#c9a8ff">第三道光：Golden · Python</text>
+        <text x="696" y="304" font-family="Noto Serif SC, serif" font-size="13" fill="rgba(255,255,255,.5)">独立解释 AST · 第三方对撞</text>
 
         <!-- 底部注释 -->
-        <text x="160" y="310" font-family="Noto Serif SC, serif" font-size="12" fill="rgba(255,255,255,.3)">三份产物喂同一份激励 → 逐拍对撞 → 差异即报错</text>
+        <text x="500" y="364" text-anchor="middle" font-family="Noto Serif SC, serif" font-size="14" fill="rgba(255,255,255,.3)">三份产物喂同一份激励 → 逐拍对撞 → 差异即报错</text>
       </svg>
       <figcaption>名字 <tspan font-family="JetBrains Mono, monospace">Prism</tspan>（棱镜）就是这张图——一束算法的白光，经编译器折射为三道光谱，第三个棱面独立验收</figcaption>
     </figure>
@@ -239,7 +251,7 @@ footer .next { display: block; margin-bottom: 12px; font-family: 'Noto Serif SC'
 
   <ul>
     <li>没有类型——只有 <code>wire</code> 和 <code>reg</code>，位宽靠 <code>[31:0]</code> 数数，符号靠人脑记；</li>
-    <li>没有泛型——改一个 8 位加法器成 32 位，复制粘贴、全局替换；</li>
+    <li>没有泛型——想把 8 位计数器加宽到 32 位？复制粘贴、全局替换；</li>
     <li>没有模式匹配——所有分支都是 <code>case</code> + <code>default</code> + 手写位段宏；</li>
     <li>没有表达式——你想写 <code>sum = a + b</code>，它要你声明 <code>wire [31:0] sum;</code> + <code>assign sum = a + b;</code>，再告诉综合器这不是 latch；</li>
     <li>没有包管理、没有类型检查器、没有 LSP、没有 <code>--help</code> 能直接跑通的 30 秒上手。</li>
@@ -284,56 +296,61 @@ footer .next { display: block; margin-bottom: 12px; font-family: 'Noto Serif SC'
 </section>
 
 <section id="s3">
-  <h2>最小的一束光：32 位加法器</h2>
-  <p>第一集不谈深——只把这份"同源三下降"落到最小可行示例。三个端口、一句 <code>sum = a + b</code>、一段 <code>run</code> 激励；20 分钟从源码走到三份产物、再全绿对撞。</p>
+  <h2>最小的一束光：一颗计数器</h2>
+  <p>第一集不谈深——只把这份"同源三下降"落到最小可行示例。一个端口、一个 <code>reg</code>、一句 <code>cnt' = cnt + 1</code>、一段 <code>run</code> 激励；20 分钟从源码走到三份产物、再全绿对撞。</p>
 
   <div class="code">
     <div class="code-header">
       <span class="code-lang">prism</span>
-      <span class="code-file">adder.prism</span>
+      <span class="code-file">counter.prism</span>
     </div>
-<pre><span class="tk-decl">module</span> <span class="tk-name">adder</span> {
-    <span class="tk-dir">in</span>  <span class="tk-name">a</span>   : <span class="tk-typ">Signal</span>&lt;<span class="tk-prim">u32</span>&gt;
-    <span class="tk-dir">in</span>  <span class="tk-name">b</span>   : <span class="tk-typ">Signal</span>&lt;<span class="tk-prim">u32</span>&gt;
-    <span class="tk-dir">out</span> <span class="tk-name">sum</span> : <span class="tk-typ">Signal</span>&lt;<span class="tk-prim">u32</span>&gt;
+<pre><span class="tk-decl">module</span> <span class="tk-name">counter</span> {
+    <span class="tk-dir">out</span> <span class="tk-name">q</span>   : <span class="tk-typ">Signal</span>&lt;<span class="tk-prim">u8</span>&gt;
 
-    <span class="tk-name">sum</span> <span class="tk-op">=</span> <span class="tk-name">a</span> <span class="tk-op">+</span> <span class="tk-name">b</span>
+    <span class="tk-stor">reg</span> <span class="tk-name">cnt</span> : <span class="tk-prim">u8</span>
+
+    <span class="tk-stor">on</span> <span class="tk-stor">clock</span> {
+        <span class="tk-name">cnt</span><span class="tk-op">'</span> = <span class="tk-name">cnt</span> + <span class="tk-num">1</span>
+    }
+
+    <span class="tk-name">q</span> = <span class="tk-name">cnt</span>
 }
 
-<span class="tk-ann">@schedule</span> <span class="tk-name">adder</span> {
-    <span class="tk-sf">bitwidth</span>  : { <span class="tk-sv">data</span>:<span class="tk-num">32</span> }
+<span class="tk-ann">@schedule</span> <span class="tk-name">counter</span> {
+    <span class="tk-sf">bitwidth</span>  : { <span class="tk-sv">data</span>:<span class="tk-num">8</span> }
     <span class="tk-sf">pipeline</span>  : <span class="tk-num">1</span> <span class="tk-sv">stage</span>
-    <span class="tk-sf">storage</span>   : <span class="tk-sv">none</span>
-    <span class="tk-sf">interface</span> : <span class="tk-name">a</span>, <span class="tk-name">b</span>, <span class="tk-name">sum</span> = <span class="tk-typ">Signal</span>
     <span class="tk-sf">reset</span>     : <span class="tk-sv">async_low</span>
     <span class="tk-sf">clock</span>     : <span class="tk-num">100</span> <span class="tk-sv">MHz</span>, <span class="tk-sv">domain</span> = <span class="tk-sv">single</span>
     <span class="tk-sf">resource</span>  : <span class="tk-sv">none</span>
     <span class="tk-sf">latency</span>   : <span class="tk-num">1</span> <span class="tk-sv">cycle</span>
 }
 
-<span class="tk-decl">design</span> <span class="tk-name">adder_top</span> {
-    <span class="tk-name">dut</span> : <span class="tk-name">adder</span>
+<span class="tk-decl">design</span> <span class="tk-name">counter_top</span> {
+    <span class="tk-name">dut</span> : <span class="tk-name">counter</span>
 }
 
-<span class="tk-decl">run</span> <span class="tk-name">adder_check</span> <span class="tk-rw">of</span> <span class="tk-name">adder_top</span> {
+<span class="tk-decl">run</span> <span class="tk-name">counter_check</span> <span class="tk-rw">of</span> <span class="tk-name">counter_top</span> {
     <span class="tk-rf">stim</span> <span class="tk-op">:</span> {
-        <span class="tk-name">a</span>, <span class="tk-name">b</span>, [<span class="tk-name">sum</span>] <span class="tk-op">=</span> {
-                  <span class="tk-num">1</span>,          <span class="tk-num">2</span>,            [<span class="tk-num">3</span>],
-                 <span class="tk-num">10</span>,         <span class="tk-num">20</span>,           [<span class="tk-num">30</span>],
-                <span class="tk-num">100</span>,        <span class="tk-num">200</span>,          [<span class="tk-num">300</span>],
+        [<span class="tk-name">q</span>] <span class="tk-op">=</span> {
+             [<span class="tk-num">1</span>],
+             [<span class="tk-num">2</span>],
+             [<span class="tk-num">3</span>],
+             [<span class="tk-num">4</span>],
+             [<span class="tk-num">5</span>],
+             [<span class="tk-num">6</span>],
         }
     }
     <span class="tk-rf">until</span> <span class="tk-op">:</span> <span class="tk-rw">end</span> <span class="tk-rw">of</span> <span class="tk-rf">stim</span>
-    <span class="tk-rf">show</span>  <span class="tk-op">:</span> { <span class="tk-name">a</span>, <span class="tk-name">b</span>, <span class="tk-name">sum</span> }
+    <span class="tk-rf">show</span>  <span class="tk-op">:</span> { <span class="tk-name">q</span> }
 }</pre>
   </div>
 
   <p>这一份源码里已经有 Prism 的四件关键事——但先不展开。</p>
   <ul>
-    <li><strong>算法层</strong>（<code>module adder</code>）——只写"做什么"：<code>sum = a + b</code>，一句数据流函数；端口用 <code>in</code> / <code>out</code> 显式标方向（不靠"有没有被赋值"倒推）。</li>
-    <li><strong>调度层</strong>（<code>@schedule adder</code>）——只谈"怎么做"：位宽、流水、存储、时钟、复位。它把微架构从算法里剥出来，独立成一个语法块。</li>
-    <li><strong>类型驱动</strong>（<code>Signal&lt;u32&gt;</code>）——32 位无符号；<code>+</code> 会自动扩一位防进位、<code>sum</code> 的 <code>u32</code> 目标再截回来。截断永远显式。</li>
-    <li><strong>仿真入口</strong>（<code>run adder_check</code>）——表式 <code>stim</code> 一次声明列头，每行末尾 <code>[...]</code> 是<strong>手算期望</strong>；跑一次就是一次自判定。5 拍 × 5 行全对，编译器打"expect: 5/5 全等 ✅"。</li>
+    <li><strong>算法层</strong>（<code>module counter</code>）——只写"做什么"：<code>cnt' = cnt + 1</code>——整个模块的行为就这一句；端口用 <code>in</code> / <code>out</code> 显式标方向（不靠"有没有被赋值"倒推）。</li>
+    <li><strong>调度层</strong>（<code>@schedule counter</code>）——只谈"怎么做"：位宽、流水、时钟、复位。存储、接口这类能从模块体推断的字段，整条可以省略——语言自己推。它把微架构从算法里剥出来，独立成一个语法块。</li>
+    <li><strong>类型驱动</strong>（<code>reg cnt : u8</code> / <code>Signal&lt;u8&gt;</code>）——8 位无符号，位宽是编译期推出来的账、回绕是 8 位的物理事实——都不用拿脑子记。</li>
+    <li><strong>仿真入口</strong>（<code>run counter_check</code>）——表式 <code>stim</code> 一次声明列头，每行末尾 <code>[...]</code> 是<strong>手算期望</strong>；跑一次就是一次自判定。6 拍 × 6 行全对，编译器打"expect: 6/6 全等 ✅"。</li>
   </ul>
 
   <p>第 2 集再讲这四件；这一集只看一件事——<strong>三条通路第一次同拍发出同一个数值</strong>。</p>
@@ -341,7 +358,7 @@ footer .next { display: block; margin-bottom: 12px; font-family: 'Noto Serif SC'
 
 <section id="s4">
   <h2>三道棱面 · 逐拍对撞</h2>
-  <p>三条命令、三次下降、三份产物。每一条都在同一颗 CPU（编译器）上、同一份激励上、跑同样的 5 拍：</p>
+  <p>三条命令、三次下降、三份产物。每一条都在同一颗 CPU（编译器）上、同一份激励上、跑同样的 6 拍：</p>
 
   <h3>① Python golden 直跑</h3>
   <div class="code">
@@ -349,19 +366,21 @@ footer .next { display: block; margin-bottom: 12px; font-family: 'Noto Serif SC'
       <span class="code-lang">bash</span>
       <span class="code-file">shell</span>
     </div>
-<pre>prism run examples/adder.prism</pre>
+<pre>prism run examples/counter.prism --show --util</pre>
   </div>
   <div class="term">
     <div class="term-header">▸ golden · Python 解释 AST</div>
-    <div class="term-body"># run: adder_check  design: adder_top
-cycle   a     b     sum
-0       1     2     3
-1       10    20    30
-2       100   200   300
-<span class="term-hint"># stop: end of stim (3 cycles)</span>
-<span class="term-ok"># expect: 3/3 拍有断言 · 1 列 · 全等 ✅</span></div>
+    <div class="term-body"># run: counter_check  design: counter_top  stop: end of stim (6 cycles)
+cycle   q
+0       1
+1       2
+2       3
+3       4
+4       5
+5       6
+<span class="term-ok"># expect: 6/6 拍有断言 · 1 列 · 全等 ✅</span></div>
   </div>
-  <p>这一份是 <strong>golden</strong>——Python 直接解释 AST 得到的逐拍表；独立、快、可读。表尾 <code># expect: 3/3 ... 全等 ✅</code> 说的是每一行的手算期望 <code>[3]</code> / <code>[30]</code> / <code>[300]</code> 都命中——<strong>golden 一侧自己就能判定跑对没有</strong>。</p>
+  <p>这一份是 <strong>golden</strong>——Python 直接解释 AST 得到的逐拍表；独立、快、可读。表尾 <code># expect: 6/6 ... 全等 ✅</code> 说的是每一行的手算期望 <code>[1]</code> … <code>[6]</code> 都命中——<strong>golden 一侧自己就能判定跑对没有</strong>。</p>
 
   <h3>② RTL 通路 · iverilog 真仿真</h3>
   <div class="code">
@@ -369,17 +388,19 @@ cycle   a     b     sum
       <span class="code-lang">bash</span>
       <span class="code-file">shell</span>
     </div>
-<pre>prism run examples/adder.prism --cosim</pre>
+<pre>prism run examples/counter.prism --cosim --show --util</pre>
   </div>
   <div class="term">
     <div class="term-header">▸ RTL · SystemVerilog + iverilog</div>
-    <div class="term-body">cycle   a     b     sum
-0       1     2     3
-1       10    20    30
-2       100   200   300
-# stop: end of stim (3 cycles)
-<span class="term-ok">[run --cosim] ✅ PASS: adder_check golden == RTL 仿真（3 拍 × 3 列全等）</span>
-<span class="term-ok"># expect: 3/3 拍有断言 · 1 列 · 全等 ✅</span></div>
+    <div class="term-body"><span class="term-ok">[run --cosim] ✅ PASS: counter_check golden == RTL 仿真（6 拍 × 1 列全等；golden stop: end of stim (6 cycles)）</span>
+cycle   q
+0       1
+1       2
+2       3
+3       4
+4       5
+5       6
+<span class="term-ok"># expect: 6/6 拍有断言 · 1 列 · 全等 ✅</span></div>
   </div>
   <p>编译器把同一份 <code>.prism</code> 下降成 SystemVerilog，<code>iverilog</code> 真跑，输出的每一拍每一列与 golden 对齐；同一份手算期望也在 SV 侧过一遍。<strong>RTL 后端的下降 bug（位宽截断错、符号性错、握手错）会被这一步逮住</strong>。</p>
 
@@ -389,17 +410,20 @@ cycle   a     b     sum
       <span class="code-lang">bash</span>
       <span class="code-file">shell</span>
     </div>
-<pre>prism tlm examples/adder.prism</pre>
+<pre>prism tlm examples/counter.prism</pre>
   </div>
   <div class="term">
     <div class="term-header">▸ TLM · SystemC + g++</div>
     <div class="term-body">Info: /OSCI/SystemC: Simulation stopped by user.
-cycle   a     b     sum
-0       1     2     3
-1       10    20    30
-2       100   200   300
-<span class="term-ok">[tlm] ✅ PASS: adder_check SystemC/TLM == golden（3 拍 × 3 列全等）</span>
-<span class="term-ok"># expect: 3/3 拍有断言 · 1 列 · 全等 ✅</span></div>
+cycle   q
+0       1
+1       2
+2       3
+3       4
+4       5
+5       6
+<span class="term-ok">[tlm] ✅ PASS: counter_check SystemC/TLM == golden（6 拍 × 1 列全等）</span>
+<span class="term-ok"># expect: 6/6 拍有断言 · 1 列 · 全等 ✅</span></div>
   </div>
   <p>编译器把同一份 <code>.prism</code> 下降成 SystemC/TLM C++ 源码，<code>g++</code> 编译、跑 SystemC 内核，<strong>忽略调度层塌缩为事务跳转</strong>——输出的观测表仍与 golden 对齐，同一份手算期望在 TLM 侧也过一遍。这一条抓的是"时序抽象契约违反"。</p>
 
@@ -416,8 +440,8 @@ cycle   a     b     sum
       </thead>
       <tbody>
         <tr><td>Golden</td><td class="mono">Python AST</td><td>直接解释</td><td>基准</td></tr>
-        <tr><td>RTL</td><td class="mono">SystemVerilog</td><td class="mono">iverilog</td><td><span class="check">✅ 3×3 全等</span></td></tr>
-        <tr><td>TLM</td><td class="mono">SystemC C++</td><td class="mono">g++ + SystemC</td><td><span class="check">✅ 3×3 全等</span></td></tr>
+        <tr><td>RTL</td><td class="mono">SystemVerilog</td><td class="mono">iverilog</td><td><span class="check">✅ 6×1 全等</span></td></tr>
+        <tr><td>TLM</td><td class="mono">SystemC C++</td><td class="mono">g++ + SystemC</td><td><span class="check">✅ 6×1 全等</span></td></tr>
       </tbody>
     </table>
   </div>
@@ -437,7 +461,7 @@ cycle   a     b     sum
 <section id="s5">
   <h2>神看光是好的</h2>
   <p>这就是第一集要讲完的唯一一件事——Prism 存在的理由：<strong>把两遍写、两遍盯、两遍改，合成一遍</strong>。</p>
-  <p>一颗 32 位加法器 <code>sum = a + b</code>——同一行代码，20 分钟前只是一段字符，现在它同时是：</p>
+  <p>一颗八位计数器 <code>cnt' = cnt + 1</code>——同一行代码，20 分钟前只是一段字符，现在它同时是：</p>
   <ul>
     <li>一段可综合 SystemVerilog，可以送进 yosys / Vivado 出 bitfile；</li>
     <li>一段 SystemC C++，可以挂进 gem5 / 事务级模型做架构探索；</li>
@@ -457,9 +481,9 @@ cycle   a     b     sum
 <section id="s6">
   <h2>练习</h2>
   <ol>
-    <li>把 <code>sum = a + b</code> 改成 <code>sum = a - b</code>，跑 <code>run --cosim</code>——cosim 依然 PASS（golden 与 RTL 同源、同时错），但行级期望 <code>[3]</code> 会喊"期望 3，实得 4294967295"。<strong>这就是行级期望的意义：不给一个"从不失败"的测试留活路。</strong></li>
-    <li>把 <code>@schedule</code> 里的 <code>bitwidth : { data:32 }</code> 删掉——Prism 会怎么报错？（提示：静态可下降性检查——信息不足时编译期报错，不静默产出劣质电路。）</li>
-    <li>把 <code>stim</code> 里加一行 <code>1000, 2000, [3000],</code>，三次下降仍全绿。</li>
+    <li>把 <code>cnt + 1</code> 改成 <code>cnt + 2</code>，跑 <code>prism run --cosim --show --util</code>——cosim 依然 PASS（golden 与 RTL 同源、同时错），但行级期望会喊"期望 1，实得 2"。<strong>这就是行级期望的意义：不给一个"从不失败"的测试留活路。</strong></li>
+    <li>把 <code>@schedule</code> 里的 <code>bitwidth : { data:8 }</code> 删掉——Prism 会怎么报错？（提示：静态可下降性检查——信息不足时编译期报错，不静默产出劣质电路。）</li>
+    <li>在 <code>stim</code> 末尾再加一行 <code>[6],</code>——三次下降仍全绿。</li>
   </ol>
 </section>
 
@@ -476,9 +500,9 @@ brew install icarus-verilog systemc   <span class="tk-com"># macOS</span>
 git clone https://github.com/prism-hdl/seven-days
 cd seven-days
 
-prism run examples/adder.prism              <span class="tk-com"># ① golden</span>
-prism run examples/adder.prism --cosim      <span class="tk-com"># ② RTL</span>
-prism tlm examples/adder.prism              <span class="tk-com"># ③ TLM</span></pre>
+prism run examples/counter.prism --show --util        <span class="tk-com"># ① golden</span>
+prism run examples/counter.prism --cosim --show --util  <span class="tk-com"># ② RTL</span>
+prism tlm examples/counter.prism                      <span class="tk-com"># ③ TLM</span></pre>
   </div>
 </section>
 

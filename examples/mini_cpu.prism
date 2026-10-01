@@ -38,8 +38,6 @@ module thresh {
 @schedule ticker {
     bitwidth  : { data:7 }
     pipeline  : 1 stage
-    storage   : cnt = reg, width = 7
-    interface : en, c = Signal
     reset     : async_low
     clock     : 100 MHz, domain = single
     resource  : none
@@ -49,8 +47,6 @@ module thresh {
 @schedule doubler {
     bitwidth  : { data:8 }
     pipeline  : 1 stage
-    storage   : none
-    interface : x, y = Signal
     reset     : async_low
     clock     : 100 MHz, domain = single
     resource  : none
@@ -60,8 +56,6 @@ module thresh {
 @schedule thresh {
     bitwidth  : { data:8 }
     pipeline  : 1 stage
-    storage   : none
-    interface : x, hit = Signal
     reset     : async_low
     clock     : 100 MHz, domain = single
     resource  : none
