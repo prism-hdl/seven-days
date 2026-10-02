@@ -247,34 +247,36 @@ footer .next { display:block; margin-bottom:12px; font-family:'Noto Serif SC',se
   </div>
 
   <div class="term">
-    <div class="term-header">▸ prism run examples/day2/memory.prism --run regfile_check --show --util</div>
-    <div class="term-body">cycle  raddr1  raddr2  waddr  wdata  wen  rdata1  rdata2  x0_raw
-0      5       0       5      100    1    100     0       0
-1      5       6       0      0      0    100     0       0
-2      6       0       6      200    1    200     0       0
-3      0       5       0      0      0    0       100     0
-4      0       0       0      999    1    0       0       0        <span class="term-hint"># 试图写 x0</span>
-5      6       0       0      0      0    200     0       0
+    <div class="term-header">▸ prism run examples/day2/memory.prism --run regfile_check --debug</div>
+    <div class="term-body">cycle  dut_raddr1  dut_raddr2  dut_waddr  dut_wdata  dut_wen  dut_rdata1  dut_rdata2  x0_raw
+0      5           0           5          100        1        100         0           0
+1      5           6           0          0          0        100         0           0
+2      6           0           6          200        1        200         0           0
+3      0           5           0          0          0        0           100         0
+4      0           0           0          999        1        0           0           0        <span class="term-hint"># 试图写 x0</span>
+5      6           0           0          0          0        200         0           0
 <span class="term-ok"># expect: 6/6 拍有断言 · 3 列 · 全等 ✅</span></div>
   </div>
 
-  <p>注意拍 4：<code>wen=1</code>、<code>waddr=0</code>、<code>wdata=999</code>——<strong>写请求确实发出去了，但被 regfile 拒收</strong>。<code>rdata1</code> 是 0（读侧硬连线），<code>x0_raw</code> 也是 0（写侧丢弃，阵列里根本没变）。这两列一起，才是完整证据。</p>
+  <p>注意拍 4：<code>wen=1</code>、<code>waddr=0</code>、<code>wdata=999</code>——<strong>写请求确实发出去了，但被 regfile 拒收</strong>。<code>rdata1</code> 是 0（读侧硬连线），<code>x0_raw</code> 也是 0（写侧丢弃，阵列里根本没变）。这两列一起，才是完整证据。把写侧那道 <code>(waddr != 0)</code> 删掉再看：喊出来的第一列正是 <code>x0_raw</code>——拍 4 起实得 <code>999</code>（<code>rdata1</code> 仍稳在 0，读侧硬连线没被动过）。<strong>两道防线各自承重，测试分得清缺的是哪一道。</strong></p>
 
   <h3>字阵列：写三个字、读回来</h3>
   <div class="term">
-    <div class="term-header">▸ prism run examples/day2/memory.prism --run ram_check --show --util</div>
-    <div class="term-body">cycle  addr  wdata  wen  ren  rdata
-0      10    1111   1    1    1111       <span class="term-hint"># 写与读同拍：异步读口已看到新值</span>
-1      10    0      0    1    1111
-2      11    2222   1    1    2222
-3      11    0      0    1    2222
-4      0     3333   1    0    0          <span class="term-hint"># ren=0：读口给 0，不泄阵列值</span>
-5      0     0      0    1    3333
-6      12    0      0    1    0          <span class="term-hint"># 没写过的地址读到复位值</span>
+    <div class="term-header">▸ prism run examples/day2/memory.prism --run ram_check --debug</div>
+    <div class="term-body">cycle  dut_addr  dut_wdata  dut_wen  dut_ren  dut_rdata
+0      10        1111       1        1        1111        <span class="term-hint"># 写与读同拍：异步读口已看到新值</span>
+1      10        0          0        1        1111
+2      11        2222       1        1        2222
+3      11        0          0        1        2222
+4      0         3333       1        0        0        <span class="term-hint"># ren=0：读口给 0，不泄阵列值</span>
+5      0         0          0        1        3333
+6      12        0          0        1        0        <span class="term-hint"># 没写过的地址读到复位值</span>
 <span class="term-ok"># expect: 7/7 拍有断言 · 1 列 · 全等 ✅</span>
 <span class="term-ok">[run --cosim] ✅ PASS: regfile_check golden == RTL 仿真（6 拍 × 8 列全等；golden stop: end of stim (6 cycles)）</span>
 <span class="term-ok">[run --cosim] ✅ PASS: ram_check golden == RTL 仿真（7 拍 × 5 列全等；golden stop: end of stim (7 cycles)）</span></div>
   </div>
+
+  <p>把 <code>ren ? … : 0</code> 拿掉再跑：第 4 拍（<code>ren=0</code>）的读口变成 <code>3333</code>——阵列值泄到读口上了。今天它只是仿真表里的一格差异；<strong>接上外设之后，这就是"没在读却把数据总线驱动起来"的致命形态</strong>。</p>
 </section>
 
 <section id="s5">
@@ -316,15 +318,6 @@ footer .next { display:block; margin-bottom:12px; font-family:'Noto Serif SC',se
   <p>下一集造 <strong>ALU</strong>——四颗器官里唯一"纯组合"的一颗，也是第一次出现"会走多步"的单元。</p>
 </section>
 
-<section id="s7">
-  <h2>练习</h2>
-  <ol>
-    <li>把 regfile 写侧的 <code>(waddr != 0)</code> 条件删掉，跑 <code>regfile_check</code>——哪一列先喊？（提示：不是 <code>rdata1</code>，是 <code>x0_raw</code>。想想为什么。）</li>
-    <li>把 <code>rdata = ren ? mem[addr] : 0</code> 里的 <code>ren ? … : 0</code> 去掉（直接 <code>rdata = mem[addr]</code>），跑 <code>ram_check</code>——第 5 拍（cycle 4）会变成什么？为什么这个"泄漏"在接上外设时很危险？</li>
-    <li>给 <code>ram</code> 加一个 <code>size</code> 形参之外的第二个实例 <code>im</code>，并用 <code>mem mem : [SIZE] u32 = [...]</code> 塞几条指令进去（常量列表）——这就是合体后要跑的程序的雏形。</li>
-  </ol>
-</section>
-
 <section id="s8">
   <h2>复现本集</h2>
   <div class="code">
@@ -332,8 +325,8 @@ footer .next { display:block; margin-bottom:12px; font-family:'Noto Serif SC',se
 <pre>git clone https://github.com/prism-hdl/seven-days
 cd seven-days
 
-prism run examples/day2/memory.prism --run regfile_check --cosim --show --util
-prism run examples/day2/memory.prism --run ram_check     --cosim --show --util</pre>
+prism cosim examples/day2/memory.prism --run regfile_check
+prism cosim examples/day2/memory.prism --run ram_check</pre>
   </div>
 </section>
 

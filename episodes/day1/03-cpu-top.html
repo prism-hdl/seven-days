@@ -174,7 +174,7 @@ footer .next { display: block; margin-bottom: 12px; font-family: 'Noto Serif SC'
         <!-- label -->
         <text x="30" y="60" font-family="Noto Serif SC, serif" font-size="13" fill="rgba(255,255,255,.5)">design mini_cpu —— 三颗实例 · 两根 wire · 一条 expose</text>
       </svg>
-      <figcaption>本集的 runnable 样例：三颗模块用两根具名 <tspan font-family="JetBrains Mono, monospace">wire</tspan> 串成一条数据通路</figcaption>
+      <figcaption>本集的数据通路样例：三颗模块用两根具名 <code>wire</code> 串起来（<code>mini_cpu.prism</code>）</figcaption>
     </figure>
   </div>
 </header>
@@ -188,7 +188,7 @@ footer .next { display: block; margin-bottom: 12px; font-family: 'Noto Serif SC'
 
 <section id="s1">
   <h2>零件不等于身体</h2>
-  <p>第 1 集的计数器、第 2 集的饱和计数器——都是<strong>一颗</strong>模块。一颗模块能做一件事：数着自己往前走、数到饱和。但一具能动的东西不是"一颗做很多事的模块"，而是<strong>许多颗各做一件事的模块，被线连起来</strong>。</p>
+  <p>第 1 集的加法器、第 2 集的进程调度单元——都是<strong>一颗</strong>模块。一颗模块能做一件事：加两个数，或管好一个进程的一生。但一具能动的东西不是"一颗做很多事的模块"，而是<strong>许多颗各做一件事的模块，被线连起来</strong>。</p>
 
   <p>于是 Prism 有第三组语法，专门回答一个问题：<strong>零件怎么聚成身体</strong>。这一组里每个手段都不是凭空设计的——都是被一个具体的麻烦逼出来的：</p>
 
@@ -239,7 +239,7 @@ footer .next { display: block; margin-bottom: 12px; font-family: 'Noto Serif SC'
   </div>
 
   <h3><code>expose</code> · 里面的状态要看得见</h3>
-  <p>接完线还有一件麻烦事：看不见它。线全在里面跑，你想确认"那颗计数器真的在跳"——总不能在叶子模块上凿一排调试端口。于是有了 <code>expose</code>：观测点不加在叶子身上，加在顶层：</p>
+  <p>接完线还有一件麻烦事：看不见它。线全在里面跑，你想确认"里面的状态真的在跳"——总不能在叶子模块上凿一排调试端口。于是有了 <code>expose</code>：观测点不加在叶子身上，加在顶层：</p>
   <div class="code">
     <div class="code-header"><span class="code-lang">prism</span><span class="code-file">design 体内</span></div>
 <pre><span class="tk-kw">expose</span> rf.regs[1] <span class="tk-kw">as</span> x1     <span class="tk-com">// mem 元素</span>
@@ -289,7 +289,14 @@ footer .next { display: block; margin-bottom: 12px; font-family: 'Noto Serif SC'
 }</pre>
   </div>
 
-  <p>三颗模块各自<strong>还能单独跑</strong>——这是模块化的硬指标。<code>design</code> 层只写"谁接谁"，不写任何计算。</p>
+  <p>这份文件里站着两类声明：三颗 <code>module</code> 各说"我做什么"，一份 <code>design</code> 说"它们怎么拼"。<code>design</code> 是这个语言里唯一"看得见全局"的地方——一份拼装图里只有三样东西：<strong>实例</strong>（谁在场）、<strong>接线</strong>（谁接谁）、<strong>观测</strong>（看什么）。三条规矩值得展开：</p>
+  <ul>
+    <li><strong>实例化写 <code>名字 : 模块</code></strong>——同一颗模块可以例化多份，各起各的名字；名字唯一，<code>名字.端口</code> 就是引用它的方式（上面 <code>t.c</code> / <code>d.y</code> / <code>h.x</code> 都是）。</li>
+    <li><strong>顶层端口是推导出来的</strong>——没被任何 <code>connect</code> / <code>wire</code> 接走的输入端口，就是顶层输入；没被接走的输出，就是顶层输出。看上面那份：<code>t.en</code> 没人接 → 它就是要被驱动的顶层输入；<code>h.hit</code> 没人接 → 它就是要被观测的顶层输出。端口表不用手写——"谁还没被接走"自己说了算，下一节的跑表里就能看到这两个名字。</li>
+    <li><strong><code>design</code> 不写行为</strong>——没有 <code>reg</code>、没有 <code>on clock</code>：跨拍的状态住在零件（<code>module</code>）里；<code>design</code> 只做"接线上的加工"（<code>wire</code> 右值：取位、拼宽、常量）。唯一的例外：一台 <code>fsm</code> 要统管几颗实例时，它写在 <code>design</code> 里——那是后日流水线的事。</li>
+  </ul>
+
+  <p>三颗模块各自<strong>还能单独跑</strong>——这是模块化的硬指标；拼装图只是把它们的端口连起来，零件内部一行行为都没改写。</p>
 </section>
 
 <section id="s4">
@@ -313,7 +320,7 @@ footer .next { display: block; margin-bottom: 12px; font-family: 'Noto Serif SC'
   </div>
 
   <div class="term">
-    <div class="term-header">▸ prism run examples/mini_cpu.prism --show --util</div>
+    <div class="term-header">▸ prism run examples/mini_cpu.prism --debug</div>
     <div class="term-body">cycle   t_en   ticks   step   res   h_hit
 0       1      1       2      4     0
 1       1      2       3      6     0
@@ -325,98 +332,119 @@ footer .next { display: block; margin-bottom: 12px; font-family: 'Noto Serif SC'
 7       1      8       9      18    1
 8       1      9       10     20    1
 9       1      10      11     22    1
-<span class="term-ok"># expect: 10/10 拍有断言 · 4 列 · 全等 ✅</span>
-<span class="term-ok">[run --cosim] ✅ PASS: mini_cpu_check golden == RTL 仿真（10 拍 × 5 列全等）</span>
-<span class="term-ok">[tlm]         ✅ PASS: mini_cpu_check SystemC/TLM == golden（10 拍 × 5 列全等）</span></div>
+<span class="term-ok"># expect: 10/10 拍有断言 · 4 列 · 全等 ✅</span></div>
+  </div>
+
+  <p>同一份手算期望，另外两条腿也各过一遍——<code>cosim</code> 把 golden 与它们的逐拍对撞：</p>
+  <div class="term">
+    <div class="term-header">▸ prism cosim examples/mini_cpu.prism --run mini_cpu_check</div>
+    <div class="term-body">[run] mini_cpu_check: RTL 期望值比对
+<span class="term-ok"># expect: 10/10 拍有断言 · 4 列 · 全等 ✅</span></div>
+  </div>
+  <div class="term">
+    <div class="term-header">▸ prism cosim examples/mini_cpu.prism --run mini_cpu_check --sim systemc</div>
+    <div class="term-body">[run] mini_cpu_check: TLM 期望值比对
+<span class="term-ok"># expect: 10/10 拍有断言 · 4 列 · 全等 ✅</span></div>
   </div>
 
   <p>注意观测列里同时出现了三种东西：<code>t.en</code> 是<strong>没被占用的顶层输入</strong>、<code>ticks</code> 是 <code>expose</code> 出来的<strong>实例内部寄存器</strong>、<code>step</code> / <code>res</code> 是<strong>具名 wire</strong>。<code>h.hit</code> 则是没被连走的输出端口。</p>
-</section>
 
-<section id="s5">
-  <h2>编译器给的是什么</h2>
-  <p><code>prism gen-rtl</code> 把上面那份 <code>design</code> 下降成顶层网表。以下是我机器上的真实产物（节选）：</p>
-
-  <div class="code">
-    <div class="code-header"><span class="code-lang">systemverilog</span><span class="code-file">mini_cpu.sv · 顶层网表</span></div>
-<pre><span class="tk-kw">module</span> <span class="tk-typ">mini_cpu_top</span> (
-  <span class="tk-kw">input</span>  <span class="tk-kw">logic</span> clk, rst_n,
-  <span class="tk-kw">input</span>  <span class="tk-kw">logic</span> [<span class="tk-num">1</span><span class="tk-op">-</span><span class="tk-num">1</span>:<span class="tk-num">0</span>] t_en,
-  <span class="tk-kw">output</span> <span class="tk-kw">logic</span> [<span class="tk-num">1</span><span class="tk-op">-</span><span class="tk-num">1</span>:<span class="tk-num">0</span>] h_hit,
-  <span class="tk-kw">output</span> <span class="tk-kw">logic</span> [<span class="tk-num">7</span><span class="tk-op">-</span><span class="tk-num">1</span>:<span class="tk-num">0</span>] ticks
-);
-
-  <span class="tk-com">// design-level wire 声明</span>
-  <span class="tk-kw">logic</span>  [<span class="tk-num">7</span>:<span class="tk-num">0</span>] step;
-  <span class="tk-kw">logic</span>  [<span class="tk-num">7</span>:<span class="tk-num">0</span>] res;
-
-  <span class="tk-com">// 内部连线（connect 生成）</span>
-  <span class="tk-kw">logic</span>  [<span class="tk-num">7</span><span class="tk-op">-</span><span class="tk-num">1</span>:<span class="tk-num">0</span>] w_t_c;
-  <span class="tk-kw">logic</span>  [<span class="tk-num">8</span><span class="tk-op">-</span><span class="tk-num">1</span>:<span class="tk-num">0</span>] w_d_y;
-
-  <span class="tk-com">// expose 观测线（子模块输出端口引出，非层次引用）</span>
-  <span class="tk-kw">logic</span> [<span class="tk-num">7</span><span class="tk-op">-</span><span class="tk-num">1</span>:<span class="tk-num">0</span>] w_xpose_t_cnt;
-
-  <span class="tk-com">// 子模块例化（clk/rst_n 分发）</span>
-  <span class="tk-typ">ticker_rtl</span> t (.clk(clk), .rst_n(rst_n), .en(t_en), .c(w_t_c), .xpose_cnt(w_xpose_t_cnt));
-  <span class="tk-typ">doubler_rtl</span> d (.clk(clk), .rst_n(rst_n), .x(step), .y(w_d_y));
-  <span class="tk-typ">thresh_rtl</span> h (.clk(clk), .rst_n(rst_n), .x(res), .hit(h_hit));
-
-  <span class="tk-com">// design-level 组合 assign</span>
-  <span class="tk-kw">assign</span> step <span class="tk-op">=</span> (w_t_c + <span class="tk-num">1</span>);
-  <span class="tk-kw">assign</span> res  <span class="tk-op">=</span> w_d_y;
-
-  <span class="tk-com">// 观测 assign（expose，走子模块输出端口）</span>
-  <span class="tk-kw">assign</span> ticks <span class="tk-op">=</span> w_xpose_t_cnt;
-<span class="tk-kw">endmodule</span></pre>
-  </div>
-
-  <p>三件值得注意的事：</p>
-  <ul>
-    <li><strong><code>clk</code> / <code>rst_n</code> 自动分发</strong>——三颗子模块各接一根，不用你写第三遍。</li>
-    <li><strong>被 <code>connect</code> 占用的端口会生成中间线</strong>（<code>w_t_c</code> / <code>w_d_y</code>），顶层模块的端口表因此只留<strong>没被连走的</strong>那些（<code>t_en</code> / <code>h_hit</code>）。</li>
-    <li><strong><code>expose</code> 不下跨层次引用</strong>——它给子模块加一个 <code>xpose_cnt</code> 输出端口，再在顶层 <code>assign</code> 出来。为什么绕这一下？因为 yosys 不解析 SV 的跨层次路径引用，直接写 <code>t.cnt</code> 会<strong>静默产出无驱动的网表</strong>。</li>
-  </ul>
+  <p>这三个手段的边界，动手碰一下最清楚：把 <code>t.c + 1</code> 改成 <code>+ 3</code>——动的只是这条线及其下游期望，叶子模块一行不用碰；把 <code>wire res : u8 = d.y -&gt; h.x</code> 拆成「只算不推的 wire + 单独的 <code>connect d.y -&gt; h.x</code>」——两种写法都跑得通，但生成的 RTL 不同：<code>h.x</code> 的驱动源从 <code>res</code> 换成了 <code>w__d__y</code>，<code>res</code> 退化成一根只为观测存在的线（<strong>连线与观测是两件事</strong>）；再试着 expose 一个<strong>组合信号</strong>（<code>d.y</code>）——<code>check</code> 还过得去，<code>gen-rtl</code> 当场拒绝：<code>'y' 不是 reg（origin=local）；mem 需写 'inst.y[i]'</code>（<strong>expose 只服务 reg / mem 这类状态</strong>，不是万能探针）。</p>
 </section>
 
 <section id="s6">
   <h2>世界突然复杂了</h2>
-  <p>三颗模块、两根线，手写得起。可真实的工程不是三颗——是几十颗模块、上百根线。世界突然复杂了，于是 Prism 还得再往上给一层：<strong>立规矩，装更大的零件</strong>。还是同一个逻辑——遇到了什么麻烦，于是就有了什么。</p>
+  <p>三颗模块、两根线，手写得起。可真实的工程不是三颗——是几十颗模块、上百根线、好几个文件。世界突然复杂了，于是 Prism 还得再往上给一层——还是同一个逻辑：遇到了什么麻烦，于是就有了什么。</p>
 
   <h3><code>interface</code> · 零件多了，得先立规矩</h3>
-  <p>零件一多，第一个问题不是"怎么连"，而是"<strong>怎么保证每个零件都长对了</strong>"。三颗模块可以靠眼睛对端口，三十颗就不行了。于是有了 <code>interface</code>：把"一组端口"写成<strong>契约</strong>；模块声称实现某个 interface，它的端口集合就必须齐全——契约之内可替换、可复用。规矩立在类型上，编译器替你守。</p>
+  <p>零件一多，第一个问题不是"怎么连"，而是"<strong>怎么保证每个零件都长对了</strong>"。三颗模块可以靠眼睛对端口，三十颗就不行了。于是有了 <code>interface</code>：把"一组端口"写成一份<strong>契约</strong>——名字、方向、位宽，逐项钉死：</p>
+  <div class="code">
+    <div class="code-header"><span class="code-lang">prism</span><span class="code-file">box.prism · 契约与它的实现</span></div>
+<pre><span class="tk-decl">interface</span> <span class="tk-name">Accumulable</span> {                  <span class="tk-com">// 契约：一份"端口 + 方向"的清单</span>
+    <span class="tk-dir">in</span>  <span class="tk-name">din</span> : <span class="tk-typ">Signal</span>&lt;<span class="tk-prim">i8</span>&gt;
+    <span class="tk-dir">in</span>  <span class="tk-name">en</span>  : <span class="tk-typ">Signal</span>&lt;<span class="tk-prim">u1</span>&gt;
+    <span class="tk-dir">out</span> <span class="tk-name">q</span>   : <span class="tk-typ">Signal</span>&lt;<span class="tk-prim">i8</span>&gt;
+}
+
+<span class="tk-decl">module</span> <span class="tk-name">acc</span> <span class="tk-kw">implements</span> <span class="tk-name">Accumulable</span> {      <span class="tk-com">// 声称遵从——端口逐项对齐</span>
+    <span class="tk-dir">in</span>  <span class="tk-name">din</span> : <span class="tk-typ">Signal</span>&lt;<span class="tk-prim">i8</span>&gt;
+    <span class="tk-dir">in</span>  <span class="tk-name">en</span>  : <span class="tk-typ">Signal</span>&lt;<span class="tk-prim">u1</span>&gt;
+    <span class="tk-dir">out</span> <span class="tk-name">q</span>   : <span class="tk-typ">Signal</span>&lt;<span class="tk-prim">i8</span>&gt;
+
+    <span class="tk-stor">reg</span> <span class="tk-name">r</span> : <span class="tk-prim">i8</span>
+
+    <span class="tk-name">q</span> = <span class="tk-name">r</span>
+
+    <span class="tk-stor">on</span> <span class="tk-stor">clock</span> {
+        <span class="tk-kw">if</span> (<span class="tk-name">en</span>) {
+            <span class="tk-name">r</span><span class="tk-op">'</span> = <span class="tk-name">din</span>                     <span class="tk-com">// 使能那拍：din 装进 r</span>
+        }
+    }
+}</pre>
+  </div>
+  <p>模块一旦声称 <code>implements</code>，端口就必须与契约<strong>逐项对齐</strong>——写对了，<code>typecheck</code> 会回一条 <code>实现接口: Accumulable ✓</code>；对不上，编译当场停下、点名是哪个端口：</p>
+  <div class="term">
+    <div class="term-header">▸ prism typecheck · 两处"对不上"的写法</div>
+    <div class="term-body"><span class="term-err">[err] [module acc_missing] 实现接口 'Accumulable' 缺少端口 'q'
+      （interface 定义 line 4）
+[err] [module acc_wide] 实现接口 'Accumulable' 端口 'q' 位宽不匹配：期望 8，实际 16
+      （interface line 4, module line 18）</span></div>
+  </div>
+  <p>契约还有第二种用法：当<strong>插槽</strong>——"我要一颗实现了 <code>Accumulable</code> 的模块，至于是哪一颗，例化时再给"。这正是下一段的主角。</p>
 
   <h3><code>composer</code> · 几颗零件装成一颗更大的零件</h3>
-  <p>第二个麻烦：几颗零件总是绑在一起干活，你却每次都把它们之间的线重画一遍。于是有了 <code>composer</code>：把紧耦合的几颗模块封成<strong>一颗更大的零件</strong>——内部连线收在体里，外面只看见一组端口。这一步是纯编译期展平：RTL 里没有额外的包装模块。</p>
+  <p>第二个麻烦：几颗零件总是绑在一起干活，你却每次都要把它们之间的线重画一遍。于是有了 <code>composer</code>：把这套"零件 + 它们之间的线"封成<strong>一颗更大的零件</strong>——外面只看得到一圈端口：</p>
+  <div class="code">
+    <div class="code-header"><span class="code-lang">prism</span><span class="code-file">box.prism · 封装与例化</span></div>
+<pre><span class="tk-decl">composer</span> <span class="tk-name">Box</span>&lt;<span class="tk-name">A</span>: <span class="tk-name">Accumulable</span>&gt; {           <span class="tk-com">// 插槽式封装：A 必须是实现了契约的模块</span>
+    <span class="tk-dir">in</span>  <span class="tk-name">din</span> : <span class="tk-typ">Signal</span>&lt;<span class="tk-prim">i8</span>&gt;
+    <span class="tk-dir">in</span>  <span class="tk-name">en</span>  : <span class="tk-typ">Signal</span>&lt;<span class="tk-prim">u1</span>&gt;
+    <span class="tk-dir">out</span> <span class="tk-name">q</span>   : <span class="tk-typ">Signal</span>&lt;<span class="tk-prim">i8</span>&gt;
+
+    <span class="tk-name">a</span> : <span class="tk-name">A</span>                                <span class="tk-com">// 插槽：例化时放进一颗具体模块</span>
+
+    <span class="tk-kw">connect</span> <span class="tk-name">din</span> <span class="tk-op">-&gt;</span> <span class="tk-name">a.din</span>                 <span class="tk-com">// 盒内接线：外面进来 → 里边那颗</span>
+    <span class="tk-kw">connect</span> <span class="tk-name">en</span>  <span class="tk-op">-&gt;</span> <span class="tk-name">a.en</span>
+    <span class="tk-kw">connect</span> <span class="tk-name">a.q</span> <span class="tk-op">-&gt;</span> <span class="tk-name">q</span>                     <span class="tk-com">// 里边那颗 → 外面出去</span>
+}
+
+<span class="tk-decl">design</span> <span class="tk-name">box_top</span> {
+    <span class="tk-name">b</span> : <span class="tk-name">Box</span>&lt;<span class="tk-name">A</span> = <span class="tk-name">acc</span>&gt;                     <span class="tk-com">// 把上面那颗 acc 放进插槽</span>
+    <span class="tk-kw">expose</span> <span class="tk-name">b.a.r</span> <span class="tk-kw">as</span> <span class="tk-name">r_obs</span>                <span class="tk-com">// 观测穿透：读盒里那颗 acc 的 r</span>
+}</pre>
+  </div>
+  <ul>
+    <li><strong>展平是纯编译期的事</strong>——composer 不花硬件：RTL 里没有"包装模块"这一层，它就是内部实例 + 那几根线本身。</li>
+    <li><strong>例化与 <code>module</code> 同套</strong>——<code>b : Box&lt;A = acc&gt;</code>：<code>&lt;&gt;</code> 里收的是<strong>定义</strong>（把 <code>acc</code> 放进插槽 <code>A</code>）。另一种实参 <code>(...)</code> 收的是<strong>实例本身</strong>——例化处写 <code>(p = u_src)</code>，指的是父层已经存在的那份实例；展平后直接指向它、不复制第二份（后日的流水线会用到）。</li>
+    <li><strong>盒子里能写什么</strong>——一圈端口 + 内部实例 + <code>wire</code> / <code>connect</code> / 表达式；<code>reg</code> / <code>mem</code> 这类时序状态不放 composer——时序状态住在被它封进来的 <code>module</code> 里。</li>
+  </ul>
+  <p>跑一下——激励从盒外打进去，观测从盒子深处读出来：</p>
+  <div class="code">
+    <div class="code-header"><span class="code-lang">prism</span><span class="code-file">box.prism · run 段</span></div>
+<pre><span class="tk-decl">run</span> <span class="tk-name">box_check</span> <span class="tk-rw">of</span> <span class="tk-name">box_top</span> {
+    <span class="tk-rf">stim</span> : {
+        <span class="tk-name">b.din</span>, <span class="tk-name">b.en</span>, [<span class="tk-name">b.q</span>, <span class="tk-name">r_obs</span>] <span class="tk-op">=</span> {
+             <span class="tk-num">7</span>,    <span class="tk-num">1</span>,    [<span class="tk-num">7</span>, <span class="tk-num">7</span>],
+             <span class="tk-num">9</span>,    <span class="tk-num">1</span>,    [<span class="tk-num">9</span>, <span class="tk-num">9</span>],
+             <span class="tk-num">9</span>,    <span class="tk-num">0</span>,    [<span class="tk-num">9</span>, <span class="tk-num">9</span>],        <span class="tk-com">// en 拉低：r 保持上一拍的值</span>
+        }
+    }
+    <span class="tk-rf">until</span> : <span class="tk-rw">end</span> <span class="tk-rw">of</span> <span class="tk-rf">stim</span>
+    <span class="tk-rf">show</span>  : { <span class="tk-name">b.din</span>, <span class="tk-name">b.en</span>, <span class="tk-name">b.q</span>, <span class="tk-name">r_obs</span> }
+}</pre>
+  </div>
+  <div class="term">
+    <div class="term-header">▸ prism run examples/box.prism --debug</div>
+    <div class="term-body">cycle  b__din  b__en  b__q  r_obs
+0      7       1      7     7
+1      9       1      9     9
+2      9       0      9     9
+<span class="term-ok"># expect: 3/3 拍有断言 · 2 列 · 全等 ✅</span></div>
+  </div>
+  <p>列头里 <code>b.din</code> 显示成了 <code>b__din</code>——composer 展平后实例名逐段相接（第 2 集讲过的 <code>__</code> 分隔符）。而写法两边都不用改：外面照旧 <code>b.din</code>、里面照旧 <code>a.din</code>，<code>expose</code> 的路径也能继续往多层盒子里写。</p>
 
   <h3><code>import</code> · 工程大了，得分开装</h3>
   <p>第三个麻烦在"装"这个字本身：一个文件塞不下几十颗零件。于是有了 <code>import</code>：把工程拆到多个 <code>.prism</code> 文件——每颗（或每组）零件一个文件，顶层一份 import 清单。文件边界就是检视边界：想知道一个子系统长什么样，去看它那个文件。</p>
-
-  <h3><code>blackbox</code> · 有的零件根本不在 Prism 里</h3>
-  <p>最后一个麻烦最现实：总有一些零件不是你写的——厂商的 IP、别人的 Verilog。于是有了 <code>blackbox</code>：外部 SystemVerilog 作为<strong>原语</strong>例化进来，Prism 只按端口清单生成例化连线，不生成模块体。<strong>复合总线协议（AXI / DDR 控制器）由此绕过 Prism 语法</strong>，而不是硬塞进语言：</p>
-
-  <div class="code">
-    <div class="code-header"><span class="code-lang">prism</span><span class="code-file">blackbox 例化外部 IP</span></div>
-<pre><span class="tk-kw">blackbox</span> <span class="tk-name">ext_core</span> {
-    <span class="tk-sf">verilog</span>  : <span class="tk-str">"vendor/extcore/extcore.sv"</span>
-    <span class="tk-sf">filelist</span> : <span class="tk-str">"vendor/extcore/extcore_rtl.fl"</span>
-    <span class="tk-kw">in</span>  <span class="tk-name">clk</span>        : <span class="tk-typ">Signal</span>&lt;<span class="tk-prim">i1</span>&gt;
-    <span class="tk-kw">out</span> <span class="tk-name">retire0</span>    : <span class="tk-typ">Signal</span>&lt;<span class="tk-prim">i1</span>&gt;
-    <span class="tk-kw">out</span> <span class="tk-name">retire0_pc</span> : <span class="tk-typ">Signal</span>&lt;<span class="tk-prim">i40</span>&gt;
-}
-
-<span class="tk-decl">design</span> <span class="tk-name">tb_top</span> {
-    <span class="tk-name">core</span> : <span class="tk-name">ext_core</span>
-    <span class="tk-name">sink</span> : <span class="tk-name">trace_sink</span>
-    <span class="tk-kw">connect</span> core.retire0    <span class="tk-op">-></span> sink.retire_in
-    <span class="tk-kw">connect</span> core.retire0_pc <span class="tk-op">-></span> sink.retire_pc_in
-}</pre>
-  </div>
-
-  <div class="callout warn">
-    <span class="callout-title">blackbox 的边界是诚实的</span>
-    <p style="margin:0;">blackbox 只在 <strong>RTL 后端</strong>可用：TLM 后端编译期报错（外部 SV 没有 SystemC 语义），golden 后端也报错（没有 Python 求值语义、不可参与 cosim）。<strong>拒绝静默降级</strong>——不会给你一个"少了这块"的模型让你过。</p>
-  </div>
 </section>
 
 <section id="s7">
@@ -425,7 +453,7 @@ footer .next { display: block; margin-bottom: 12px; font-family: 'Noto Serif SC'
   <ul>
     <li><strong>第 1 集</strong>给了动机——两层黑暗，Prism 用一份源码三下降回应。</li>
     <li><strong>第 2 集</strong>给了<strong>一颗</strong>模块的写法——分层、类型、组合与时序、状态机。</li>
-    <li><strong>第 3 集</strong>给了<strong>多颗</strong>模块的写法——<code>connect</code> / <code>wire</code> / <code>expose</code> 把零件聚成身体，<code>interface</code> / <code>composer</code> / <code>import</code> / <code>blackbox</code> 让规模可控。</li>
+    <li><strong>第 3 集</strong>给了<strong>多颗</strong>模块的写法——<code>design</code> 把零件聚成身体（<code>connect</code> / <code>wire</code> / <code>expose</code>）；零件多了，有 <code>interface</code> 立契约、<code>composer</code> 封子系统、<code>import</code> 分文件。</li>
   </ul>
 
   <div class="verse-inline">
@@ -433,16 +461,7 @@ footer .next { display: block; margin-bottom: 12px; font-family: 'Noto Serif SC'
     <cite>—— 《创世记》 1:10</cite>
   </div>
 
-  <p>下一集是第一天最后一集——<strong>让光打出去</strong>。不写新代码，只把 prism 命令行从头到尾走一遍：<code>check</code> / <code>typecheck</code> / <code>dump-ast</code> / <code>gen-rtl</code> / <code>run</code> / <code>cosim</code> / <code>tlm</code> / <code>deps</code> / <code>keywords</code>——全部真跑在这颗 <code>mini_cpu</code> 上。工具这半边，一次看全。</p>
-</section>
-
-<section id="s8">
-  <h2>练习</h2>
-  <ol>
-    <li>把 <code>wire step : u8 = t.c + 1</code> 里的 <code>+ 1</code> 改成 <code>+ 3</code>——<code>stim</code> 表的期望要怎么改？改完三次下降是否仍全绿？（这一题想让你体会：<strong>改一条 wire 就是改一条数据通路</strong>，不用碰任何叶子模块。）</li>
-    <li>把 <code>expose t.cnt as ticks</code> 改成 <code>expose d.y as ...</code>——试试 expose 一个<strong>组合信号</strong>会报什么错（实测：<code>'y' 不是 reg（origin=local）；mem 需写 'inst.y[i]'</code>）。这能帮你记住：<code>expose</code> 只服务 <strong>reg / mem</strong> 这类<strong>状态</strong>，不是万能探针。</li>
-    <li>删掉 <code>wire res</code> 行的 <code>-&gt; h.x</code>，改成一条单独的 <code>connect d.y -&gt; h.x</code>——两种写法都跑得通，但生成的 RTL 不同：<code>h.x</code> 的驱动源从 <code>res</code> 变成了 <code>w_d_y</code>，而 <code>res</code> 退化成<strong>一根只为观测存在的线</strong>。<strong>"连线"与"观测"是两件事，可以分开。</strong></li>
-  </ol>
+  <p>下一集是第一天最后一集——<strong>让光打出去</strong>。不写新代码，只把 prism 命令行从头到尾走一遍：<code>check</code> / <code>typecheck</code> / <code>dump-ast</code> / <code>gen-rtl</code> / <code>gen-tlm</code> / <code>run</code> / <code>cosim</code> / <code>deps</code> / <code>keywords</code>——全部真跑在这颗 <code>mini_cpu</code> 上。工具这半边，一次看全。</p>
 </section>
 
 <section id="s9">
@@ -450,15 +469,15 @@ footer .next { display: block; margin-bottom: 12px; font-family: 'Noto Serif SC'
   <div class="code">
     <div class="code-header"><span class="code-lang">bash</span><span class="code-file">reproduce</span></div>
 <pre>pip install prism-hdl
-brew install icarus-verilog systemc   <span class="tk-com"># macOS</span>
+prism deps --install   <span class="tk-com"># 按操作系统补齐仿真依赖（iverilog / SystemC 等）</span>
 
 git clone https://github.com/prism-hdl/seven-days
 cd seven-days
 
-prism run examples/mini_cpu.prism --show --util    <span class="tk-com"># golden</span>
-prism run examples/mini_cpu.prism --cosim --show   <span class="tk-com"># RTL</span>
-prism tlm examples/mini_cpu.prism              <span class="tk-com"># TLM</span>
-prism gen-rtl examples/mini_cpu.prism -o /tmp/mini_cpu.sv   <span class="tk-com"># 看顶层网表</span></pre>
+prism run   examples/mini_cpu.prism --debug                             <span class="tk-com"># golden</span>
+prism cosim examples/mini_cpu.prism --run mini_cpu_check                <span class="tk-com"># RTL 对撞</span>
+prism cosim examples/mini_cpu.prism --run mini_cpu_check --sim systemc  <span class="tk-com"># TLM 对撞</span>
+prism run   examples/box.prism --debug                                  <span class="tk-com"># 契约 + 封装</span></pre>
   </div>
 </section>
 

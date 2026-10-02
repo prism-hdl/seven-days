@@ -64,6 +64,11 @@ li { margin-bottom: 8px; }
 .fields td:first-child { font-family: 'JetBrains Mono', monospace; color: var(--prism-3); font-weight: 500; white-space: nowrap; }
 .tbl-wrap { margin: 20px 0; overflow-x: auto; border-radius: var(--radius); border: 1px solid var(--line); }
 
+/* Module figure */
+.modfig { margin: 24px 0; padding: 20px 16px 12px; background: var(--cream); border: 1px solid var(--line); border-radius: var(--radius); }
+.modfig svg { width: 100%; height: auto; display: block; }
+.modfig figcaption { text-align: center; margin-top: 10px; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--mute); letter-spacing: .02em; }
+
 /* Code blocks */
 .code { margin: 22px 0; background: var(--code-bg); border-radius: var(--radius); overflow: hidden; box-shadow: 0 4px 24px rgba(15,20,32,.08); border: 1px solid #1c1f2e; }
 .code-header { padding: 10px 16px; background: #0a0d15; border-bottom: 1px solid #1c1f2e; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
@@ -121,7 +126,7 @@ footer .next { display: block; margin-bottom: 12px; font-family: 'Noto Serif SC'
   <div class="hero-inner">
     <div class="hero-eyebrow">七日创造 · 第一日 · 光 · 第 2 集</div>
     <h1>空气与水<br><em>分层与语法骨架</em></h1>
-    <p class="subtitle">上一集讲"为什么要有 Prism"——两层黑暗。这一集讲"Prism 长什么样"：<strong>把算法与调度分开，把组合与时序分开</strong>。一颗带 fsm 的饱和计数器，把语法骨架一次摆完。</p>
+    <p class="subtitle">上一集讲"为什么要有 Prism"——两层黑暗。这一集把 <strong>Prism 的语法面一次看全</strong>：词法、类型、端口、四种分支、时序与状态机——最后用一颗进程调度单元，把骨架装起来。</p>
 
     <div class="verse">
       "神说，诸水之间要有空气，将水分为上下。<br>神就造出空气，将空气以下的水、空气以上的水分开了。事就这样成了。<br>神称空气为天。有晚上，有早晨，是第二日。"
@@ -129,19 +134,27 @@ footer .next { display: block; margin-bottom: 12px; font-family: 'Noto Serif SC'
     </div>
 
     <figure class="hero-figure">
-      <svg viewBox="0 0 720 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="饱和计数器的三态 FSM">
+      <svg viewBox="0 0 720 320" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="进程五态 FSM：NEW 经 admit 到 READY，READY 经 dispatch 到 RUN；RUN 经 io_req 到 BLOCKED、经 preempt 或 yield 回 READY、经 fin 到 EXIT；BLOCKED 经 io_done 回 READY">
         <defs>
-          <linearGradient id="st-idle" x1="0" y1="0" x2="1" y2="1">
+          <linearGradient id="st-new" x1="0" y1="0" x2="1" y2="1">
             <stop offset="0%" stop-color="#4a5468" stop-opacity=".4"/>
             <stop offset="100%" stop-color="#2a3040" stop-opacity=".6"/>
+          </linearGradient>
+          <linearGradient id="st-ready" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#4a86c8" stop-opacity=".5"/>
+            <stop offset="100%" stop-color="#2a5a90" stop-opacity=".5"/>
           </linearGradient>
           <linearGradient id="st-run" x1="0" y1="0" x2="1" y2="1">
             <stop offset="0%" stop-color="#5b4bff" stop-opacity=".55"/>
             <stop offset="100%" stop-color="#a678ff" stop-opacity=".45"/>
           </linearGradient>
-          <linearGradient id="st-top" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stop-color="#ff8a4c" stop-opacity=".55"/>
-            <stop offset="100%" stop-color="#d84a4a" stop-opacity=".45"/>
+          <linearGradient id="st-exit" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#3a4254" stop-opacity=".35"/>
+            <stop offset="100%" stop-color="#232838" stop-opacity=".5"/>
+          </linearGradient>
+          <linearGradient id="st-block" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#ff8a4c" stop-opacity=".5"/>
+            <stop offset="100%" stop-color="#d84a4a" stop-opacity=".4"/>
           </linearGradient>
           <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
             <path d="M0,0 L10,5 L0,10 z" fill="#a0a8bc"/>
@@ -149,45 +162,61 @@ footer .next { display: block; margin-bottom: 12px; font-family: 'Noto Serif SC'
           <marker id="ar-p" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
             <path d="M0,0 L10,5 L0,10 z" fill="#a678ff"/>
           </marker>
+          <marker id="ar-o" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+            <path d="M0,0 L10,5 L0,10 z" fill="#ff8a4c"/>
+          </marker>
         </defs>
 
-        <!-- IDLE -->
-        <circle cx="120" cy="150" r="52" fill="url(#st-idle)" stroke="rgba(255,255,255,.3)" stroke-width="1.5"/>
-        <text x="120" y="146" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="15" font-weight="600" fill="#d6d9e0">IDLE</text>
-        <text x="120" y="166" text-anchor="middle" font-family="Noto Serif SC, serif" font-size="11" fill="rgba(255,255,255,.45)">复位态</text>
+        <!-- NEW -->
+        <circle cx="100" cy="140" r="46" fill="url(#st-new)" stroke="rgba(255,255,255,.3)" stroke-width="1.5"/>
+        <text x="100" y="136" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="15" font-weight="600" fill="#d6d9e0">NEW</text>
+        <text x="100" y="156" text-anchor="middle" font-family="Noto Serif SC, serif" font-size="11" fill="rgba(255,255,255,.45)">刚被创建</text>
+
+        <!-- READY -->
+        <circle cx="290" cy="140" r="46" fill="url(#st-ready)" stroke="#6aa6e8" stroke-width="1.5"/>
+        <text x="290" y="136" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="15" font-weight="600" fill="#eaf3ff">READY</text>
+        <text x="290" y="156" text-anchor="middle" font-family="Noto Serif SC, serif" font-size="11" fill="rgba(255,255,255,.5)">就绪队列</text>
 
         <!-- RUN -->
-        <circle cx="360" cy="150" r="58" fill="url(#st-run)" stroke="#a678ff" stroke-width="1.5"/>
-        <text x="360" y="145" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="16" font-weight="600" fill="#fff">RUN</text>
-        <text x="360" y="166" text-anchor="middle" font-family="Noto Serif SC, serif" font-size="11" fill="rgba(255,255,255,.6)">计数中</text>
+        <circle cx="480" cy="140" r="52" fill="url(#st-run)" stroke="#a678ff" stroke-width="1.8"/>
+        <text x="480" y="136" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="16" font-weight="600" fill="#fff">RUN</text>
+        <text x="480" y="156" text-anchor="middle" font-family="Noto Serif SC, serif" font-size="11" fill="rgba(255,255,255,.6)">在 CPU 上</text>
 
-        <!-- TOP -->
-        <circle cx="600" cy="150" r="52" fill="url(#st-top)" stroke="#ff8a4c" stroke-width="1.5"/>
-        <text x="600" y="146" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="15" font-weight="600" fill="#fff">TOP</text>
-        <text x="600" y="166" text-anchor="middle" font-family="Noto Serif SC, serif" font-size="11" fill="rgba(255,255,255,.6)">饱和</text>
+        <!-- EXIT -->
+        <circle cx="660" cy="140" r="44" fill="url(#st-exit)" stroke="rgba(255,255,255,.22)" stroke-width="1.5"/>
+        <text x="660" y="136" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="15" font-weight="600" fill="#c6cbd6">EXIT</text>
+        <text x="660" y="156" text-anchor="middle" font-family="Noto Serif SC, serif" font-size="11" fill="rgba(255,255,255,.4)">退出</text>
 
-        <!-- IDLE -> RUN -->
-        <line x1="172" y1="150" x2="298" y2="150" stroke="#a678ff" stroke-width="2" marker-end="url(#ar-p)"/>
-        <text x="235" y="140" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="12" fill="#c9b8ff">en</text>
+        <!-- BLOCKED -->
+        <circle cx="435" cy="264" r="42" fill="url(#st-block)" stroke="#ff8a4c" stroke-width="1.5"/>
+        <text x="435" y="260" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="14" font-weight="600" fill="#fff">BLOCKED</text>
+        <text x="435" y="280" text-anchor="middle" font-family="Noto Serif SC, serif" font-size="11" fill="rgba(255,255,255,.55)">等 I/O</text>
 
-        <!-- RUN -> TOP -->
-        <line x1="418" y1="150" x2="544" y2="150" stroke="#ff8a4c" stroke-width="2" marker-end="url(#ar)"/>
-        <text x="481" y="140" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="12" fill="#ffb48a">full</text>
+        <!-- NEW -> READY -->
+        <line x1="148" y1="140" x2="242" y2="140" stroke="#a678ff" stroke-width="2" marker-end="url(#ar-p)"/>
+        <text x="195" y="130" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="12" fill="#c9b8ff">admit</text>
 
-        <!-- RUN -> IDLE (top arc) -->
-        <path d="M360,92 C360,30 120,30 120,98" stroke="#a0a8bc" stroke-width="1.5" fill="none" marker-end="url(#ar)"/>
-        <text x="240" y="40" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="12" fill="#b8a0e0">clr</text>
+        <!-- READY -> RUN -->
+        <line x1="338" y1="140" x2="426" y2="140" stroke="#a678ff" stroke-width="2" marker-end="url(#ar-p)"/>
+        <text x="382" y="130" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="12" fill="#c9b8ff">dispatch</text>
 
-        <!-- TOP -> IDLE (bottom arc) -->
-        <path d="M600,202 C600,268 120,268 120,202" stroke="#a0a8bc" stroke-width="1.5" fill="none" marker-end="url(#ar)"/>
-        <text x="360" y="286" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="12" fill="#b8a0e0">clr</text>
+        <!-- RUN -> EXIT -->
+        <line x1="534" y1="140" x2="614" y2="140" stroke="#ff8a4c" stroke-width="2" marker-end="url(#ar-o)"/>
+        <text x="574" y="130" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="12" fill="#ffb48a">fin</text>
 
-        <!-- self loops labels -->
-        <text x="120" y="222" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" fill="rgba(255,255,255,.35)">¬en 自环</text>
-        <text x="360" y="228" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" fill="rgba(255,255,255,.35)">¬clr ∧ ¬full 自环</text>
-        <text x="600" y="222" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" fill="rgba(255,255,255,.35)">¬clr 自环</text>
+        <!-- RUN -> BLOCKED -->
+        <line x1="462" y1="189" x2="449" y2="224" stroke="#a0a8bc" stroke-width="1.8" marker-end="url(#ar)"/>
+        <text x="468" y="207" text-anchor="start" font-family="JetBrains Mono, monospace" font-size="12" fill="#9aa4b8">io_req</text>
+
+        <!-- BLOCKED -> READY -->
+        <path d="M393,264 C345,264 290,244 290,220 L290,188" fill="none" stroke="#a0a8bc" stroke-width="1.8" marker-end="url(#ar)"/>
+        <text x="345" y="241" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="12" fill="#9aa4b8">io_done</text>
+
+        <!-- RUN -> READY (top arc) -->
+        <path d="M480,86 C480,39 290,39 290,62 L290,92" stroke="#a0a8bc" stroke-width="1.8" fill="none" marker-end="url(#ar)"/>
+        <text x="385" y="42" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="12" fill="#c9b8ff">preempt / yield</text>
       </svg>
-      <figcaption>本集主角的 FSM：<tspan font-family="JetBrains Mono, monospace">IDLE → RUN → TOP</tspan>，三条转移都由谓词驱动</figcaption>
+      <figcaption>本集主角的 FSM：一个进程的五态一生——每条转移都由谓词驱动（自环省掉，缺省 = 停在本态）</figcaption>
     </figure>
   </div>
 </header>
@@ -220,72 +249,394 @@ footer .next { display: block; margin-bottom: 12px; font-family: 'Noto Serif SC'
 </section>
 
 <section id="s2">
-  <h2>主角：一颗带 fsm 的饱和计数器</h2>
-  <p>第二集不铺开讲语法——用<strong>一颗小模块</strong>把骨架一次摆完。它要求：数到 15 就停住不再涨（饱和），清一下从头数；还要能看见它"现在是空闲 / 在跑 / 已经满了"。</p>
+  <h2>module：一只盒子</h2>
+  <p>一门语言先要能装东西。Prism 的容器是 <code>module</code>——一只<strong>盒子</strong>：<strong>皮</strong>是端口（数据进出的孔），<strong>里</strong>是线（中间的值）和状态（跨拍的记忆）。盒子外面只通过端口说话——里面怎么算，是它自己的事。</p>
+
+  <figure class="modfig">
+    <svg viewBox="0 24 760 306" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="一只 module 盒子：左边 in 端口 a、b、bus_en 进入，右边 out 端口 sum、full 出去，bus 为 both 双向；盒内一条 wire、一个求和节点与一块 reg；clk 从盒外指向盒底、接到 reg">
+      <defs>
+        <marker id="mAr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto">
+          <path d="M0,0 L10,5 L0,10 z" fill="#4a5468"/>
+        </marker>
+        <marker id="mArL" viewBox="0 0 10 10" refX="0" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto">
+          <path d="M10,0 L0,5 L10,10 z" fill="#4a5468"/>
+        </marker>
+      </defs>
+
+      <!-- 盒子 -->
+      <rect x="260" y="58" width="240" height="192" rx="14" fill="#ffffff" stroke="#6b5cff" stroke-width="1.6"/>
+
+      <!-- 左：in 端口的线 -->
+      <line x1="180" y1="104" x2="260" y2="104" stroke="#4a5468" stroke-width="1.8" marker-end="url(#mAr)"/>
+      <line x1="180" y1="144" x2="260" y2="144" stroke="#4a5468" stroke-width="1.8" marker-end="url(#mAr)"/>
+      <line x1="180" y1="199" x2="260" y2="199" stroke="#4a5468" stroke-width="1.8" marker-end="url(#mAr)"/>
+      <text x="170" y="108" text-anchor="end" font-family="JetBrains Mono, monospace" font-size="12.5" fill="#1c2333">a : u8</text>
+      <text x="170" y="148" text-anchor="end" font-family="JetBrains Mono, monospace" font-size="12.5" fill="#1c2333">b : u8</text>
+      <text x="170" y="203" text-anchor="end" font-family="JetBrains Mono, monospace" font-size="12.5" fill="#1c2333">bus_en : bit</text>
+      <text x="216" y="84" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" fill="#8892a6">in</text>
+
+      <!-- 右：out 端口的线 -->
+      <line x1="500" y1="104" x2="580" y2="104" stroke="#4a5468" stroke-width="1.8" marker-end="url(#mAr)"/>
+      <line x1="500" y1="144" x2="580" y2="144" stroke="#4a5468" stroke-width="1.8" marker-end="url(#mAr)"/>
+      <text x="590" y="108" font-family="JetBrains Mono, monospace" font-size="12.5" fill="#1c2333">sum : u8</text>
+      <text x="590" y="148" font-family="JetBrains Mono, monospace" font-size="12.5" fill="#1c2333">full : bit</text>
+      <text x="540" y="84" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" fill="#8892a6">out</text>
+
+      <!-- 右：both 端口（双向） -->
+      <line x1="500" y1="199" x2="580" y2="199" stroke="#4a5468" stroke-width="1.8" marker-start="url(#mArL)" marker-end="url(#mAr)"/>
+      <text x="590" y="203" font-family="JetBrains Mono, monospace" font-size="12.5" fill="#1c2333">bus : u8</text>
+      <text x="540" y="179" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" fill="#8892a6">both</text>
+
+      <!-- 盒内：一条具名的线，汇入一个加法节点 -->
+      <line x1="262" y1="104" x2="423" y2="104" stroke="#ff8a4c" stroke-width="2"/>
+      <text x="350" y="94" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11.5" fill="#b4560a">wire step : u8 = a + b</text>
+      <polyline points="262,144 330,144 330,104" fill="none" stroke="#ff8a4c" stroke-width="2"/>
+      <circle cx="330" cy="104" r="3.5" fill="#ff8a4c"/>
+      <circle cx="435" cy="104" r="12" fill="#ffffff" stroke="#ff8a4c" stroke-width="1.6"/>
+      <text x="435" y="109" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="14" font-weight="600" fill="#ff8a4c">+</text>
+      <line x1="447" y1="104" x2="498" y2="104" stroke="#ff8a4c" stroke-width="2"/>
+      <polyline points="460,104 460,144 498,144" fill="none" stroke="#ff8a4c" stroke-width="2"/>
+      <circle cx="460" cy="104" r="3.5" fill="#ff8a4c"/>
+
+      <!-- 盒内：一块状态 -->
+      <rect x="338" y="184" width="84" height="38" rx="8" fill="#ffffff" stroke="#12a060" stroke-width="1.4"/>
+      <text x="380" y="208" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11.5" fill="#0c7a49">reg c : u8</text>
+      <polyline points="380,184 380,132 435,132 435,116" fill="none" stroke="#12a060" stroke-width="1.8"/>
+      <line x1="380" y1="296" x2="380" y2="258" stroke="#12a060" stroke-width="1.6"/>
+      <polygon points="372,258 388,258 380,250" fill="#e8f7ef" stroke="#12a060" stroke-width="1.2"/>
+      <line x1="380" y1="250" x2="380" y2="222" stroke="#12a060" stroke-width="1.6"/>
+      <text x="392" y="284" font-family="JetBrains Mono, monospace" font-size="10.5" fill="#8892a6">clk</text>
+    </svg>
+    <figcaption>一只盒子的皮与骨（示意图）：端口（in / out / both）· 线（wire）· 状态（reg，clk 由编译器自动生成）</figcaption>
+  </figure>
+
+  <p>皮上三种孔：<code>in</code> 进、<code>out</code> 出、<code>both</code> 双向；里有两样东西：<strong>具名的线</strong>——<code>wire</code>，中间算出来的值可以起名字、随取随用；<strong>状态</strong>——<code>reg</code>，带时钟沿的小方块，记住上一拍。第一集那颗加法器里 <code>sum = a + b</code> 算出的值落在出口上；给它起个中间名字，就成了盒子里的一条 <code>wire</code>。第二日的器官、整颗 CPU，到头来都是这样的盒子一层层装起来。</p>
+
+  <p><strong>写之前还有三件小事</strong>：注释只有 <code>//</code> 一种，没有块注释；换行是标点——一条语句写一行、块内条目靠换行分隔；标识符里不许出现连续两个 <code>__</code>（那是编译器代起名的段分隔符——<code>w__&lt;实例&gt;__&lt;端口&gt;</code>，用户占用会撞名，词法层直接拒）。</p>
+
+  <p>顺着这只盒子，本集往下走：<strong>端口</strong>（皮）、<strong>类型</strong>（线上流什么）、<strong>表达式</strong>（线怎么算）、<strong>on clock 与 fsm</strong>（状态怎么记）。先看皮——端口。（下面几节的代码都是<strong>算法层片段</strong>——module 体内；完整可跑的模块在最后的"装起来"一节。）</p>
+</section>
+
+<section id="s3">
+  <h2>端口：in / out / both</h2>
+  <p>端口 = <strong>2 种数据类型</strong>（<code>Signal</code> 电平 / <code>Stream</code> 握手流）× <strong>3 种方向</strong>（<code>in</code> / <code>out</code> / <code>both</code>）。方向是显式写的——不靠"有没有被赋值"倒推。本集先讲电平这一族——把上图那只盒子写成源码，六根端口一根不差：</p>
 
   <div class="code">
     <div class="code-header">
       <span class="code-lang">prism</span>
-      <span class="code-file">sat_counter.prism</span>
+      <span class="code-file">mixed_ports · 上图那只盒子</span>
     </div>
-<pre><span class="tk-decl">module</span> <span class="tk-name">sat_counter</span> {
-    <span class="tk-dir">in</span>  <span class="tk-name">en</span>    : <span class="tk-typ">Signal</span>&lt;<span class="tk-prim">u1</span>&gt;          <span class="tk-com">// 使能：非零即真</span>
-    <span class="tk-dir">in</span>  <span class="tk-name">clr</span>   : <span class="tk-typ">Signal</span>&lt;<span class="tk-prim">u1</span>&gt;          <span class="tk-com">// 清零：回 IDLE 并把 count 归零</span>
-    <span class="tk-dir">out</span> <span class="tk-name">q</span>     : <span class="tk-typ">Signal</span>&lt;<span class="tk-prim">u4</span>&gt;          <span class="tk-com">// 计数输出（4 位无符号，0..15）</span>
-    <span class="tk-dir">out</span> <span class="tk-name">full</span>  : <span class="tk-typ">Signal</span>&lt;<span class="tk-prim">u1</span>&gt;          <span class="tk-com">// 饱和标志</span>
-    <span class="tk-dir">out</span> <span class="tk-name">state</span> : <span class="tk-typ">Signal</span>&lt;<span class="tk-prim">u2</span>&gt;          <span class="tk-com">// 观测态序号</span>
+<pre><span class="tk-decl">module</span> <span class="tk-name">mixed_ports</span> {
+    <span class="tk-dir">in</span>  <span class="tk-name">a</span>      : <span class="tk-typ">Signal</span>&lt;<span class="tk-prim">u8</span>&gt;        <span class="tk-com">// 电平输入</span>
+    <span class="tk-dir">in</span>  <span class="tk-name">b</span>      : <span class="tk-typ">Signal</span>&lt;<span class="tk-prim">u8</span>&gt;        <span class="tk-com">// 电平输入</span>
+    <span class="tk-dir">out</span> <span class="tk-name">sum</span>    : <span class="tk-typ">Signal</span>&lt;<span class="tk-prim">u8</span>&gt;        <span class="tk-com">// 电平输出</span>
+    <span class="tk-dir">out</span> <span class="tk-name">full</span>   : <span class="tk-typ">Signal</span>&lt;<span class="tk-prim">bit</span>&gt;       <span class="tk-com">// 电平输出</span>
+    <span class="tk-dir">both</span> <span class="tk-name">bus</span>  : <span class="tk-typ">Signal</span>&lt;<span class="tk-prim">u8</span>&gt;        <span class="tk-com">// 双向（三态）总线</span>
+    <span class="tk-dir">in</span>  <span class="tk-name">bus_en</span> : <span class="tk-typ">Signal</span>&lt;<span class="tk-prim">bit</span>&gt;       <span class="tk-com">// 驱动使能</span>
 
-    <span class="tk-stor">fsm</span> ctrl {
-        <span class="tk-sf">states</span> : IDLE, RUN, TOP
-        <span class="tk-sf">reset</span>  : IDLE
+    <span class="tk-kw">wire</span> <span class="tk-name">step</span> : <span class="tk-prim">u8</span> = <span class="tk-name">a</span> + <span class="tk-name">b</span>          <span class="tk-com">// 盒内的线（见上图）</span>
+    <span class="tk-stor">reg</span>  <span class="tk-name">c</span> : <span class="tk-prim">u8</span> = <span class="tk-num">0</span>               <span class="tk-com">// 盒内的状态（见上图）</span>
 
-        IDLE: en     <span class="tk-op">-></span> RUN
-        IDLE: _      <span class="tk-op">-></span> IDLE
-        RUN:  clr    <span class="tk-op">-></span> IDLE
-        RUN:  full   <span class="tk-op">-></span> TOP
-        RUN:  _      <span class="tk-op">-></span> RUN
-        TOP:  clr    <span class="tk-op">-></span> IDLE
-        TOP:  _      <span class="tk-op">-></span> TOP
-    }
-
-    <span class="tk-stor">reg</span> count : <span class="tk-prim">u4</span>
-
-    <span class="tk-stor">on</span> <span class="tk-stor">clock</span> {
-        count<span class="tk-op">'</span> = clr ? <span class="tk-num">0</span> : (full ? count : ((ctrl.<span class="tk-fn">is</span>(RUN) &amp; en) ? count + <span class="tk-num">1</span> : count))
-    }
-
-    q     = count
-    full  = (count == <span class="tk-num">15</span>) ? <span class="tk-num">1</span> : <span class="tk-num">0</span>
-    state = <span class="tk-kw">match</span> { ctrl.<span class="tk-fn">is</span>(IDLE) =&gt; <span class="tk-num">0</span>,
-                    ctrl.<span class="tk-fn">is</span>(RUN)  =&gt; <span class="tk-num">1</span>,
-                    _             =&gt; <span class="tk-num">2</span> }
+    <span class="tk-name">sum</span>  = <span class="tk-name">step</span> + <span class="tk-name">c</span>                  <span class="tk-com">// out 端口直接赋值：组合驱动</span>
+    <span class="tk-name">full</span> = (<span class="tk-name">sum</span> == <span class="tk-num">15</span>) ? <span class="tk-num">1</span> : <span class="tk-num">0</span>
+    <span class="tk-name">bus</span>  = <span class="tk-name">bus_en</span> ? <span class="tk-name">step</span> : <span class="tk-num">1'bz</span>    <span class="tk-com">// both 的赋值必须含高阻</span>
 }</pre>
   </div>
 
-  <h3>拆开看：算法层的五件兵器</h3>
-
   <ul>
-    <li><strong>端口 · <code>Signal&lt;T&gt;</code> + 方向词</strong> — <code>in</code> / <code>out</code> / <code>both</code> 显式标方向，不靠"有没有被赋值"倒推。<code>Signal&lt;u4&gt;</code> 就是 4 位无符号，<code>Signal&lt;u1&gt;</code> 是 1 位无符号（控制位首选，不是 <code>i1</code>——1 位补码只装得下 0 和 −1）。</li>
-    <li><strong>组合表达式 · <code>x = expr</code></strong> — <code>q = count</code>、<code>full = (count == 15) ? 1 : 0</code>。输入一变输出立刻跟着变，无时钟。</li>
-    <li><strong>时序更新 · <code>on clock { x' = expr }</code></strong> — <code>'</code>（prime）是 next-state 记号：等号右边读的是<strong>本拍值</strong>，左边写的是<strong>下一拍值</strong>。这就是 Prism 里唯一的时序写法，没有"阻塞 / 非阻塞"问题。</li>
-    <li><strong><code>reg</code></strong> — 声明一个跨拍状态 <code>reg count : u4</code>。它在算法层只说"这是一份状态"，至于占用多少触发器、复位成什么值，归调度层。</li>
-    <li><strong><code>fsm</code> 原语</strong> — 一张转移表：<code>态: 谓词 -&gt; 目标态</code>。<code>_</code> 是兜底（默认自环）。<strong>不用手写 <code>if</code> / <code>match</code> 编状态码</strong>——状态机的语义写在算法层，编码交给调度层。</li>
+    <li><strong><code>Signal&lt;T&gt;</code> 是电平</strong>——组合逻辑，每拍有效；裸引用即取值，<code>sum = step + c</code> 这种对 <code>out</code> 端口的直接赋值就是合法驱动形态。</li>
+    <li><strong><code>both</code> 是双向三态</strong>——赋值必须含高阻（<code>bus_en ? step : 1'bz</code>）；读回的是<strong>整条总线的分辨率</strong>，不是自己那一路的驱动值（没人驱动读到高阻，两个不同的确定值同时驱动读到未知）；高阻只整值出现，不与实数据混位。</li>
+    <li><strong><code>Stream&lt;T&gt;</code> 是握手流</strong>——<code>valid + data</code> 的信号束，带反压写成 <code>Stream&lt;T, ready&gt;</code>；第二日的流水线会重度使用它，今天先知道门牌。</li>
+  </ul>
+</section>
+
+<section id="s4">
+  <h2>类型：位宽的账在这里算清</h2>
+  <p>Prism 没有动态类型、没有字符串、没有递归——信号域里只有四个类型：</p>
+
+  <table class="fields">
+    <thead>
+      <tr><th>类型</th><th>含义</th><th>例子</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>bit</td><td>1 位无符号</td><td><code>Signal&lt;bit&gt;</code>——控制位首选（写法也可以是 <code>u1</code>）</td></tr>
+      <tr><td>i&lt;N&gt;</td><td>N 位有符号</td><td><code>i32</code>、<code>i8</code>——二补数</td></tr>
+      <tr><td>u&lt;N&gt;</td><td>N 位无符号</td><td><code>u8</code>、<code>u64</code></td></tr>
+      <tr><td>array&lt;T, N&gt;</td><td>N 个 T 的定长数组</td><td><code>array&lt;i32, 4&gt;</code></td></tr>
+    </tbody>
+  </table>
+
+  <p>位宽的账有三条规矩，读完基本不会写错：</p>
+  <ul>
+    <li><strong>端口位宽由声明钉死</strong>，不随表达式浮动；表达式只在<strong>落位处</strong>（赋值目标）按 2<sup>N</sup> 回绕，无饱和。</li>
+    <li><strong>中间算术按全精度算</strong>——加减带进位保护位、乘法按两操作数位宽之和——不会半路丢位。</li>
+    <li><strong>只有真装不下才报</strong>：右值比目标宽时，先去掉不承载数据的位（进位保护位、非负字面量的符号位），去完还装不下才报错，且带上行号与右值原文。</li>
   </ul>
 
-  <h3><code>match</code> 与三元</h3>
-  <p>两个选择器，各有各的用处：</p>
+  <p>要改<strong>符号性视角</strong>（不是改值），用类型转换——语义是<strong>位模式不动，只换视角</strong>：</p>
   <ul>
-    <li><strong>三元 <code>cond ? a : b</code></strong>——二选一，链式右结合，<code>c1 ? e1 : c2 ? e2 : e3</code> 就是一个两级 mux，无需括号。</li>
-    <li><strong><code>match</code></strong>——多路分发，<code>_</code> 兜底。<code>state = match { ctrl.is(IDLE) =&gt; 0, ctrl.is(RUN) =&gt; 1, _ =&gt; 2 }</code> 读作"如果现在是 IDLE 就输出 0，RUN 就 1，否则 2"。</li>
+    <li><code>u&lt;N&gt;(x)</code> / <code>i&lt;N&gt;(x)</code>——带宽度，要求两侧<strong>等宽</strong>；</li>
+    <li><code>u(x)</code> / <code>i(x)</code>——不写宽度，位宽取操作数，泛型模块里就这么写；</li>
+    <li>截断写切片 <code>x[31:0]</code>，扩位写复制拼接——<strong>转换不管宽度</strong>。</li>
   </ul>
 
-  <div class="callout">
-    <span class="callout-title">为什么 <code>ctrl.is(RUN)</code> 而不是 <code>state == 1</code>？</span>
-    <p style="margin:0;"><code>ctrl.is(RUN)</code> 是<strong>编码无关谓词</strong>——它读的是"态"，不是"态的编码值"。今天编译器把三个态编成 <code>00/01/10</code>，明天换成独热码，源码一个字都不用改。这是分层带来的第一个红利。</p>
+  <div class="code">
+    <div class="code-header">
+      <span class="code-lang">prism</span>
+      <span class="code-file">typ_demo · 类型与转换</span>
+    </div>
+<pre><span class="tk-decl">module</span> <span class="tk-name">typ_demo</span> {
+    <span class="tk-dir">in</span>  <span class="tk-name">a</span>   : <span class="tk-typ">Signal</span>&lt;<span class="tk-prim">i8</span>&gt;
+    <span class="tk-dir">in</span>  <span class="tk-name">b</span>   : <span class="tk-typ">Signal</span>&lt;<span class="tk-prim">i8</span>&gt;
+    <span class="tk-dir">in</span>  <span class="tk-name">x</span>   : <span class="tk-typ">Signal</span>&lt;<span class="tk-prim">u8</span>&gt;
+    <span class="tk-dir">in</span>  <span class="tk-name">n</span>   : <span class="tk-typ">Signal</span>&lt;<span class="tk-prim">u3</span>&gt;
+    <span class="tk-dir">out</span> <span class="tk-name">sum</span> : <span class="tk-typ">Signal</span>&lt;<span class="tk-prim">i16</span>&gt;
+    <span class="tk-dir">out</span> <span class="tk-name">lsr</span> : <span class="tk-typ">Signal</span>&lt;<span class="tk-prim">i8</span>&gt;
+    <span class="tk-dir">out</span> <span class="tk-name">lt</span>  : <span class="tk-typ">Signal</span>&lt;<span class="tk-prim">u1</span>&gt;
+
+    <span class="tk-name">sum</span> = <span class="tk-name">a</span> + <span class="tk-name">b</span>                <span class="tk-com">// 全精度求值：和不会半路丢位</span>
+    <span class="tk-name">lsr</span> = <span class="tk-fn">i8</span>(<span class="tk-fn">u</span>(<span class="tk-name">a</span>) &gt;&gt; <span class="tk-name">n</span>)     <span class="tk-com">// 逻辑右移：先换无符号视角，再换回来</span>
+    <span class="tk-name">lt</span>  = <span class="tk-fn">u</span>(<span class="tk-name">a</span>) &lt; <span class="tk-fn">u</span>(<span class="tk-name">x</span>)      <span class="tk-com">// 无符号比较：位模式不动，只换视角</span>
+}</pre>
   </div>
 </section>
 
-<section id="s3">
+<section id="s5">
+  <h2>表达式：一张运算符表，四种取值分支</h2>
+  <p>组合世界的一切都写成表达式——<code>x = expr</code>，输入一变输出立刻跟着变。运算符按优先级排一张表：</p>
+
+  <table class="fields">
+    <thead>
+      <tr><th>层</th><th>运算符</th><th>说明</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>多路分支</td><td><code>match</code></td><td>主表达式级，结合比任何二元运算符都紧</td></tr>
+      <tr><td>位选择</td><td><code>x[hi:lo]</code> · <code>x[i]</code> · <code>{a, b}</code> · <code>{N{x}}</code></td><td>切片 / 索引 / 拼接 / 复制</td></tr>
+      <tr><td>一元</td><td><code>- ~ !</code></td><td>取负 / 按位取反 / 逻辑非</td></tr>
+      <tr><td>乘除</td><td><code>* / %</code></td><td>标量算术</td></tr>
+      <tr><td>加减</td><td><code>+ -</code></td><td>按全精度算，落位处回绕</td></tr>
+      <tr><td>移位</td><td><code>&lt;&lt; &gt;&gt;</code></td><td>行为由操作数类型决定：<code>u</code> 补 0、<code>i</code> 算术（保号）</td></tr>
+      <tr><td>关系</td><td><code>== != &lt; &gt; &lt;= &gt;=</code></td><td>有 / 无符号由操作数类型决定</td></tr>
+      <tr><td>成员</td><td><code>x in [a, b]</code> · <code>x in lo..hi</code></td><td>集合内判定，结果 1 位</td></tr>
+      <tr><td>位与</td><td><code>&amp; ^ |</code></td><td>逐位运算</td></tr>
+      <tr><td>逻辑</td><td><code>&amp;&amp; ||</code></td><td>仅布尔语境（guard / 条件）</td></tr>
+      <tr><td>三元</td><td><code>cond ? a : b</code></td><td>两路选择，链式右结合</td></tr>
+    </tbody>
+  </table>
+
+  <p>三种位操作先看一遍——切片、拼接、复制：</p>
+
+  <div class="code">
+    <div class="code-header">
+      <span class="code-lang">prism</span>
+      <span class="code-file">expr_demo · 取位三式</span>
+    </div>
+<pre><span class="tk-decl">module</span> <span class="tk-name">expr_demo</span> {
+    <span class="tk-dir">in</span>  <span class="tk-name">hi</span>     : <span class="tk-typ">Signal</span>&lt;<span class="tk-prim">u8</span>&gt;
+    <span class="tk-dir">in</span>  <span class="tk-name">lo</span>     : <span class="tk-typ">Signal</span>&lt;<span class="tk-prim">u8</span>&gt;
+    <span class="tk-dir">in</span>  <span class="tk-name">instr</span>  : <span class="tk-typ">Signal</span>&lt;<span class="tk-prim">u32</span>&gt;
+    <span class="tk-dir">out</span> <span class="tk-name">pair</span>   : <span class="tk-typ">Signal</span>&lt;<span class="tk-prim">u16</span>&gt;
+    <span class="tk-dir">out</span> <span class="tk-name">funct3</span> : <span class="tk-typ">Signal</span>&lt;<span class="tk-prim">u3</span>&gt;
+    <span class="tk-dir">out</span> <span class="tk-name">sext</span>   : <span class="tk-typ">Signal</span>&lt;<span class="tk-prim">i32</span>&gt;
+
+    <span class="tk-name">pair</span>   = {<span class="tk-name">hi</span>, <span class="tk-name">lo</span>}                        <span class="tk-com">// 拼接：16 位，结果无符号</span>
+    <span class="tk-name">funct3</span> = <span class="tk-name">instr</span>[<span class="tk-num">14</span>:<span class="tk-num">12</span>]               <span class="tk-com">// 切片：边界是编译期常量</span>
+    <span class="tk-name">sext</span>   = {{<span class="tk-num">20</span>{<span class="tk-name">instr</span>[<span class="tk-num">31</span>:<span class="tk-num">31</span>]}}, <span class="tk-name">instr</span>[<span class="tk-num">31</span>:<span class="tk-num">20</span>]}  <span class="tk-com">// 复制拼接：符号扩展成 32 位</span>
+}</pre>
+  </div>
+
+  <p>取值分支有四种，按"几路、在哪一级"分工，每种都有自己的位置：</p>
+
+  <div class="code">
+    <div class="code-header">
+      <span class="code-lang">prism</span>
+      <span class="code-file">choose_demo · 四种分支里的表达式侧</span>
+    </div>
+<pre>    <span class="tk-name">pick</span>  = <span class="tk-name">sel</span> ? <span class="tk-name">x</span> : <span class="tk-name">y</span>                                     <span class="tk-com">// 两路：三元</span>
+    <span class="tk-name">disp</span>  = <span class="tk-kw">match</span> <span class="tk-name">op</span> { <span class="tk-num">0</span> =&gt; <span class="tk-name">x</span>, <span class="tk-num">1</span> =&gt; <span class="tk-name">y</span>, <span class="tk-num">2</span> =&gt; <span class="tk-name">x</span> + <span class="tk-name">y</span>, <span class="tk-kw">_</span> =&gt; <span class="tk-num">0</span> }   <span class="tk-com">// 多路（常量式）</span>
+    <span class="tk-name">combo</span> = <span class="tk-kw">match</span> { <span class="tk-name">sel</span> &amp; (<span class="tk-name">x</span> == <span class="tk-num">0</span>) =&gt; <span class="tk-name">x</span>, <span class="tk-name">sel</span> =&gt; <span class="tk-name">y</span>, <span class="tk-kw">_</span> =&gt; <span class="tk-num">0</span> }      <span class="tk-com">// 多路（条件式）</span>
+    <span class="tk-name">shift</span> = <span class="tk-name">op</span> <span class="tk-kw">in</span> <span class="tk-num">3</span>..<span class="tk-num">5</span>                                     <span class="tk-com">// 集合判定</span></pre>
+  </div>
+
+  <ul>
+    <li><strong>三元 <code>cond ? a : b</code></strong>——两路取值；<strong>链式右结合</strong>：<code>c1 ? e1 : c2 ? e2 : e3</code> 就是一个两级 mux，无需括号。</li>
+    <li><strong><code>match</code> 两种形态</strong>——常量式带 scrutinee（<code>match op { … }</code>，模式是两两互斥的整数字面量）；条件式不带（<code>match { is_lui =&gt; … }</code>，模式是任意布尔表达式，重叠时<strong>书写顺序即优先级</strong>）。两形态的默认分支 <code>_</code> 都<strong>必填</strong>，语义都下降为嵌套三元。</li>
+    <li><strong><code>in</code> 是集合判定</strong>——<code>op in 3..5</code> 是<strong>闭区间</strong>，<code>op in [5, 6, 8]</code> 是枚举列表；元素只能是编译期常量。取反要<strong>连整个判定一起括</strong>；布尔判定取反用 <code>!</code> 不用 <code>~</code>——<code>~(x in 0..3)</code> 高位全 1，进 if 条件就是恒真。</li>
+  </ul>
+
+  <div class="callout">
+    <span class="callout-title"><code>~</code> 的口径：操作数说了算</span>
+    <p style="margin:0;">对<strong>定宽值</strong>（reg / 端口 / 切片）取反，按<strong>操作数自己的位宽</strong>来、不越位：<code>reg x : u8</code> 时 <code>(~x) + 1</code> 得 <code>256</code>，不是全精度二补数的 0；字面量和复合表达式不钉宽，走全精度（<code>~255</code> 参与运算时是 <code>-256</code>）。</p>
+  </div>
+
+  <p>还有一条贯穿全部四种分支的分工——<strong>一根寄存器两路取值写三元，一组寄存器整体切换写 <code>if</code>/<code>else</code>；按值给一个目标选结果用 <code>match</code>，一个模式下要更新多个目标就用语句级的 <code>switch</code></strong>。后两者入口都在 <code>on clock</code> 里，下一节看。</p>
+</section>
+
+<section id="s6">
+  <h2>时序：on clock 是唯一的写法</h2>
+  <p>跨拍状态用 <code>reg</code> 声明，更新只写在 <code>on clock</code> 里，用 <strong>prime 记号</strong> <code>'</code>：等号右边读的是<strong>本拍值</strong>，左边写的是<strong>下一拍值</strong>。这就是 Prism 里唯一的时序写法——没有"阻塞 / 非阻塞"，没有别的语法能碰时序。</p>
+
+  <div class="code">
+    <div class="code-header">
+      <span class="code-lang">prism</span>
+      <span class="code-file">seq_demo · 条件更新与多路分支</span>
+    </div>
+<pre><span class="tk-decl">module</span> <span class="tk-name">seq_demo</span> {
+    <span class="tk-dir">in</span>  <span class="tk-name">en</span>   : <span class="tk-typ">Signal</span>&lt;<span class="tk-prim">bit</span>&gt;
+    <span class="tk-dir">in</span>  <span class="tk-name">clr</span>  : <span class="tk-typ">Signal</span>&lt;<span class="tk-prim">bit</span>&gt;
+    <span class="tk-dir">in</span>  <span class="tk-name">mode</span> : <span class="tk-typ">Signal</span>&lt;<span class="tk-prim">u2</span>&gt;
+    <span class="tk-dir">out</span> <span class="tk-name">cnt</span>  : <span class="tk-typ">Signal</span>&lt;<span class="tk-prim">u8</span>&gt;
+
+    <span class="tk-stor">reg</span> <span class="tk-name">c</span> : <span class="tk-prim">u8</span> = <span class="tk-num">0</span>
+
+    <span class="tk-stor">on</span> <span class="tk-stor">clock</span> {
+        <span class="tk-kw">if</span> (<span class="tk-name">clr</span>) {
+            <span class="tk-name">c</span><span class="tk-op">'</span> = <span class="tk-num">0</span>                        <span class="tk-com">// 条件更新：不满足就保持</span>
+        } <span class="tk-kw">else if</span> (<span class="tk-name">en</span>) {
+            <span class="tk-kw">switch</span> <span class="tk-name">mode</span> {
+                <span class="tk-num">0</span> =&gt; { <span class="tk-name">c</span><span class="tk-op">'</span> = <span class="tk-name">c</span> + <span class="tk-num">1</span> }
+                <span class="tk-num">1</span> =&gt; { <span class="tk-name">c</span><span class="tk-op">'</span> = <span class="tk-name">c</span> - <span class="tk-num">1</span> }
+                <span class="tk-kw">_</span> =&gt; { <span class="tk-name">c</span><span class="tk-op">'</span> = <span class="tk-name">c</span> }       <span class="tk-com">// 默认分支必填</span>
+            }
+        }
+    }
+
+    <span class="tk-name">cnt</span> = <span class="tk-name">c</span>
+}</pre>
+  </div>
+
+  <ul>
+    <li><strong><code>if</code> 条件带圆括号</strong>：<code>if (cond) { … }</code>；<code>else</code> 是<strong>补集条件</strong>——<code>else if (d)</code> 的条件是 <code>!c &amp; d</code>，臂与臂互斥、首匹配生效；一路里还要分岔就把 <code>if</code> 嵌进体内。</li>
+    <li><strong>没出现在任何臂里的寄存器保持原值</strong>（与不带 else 的 if 同一口径）；空臂合法，就是"这一路不更新"。</li>
+    <li><strong><code>switch</code> 是语句级多路</strong>——<code>switch mode { 0 =&gt; { … } _ =&gt; { … } }</code>：模式是整数字面量或 <code>_</code>，<code>_</code> 必填且写最后，重复模式报错；语义等于一串<strong>互斥</strong>的 if，首个匹配者生效。</li>
+    <li><strong>体内可任意互嵌</strong>——更新、<code>if</code>/<code>else</code>、<code>switch</code>、<code>for</code> 谁都能装谁；缩进和换行只是排版，不承载语义。</li>
+  </ul>
+
+  <p>重复更新写 <code>for</code>——循环变量在体内是<strong>编译期常量</strong>，展开出的并列语句和手写完全等价：</p>
+
+  <div class="code">
+    <div class="code-header">
+      <span class="code-lang">prism</span>
+      <span class="code-file">for_demo · 展开成常量</span>
+    </div>
+<pre>    <span class="tk-stor">on</span> <span class="tk-stor">clock</span> {
+        <span class="tk-kw">for</span> <span class="tk-name">k</span> <span class="tk-kw">in</span> <span class="tk-num">0</span>..<span class="tk-num">3</span> {
+            <span class="tk-kw">if</span> (<span class="tk-name">sel</span> == <span class="tk-name">k</span>) {
+                <span class="tk-name">acc</span><span class="tk-op">'</span> = <span class="tk-name">k</span> + <span class="tk-num">1</span>       <span class="tk-com">// 展开成 4 条并列更新：命中的那条生效</span>
+            }
+        }
+    }</pre>
+  </div>
+
+  <div class="callout">
+    <span class="callout-title">时钟与复位：都不用手写</span>
+    <p style="margin:0;"><code>clk</code> / <code>rst_n</code> 是<strong>编译器在顶层网表自动生成的端口</strong>——不出现在任何端口表，也没人声明它。复位方式与极性归 <code>@schedule reset</code>（本集是 <code>async_low</code>）；<strong>复位优先</strong>：rst_n 有效期间所有 reg 无视更新、装载声明时的初值（初值必须是编译期常量）。</p>
+  </div>
+</section>
+
+<section id="s7">
+  <h2>状态机：fsm 原语</h2>
+  <p>状态机的<strong>语义</strong>写在算法层的一张转移表里——<code>态: 谓词 -&gt; 目标态</code>；<strong>编码</strong>交给调度层。最熟的例子其实是操作系统：一个进程的一生（你在 <code>ps</code> / <code>top</code> 里天天见到的那几个状态），一张表就能写完：</p>
+
+  <div class="code">
+    <div class="code-header">
+      <span class="code-lang">prism</span>
+      <span class="code-file">proc · 进程的一生</span>
+    </div>
+<pre>    <span class="tk-stor">fsm</span> <span class="tk-name">proc</span> {
+        <span class="tk-sf">states</span>  : NEW, READY, RUN, BLOCKED, EXIT
+        <span class="tk-sf">reset</span>   : NEW
+        <span class="tk-sf">enc</span>     : one_hot                  <span class="tk-com">// 编码：binary | one_hot | gray</span>
+        <span class="tk-sf">illegal</span> : hold                     <span class="tk-com">// 非法编码：hold | to_reset | compile_error</span>
+        <span class="tk-sf">latency</span> : { BLOCKED: 2 }           <span class="tk-com">// 进 BLOCKED 后至少驻留 2 拍</span>
+
+        NEW:     admit    <span class="tk-op">-&gt;</span> READY
+        READY:   dispatch <span class="tk-op">-&gt;</span> RUN
+        RUN:     io_req   <span class="tk-op">-&gt;</span> BLOCKED   <span class="tk-com">// 发起 I/O：从 CPU 上让出来</span>
+        RUN:     preempt  <span class="tk-op">-&gt;</span> READY     <span class="tk-com">// 时间片到：被换下</span>
+        RUN:     yield    <span class="tk-op">-&gt;</span> READY     <span class="tk-com">// 主动让出</span>
+        RUN:     fin      <span class="tk-op">-&gt;</span> EXIT
+        BLOCKED: io_done  <span class="tk-op">-&gt;</span> READY     <span class="tk-com">// I/O 完成：回就绪队列</span>
+        <span class="tk-com">// 自环可以不写：没写的转移 = 停在本态（EXIT 一行不写，就永远停着）</span>
+    }
+
+    <span class="tk-name">on_cpu</span>     = <span class="tk-name">proc</span>.<span class="tk-fn">is</span>(RUN)                      <span class="tk-com">// 本拍在不在 CPU 上</span>
+    <span class="tk-name">next_on</span>    = <span class="tk-name">proc</span>.<span class="tk-fn">will</span>(RUN)                    <span class="tk-com">// 组合量：下一个沿会进 RUN</span>
+    <span class="tk-name">first_tick</span> = <span class="tk-name">proc</span>.<span class="tk-fn">is</span>(RUN) &amp; !<span class="tk-name">proc</span>.<span class="tk-fn">was</span>(RUN)     <span class="tk-com">// 刚被调度的第一拍</span></pre>
+  </div>
+
+  <p>同一张表的图形版——操作系统教材里那张经典的进程状态转换图（自环省掉，缺省保持）：</p>
+
+  <figure class="modfig">
+    <svg viewBox="0 0 940 378" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="进程五态转换图：NEW 经 admit 到 READY，READY 经 dispatch 到 RUN；RUN 经 io_req 到 BLOCKED、经 preempt 或 yield 回 READY、经 fin 到 EXIT；BLOCKED 经 io_done 回 READY">
+      <defs>
+        <marker id="pAr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto">
+          <path d="M0,0 L10,5 L0,10 z" fill="#4a5468"/>
+        </marker>
+      </defs>
+
+      <!-- 主排四态 -->
+      <circle cx="120" cy="156" r="48" fill="#f3f5f9" stroke="#8b95a8" stroke-width="1.5"/>
+      <text x="120" y="150" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="15" font-weight="600" fill="#1c2333">NEW</text>
+      <text x="120" y="172" text-anchor="middle" font-family="Noto Serif SC, serif" font-size="11" fill="#7c8698">刚被创建</text>
+
+      <circle cx="345" cy="156" r="48" fill="#eef4fc" stroke="#4a86c8" stroke-width="1.5"/>
+      <text x="345" y="150" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="15" font-weight="600" fill="#1c2333">READY</text>
+      <text x="345" y="172" text-anchor="middle" font-family="Noto Serif SC, serif" font-size="11" fill="#7c8698">就绪队列</text>
+
+      <circle cx="575" cy="156" r="48" fill="#efeafd" stroke="#6b5cff" stroke-width="2"/>
+      <text x="575" y="150" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="15" font-weight="600" fill="#3a2fa8">RUN</text>
+      <text x="575" y="172" text-anchor="middle" font-family="Noto Serif SC, serif" font-size="11" fill="#7a6ad0">在 CPU 上</text>
+
+      <circle cx="812" cy="156" r="48" fill="#f4f5f7" stroke="#4a5468" stroke-width="1.5"/>
+      <text x="812" y="150" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="15" font-weight="600" fill="#1c2333">EXIT</text>
+      <text x="812" y="172" text-anchor="middle" font-family="Noto Serif SC, serif" font-size="11" fill="#7c8698">退出</text>
+
+      <!-- 下方：BLOCKED -->
+      <circle cx="520" cy="286" r="48" fill="#fff3e8" stroke="#ff8a4c" stroke-width="1.5"/>
+      <text x="520" y="280" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="15" font-weight="600" fill="#8a4a14">BLOCKED</text>
+      <text x="520" y="302" text-anchor="middle" font-family="Noto Serif SC, serif" font-size="11" fill="#b07a52">等 I/O</text>
+
+      <!-- 六条转移 -->
+      <line x1="168" y1="156" x2="297" y2="156" stroke="#4a5468" stroke-width="1.8" marker-end="url(#pAr)"/>
+      <text x="232" y="144" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="12" fill="#4a5468">admit</text>
+
+      <line x1="393" y1="156" x2="527" y2="156" stroke="#4a5468" stroke-width="1.8" marker-end="url(#pAr)"/>
+      <text x="459" y="144" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="12" fill="#4a5468">dispatch</text>
+
+      <line x1="623" y1="156" x2="764" y2="156" stroke="#4a5468" stroke-width="1.8" marker-end="url(#pAr)"/>
+      <text x="693" y="144" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="12" fill="#4a5468">fin</text>
+
+      <line x1="556" y1="200" x2="539" y2="242" stroke="#4a5468" stroke-width="1.8" marker-end="url(#pAr)"/>
+      <text x="559" y="225" text-anchor="start" font-family="JetBrains Mono, monospace" font-size="12" fill="#4a5468">io_req</text>
+
+      <path d="M472,286 C400,286 345,262 345,238 L345,206" fill="none" stroke="#4a5468" stroke-width="1.8" marker-end="url(#pAr)"/>
+      <text x="408" y="270" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="12" fill="#4a5468">io_done</text>
+
+      <path d="M575,106 C575,62 345,62 345,84 L345,106" fill="none" stroke="#4a5468" stroke-width="1.8" marker-end="url(#pAr)"/>
+      <text x="460" y="52" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="12" fill="#4a5468">preempt / yield</text>
+    </svg>
+    <figcaption>进程的一生（五态图）：表里七条"离开"的转移收在图上六支箭里（preempt 与 yield 共用一支）——自环没画：缺省保持</figcaption>
+  </figure>
+
+  <ul>
+    <li><strong>四个谓词，一个读法</strong>——<code>proc.is(S)</code> 本拍在 S、<code>proc.was(S)</code> 上一拍在 S、<code>proc.will(S)</code> 下一个沿会进 S（组合量）、<code>proc.state</code> 编码值（只读）。三个谓词可以出现在任何表达式位置；<code>will</code> 不许进 guard（会成组合环）。</li>
+    <li><strong>转移恒为同步</strong>——当前态 + guard → 下一态，每拍一次；同一源态多条转移，<strong>书写顺序即优先级</strong>；从 <code>reset</code> 不可达的态报错。</li>
+    <li><strong>转移表里永不出现编码字样</strong>——怎么编、编几位只写在 <code>enc</code> 属性行：改编码不动转移表。这就是"状态与编码分开"。</li>
+    <li><strong>不手写编码</strong>——禁止用 <code>on clock</code> 去写态寄存器、禁止比较 <code>proc.state</code> 的数值；写转移表，别写 if 链。</li>
+  </ul>
+
+  <p><strong>自环可以不写。</strong>上面这张表把所有"原地等待"的行都省掉了——<code>admit</code> 没来就停在 <code>NEW</code>，<code>io_done</code> 没来就停在 <code>BLOCKED</code>；<code>EXIT</code> 一行都没有，就是永远停着。缺省语义就是<strong>保持当前态</strong>：只有当你要<strong>离开</strong>一个态时，那条转移才需要写出来。想显式写也行（<code>_ -&gt; 自己</code> 仍然合法）；要兜底到<strong>别的</strong>态就写 <code>_ -&gt; 目标态</code>、放在该态最后。省掉自环之后，一张表里剩下的全是"什么时候走"。</p>
+
+  <p>也看"装起来"那节 <code>proc_switch</code> 的最后一拍：进程已经停在 <code>EXIT</code>（一条转移都不动），<code>clr</code> 落下，<code>cpu_time</code> 照样归零——<strong>清零走的是数据通路，与 FSM 无关</strong>：控制管"什么时候"，数据管"哪个值"，各管各的。</p>
+
+  <div class="callout">
+    <span class="callout-title">为什么 <code>proc.is(RUN)</code> 而不是 <code>proc.state == 4</code>？</span>
+    <p style="margin:0;"><code>proc.is(RUN)</code> 是<strong>编码无关谓词</strong>——它读的是"态"，不是"态的编码值"（<code>one_hot</code> 下 RUN 是 <code>4</code>，改回 <code>binary</code> 就变 <code>2</code>）。换 <code>enc</code> 不动源码一个字。这是分层带来的第一个红利。</p>
+  </div>
+</section>
+
+<section id="s8">
   <h2>调度层：六行说清微架构</h2>
   <p>同一颗模块的算法写完，微架构还没着落。下面这六行把它补上——一行不多，一行不少：</p>
 
@@ -294,7 +645,7 @@ footer .next { display: block; margin-bottom: 12px; font-family: 'Noto Serif SC'
       <tr><th>字段</th><th>说什么</th><th>本集取值</th></tr>
     </thead>
     <tbody>
-      <tr><td>bitwidth</td><td>数据通路位宽（可用什么精度算）</td><td><code>{ data:4 }</code> — 4 位</td></tr>
+      <tr><td>bitwidth</td><td>数据通路位宽（可用什么精度算）</td><td><code>{ data:16 }</code> — 16 位</td></tr>
       <tr><td>pipeline</td><td>几级流水</td><td><code>1 stage</code> — 一拍算完</td></tr>
       <tr><td>reset</td><td>复位极性</td><td><code>async_low</code> — 低电平异步复位</td></tr>
       <tr><td>clock</td><td>时钟频率与域</td><td><code>100 MHz, domain = single</code></td></tr>
@@ -306,106 +657,272 @@ footer .next { display: block; margin-bottom: 12px; font-family: 'Noto Serif SC'
   <p>还有两个字段没出现在这六行里：<code>storage</code>（哪些信号真的是寄存器、几位宽）与 <code>interface</code>（端口绑定什么协议）。<strong>它们能从模块体推断</strong>——算法层写了 <code>reg count : u4</code>，那就是 4 个触发器；端口本来就在模块头上——所以整条可以省略，语言自己推。真需要钉死微架构的时候，再写。</p>
 </section>
 
-<section id="s4">
-  <h2>跑起来：从 0 数到饱和，再清回去</h2>
-  <p>激励表只有两列输入（<code>en</code>、<code>clr</code>），三列期望（<code>q</code>、<code>full</code>、<code>state</code>）——每一行都是手算的：</p>
+<section id="s9">
+  <h2>装起来：一颗进程调度单元</h2>
+  <p>把这一集的零件装成一颗完整的模块。需求挑一个程序员都熟的：<strong>进程调度</strong>——管一个进程的五态一生（<code>NEW / READY / RUN / BLOCKED / EXIT</code>，你天天在 <code>ps</code> / <code>top</code> 里见的那几个），顺带记它在 CPU 上花了多少拍、时间片还剩多少。事件全部从端口进；<code>cpu_bus</code> 是共享三态总线——在 CPU 上时挂出 <code>pid</code>，否则让出。对照着读——每一种写法都在前面某一节出现过。</p>
 
   <div class="code">
     <div class="code-header">
       <span class="code-lang">prism</span>
-      <span class="code-file">sat_counter.prism · run 段</span>
+      <span class="code-file">proc_switch.prism · 算法层</span>
     </div>
-<pre><span class="tk-decl">run</span> <span class="tk-name">sat_counter_check</span> <span class="tk-rw">of</span> <span class="tk-name">sat_counter_top</span> {
+<pre><span class="tk-decl">module</span> <span class="tk-name">proc_switch</span> {
+    <span class="tk-com">// —— 事件（调度器与定时器给的）——</span>
+    <span class="tk-dir">in</span>  <span class="tk-name">admit</span>     : <span class="tk-typ">Signal</span>&lt;<span class="tk-prim">bit</span>&gt;       <span class="tk-com">// 新进程被接纳</span>
+    <span class="tk-dir">in</span>  <span class="tk-name">dispatch</span>  : <span class="tk-typ">Signal</span>&lt;<span class="tk-prim">bit</span>&gt;       <span class="tk-com">// 调度器选中它，上 CPU</span>
+    <span class="tk-dir">in</span>  <span class="tk-name">preempt</span>   : <span class="tk-typ">Signal</span>&lt;<span class="tk-prim">bit</span>&gt;       <span class="tk-com">// 时间片到：被换下</span>
+    <span class="tk-dir">in</span>  <span class="tk-name">yield</span>     : <span class="tk-typ">Signal</span>&lt;<span class="tk-prim">bit</span>&gt;       <span class="tk-com">// 主动让出</span>
+    <span class="tk-dir">in</span>  <span class="tk-name">io_req</span>    : <span class="tk-typ">Signal</span>&lt;<span class="tk-prim">bit</span>&gt;       <span class="tk-com">// 发起 I/O → 阻塞</span>
+    <span class="tk-dir">in</span>  <span class="tk-name">io_done</span>   : <span class="tk-typ">Signal</span>&lt;<span class="tk-prim">bit</span>&gt;       <span class="tk-com">// I/O 完成</span>
+    <span class="tk-dir">in</span>  <span class="tk-name">fin</span>       : <span class="tk-typ">Signal</span>&lt;<span class="tk-prim">bit</span>&gt;       <span class="tk-com">// 退出</span>
+
+    <span class="tk-com">// —— 数据与观察 ——</span>
+    <span class="tk-dir">in</span>  <span class="tk-name">pid</span>       : <span class="tk-typ">Signal</span>&lt;<span class="tk-prim">u8</span>&gt;        <span class="tk-com">// 进程号：上 CPU 时挂到总线</span>
+    <span class="tk-dir">in</span>  <span class="tk-name">prio</span>      : <span class="tk-typ">Signal</span>&lt;<span class="tk-prim">u2</span>&gt;        <span class="tk-com">// 优先级：0 最高，用来定时间片</span>
+    <span class="tk-dir">in</span>  <span class="tk-name">clr</span>       : <span class="tk-typ">Signal</span>&lt;<span class="tk-prim">bit</span>&gt;       <span class="tk-com">// 清零统计（与 FSM 无关）</span>
+    <span class="tk-dir">out</span> <span class="tk-name">state</span>     : <span class="tk-typ">Signal</span>&lt;<span class="tk-prim">u3</span>&gt;        <span class="tk-com">// 五态序号（NEW..EXIT = 0..4）</span>
+    <span class="tk-dir">out</span> <span class="tk-name">on_cpu</span>    : <span class="tk-typ">Signal</span>&lt;<span class="tk-prim">bit</span>&gt;       <span class="tk-com">// 本拍在不在 CPU 上</span>
+    <span class="tk-dir">out</span> <span class="tk-name">cpu_time</span>  : <span class="tk-typ">Signal</span>&lt;<span class="tk-prim">u16</span>&gt;       <span class="tk-com">// 累计在 CPU 上的拍数</span>
+    <span class="tk-dir">out</span> <span class="tk-name">slice_end</span> : <span class="tk-typ">Signal</span>&lt;<span class="tk-prim">bit</span>&gt;       <span class="tk-com">// 时间片用完（喂给调度器去触发 preempt）</span>
+    <span class="tk-dir">both</span> <span class="tk-name">cpu_bus</span>  : <span class="tk-typ">Signal</span>&lt;<span class="tk-prim">u8</span>&gt;        <span class="tk-com">// 共享总线：在 CPU 上驱动 pid，否则高阻</span>
+
+    <span class="tk-stor">fsm</span> <span class="tk-name">proc</span> {
+        <span class="tk-sf">states</span> : NEW, READY, RUN, BLOCKED, EXIT
+        <span class="tk-sf">reset</span>  : NEW
+
+        NEW:     admit    <span class="tk-op">-&gt;</span> READY
+        NEW:     <span class="tk-kw">_</span>        <span class="tk-op">-&gt;</span> NEW
+        READY:   dispatch <span class="tk-op">-&gt;</span> RUN
+        READY:   <span class="tk-kw">_</span>        <span class="tk-op">-&gt;</span> READY
+        RUN:     io_req   <span class="tk-op">-&gt;</span> BLOCKED
+        RUN:     preempt  <span class="tk-op">-&gt;</span> READY
+        RUN:     yield    <span class="tk-op">-&gt;</span> READY
+        RUN:     fin      <span class="tk-op">-&gt;</span> EXIT
+        RUN:     <span class="tk-kw">_</span>        <span class="tk-op">-&gt;</span> RUN
+        BLOCKED: io_done  <span class="tk-op">-&gt;</span> READY
+        BLOCKED: <span class="tk-kw">_</span>        <span class="tk-op">-&gt;</span> BLOCKED
+        EXIT:    <span class="tk-kw">_</span>        <span class="tk-op">-&gt;</span> EXIT
+    }
+
+    <span class="tk-kw">wire</span> <span class="tk-name">running</span> : <span class="tk-prim">u1</span> = <span class="tk-name">proc</span>.<span class="tk-fn">is</span>(RUN)          <span class="tk-com">// 具名线：本拍在不在 CPU 上</span>
+    <span class="tk-stor">reg</span>  <span class="tk-name">spent</span>   : <span class="tk-prim">u16</span> = <span class="tk-num">0</span>                    <span class="tk-com">// 累计 CPU 拍数</span>
+    <span class="tk-stor">reg</span>  <span class="tk-name">left</span>    : <span class="tk-prim">u4</span>  = <span class="tk-num">0</span>                    <span class="tk-com">// 本时间片剩余拍数</span>
+
+    <span class="tk-stor">on</span> <span class="tk-stor">clock</span> {
+        <span class="tk-kw">if</span> (<span class="tk-name">clr</span>) {
+            <span class="tk-name">spent</span><span class="tk-op">'</span> = <span class="tk-num">0</span>
+            <span class="tk-name">left</span><span class="tk-op">'</span>  = <span class="tk-num">0</span>
+        } <span class="tk-kw">else</span> {
+            <span class="tk-kw">if</span> (<span class="tk-name">running</span>) {
+                <span class="tk-name">spent</span><span class="tk-op">'</span> = <span class="tk-name">spent</span> + <span class="tk-num">1</span>            <span class="tk-com">// 在 CPU 上：拍数 +1</span>
+            }
+            <span class="tk-kw">if</span> (<span class="tk-name">dispatch</span>) {
+                <span class="tk-kw">switch</span> <span class="tk-name">prio</span> {                 <span class="tk-com">// 按优先级装载时间片</span>
+                    <span class="tk-num">0</span> =&gt; { <span class="tk-name">left</span><span class="tk-op">'</span> = <span class="tk-num">8</span> }
+                    <span class="tk-num">1</span> =&gt; { <span class="tk-name">left</span><span class="tk-op">'</span> = <span class="tk-num">4</span> }
+                    <span class="tk-kw">_</span> =&gt; { <span class="tk-name">left</span><span class="tk-op">'</span> = <span class="tk-num">2</span> }
+                }
+            } <span class="tk-kw">else if</span> (<span class="tk-name">running</span> &amp; (<span class="tk-name">left</span> != <span class="tk-num">0</span>)) {
+                <span class="tk-name">left</span><span class="tk-op">'</span> = <span class="tk-name">left</span> - <span class="tk-num">1</span>
+            }
+        }
+    }
+
+    <span class="tk-name">state</span>     = <span class="tk-kw">match</span> { <span class="tk-name">proc</span>.<span class="tk-fn">is</span>(NEW)     =&gt; <span class="tk-num">0</span>,    <span class="tk-com">// 组合量：随态即时变</span>
+                        <span class="tk-name">proc</span>.<span class="tk-fn">is</span>(READY)   =&gt; <span class="tk-num">1</span>,
+                        <span class="tk-name">proc</span>.<span class="tk-fn">is</span>(RUN)     =&gt; <span class="tk-num">2</span>,
+                        <span class="tk-name">proc</span>.<span class="tk-fn">is</span>(BLOCKED) =&gt; <span class="tk-num">3</span>,
+                        <span class="tk-kw">_</span>                =&gt; <span class="tk-num">4</span> }
+    <span class="tk-name">on_cpu</span>    = <span class="tk-name">running</span>
+    <span class="tk-name">cpu_time</span>  = <span class="tk-name">spent</span>
+    <span class="tk-name">slice_end</span> = <span class="tk-name">running</span> &amp; (<span class="tk-name">left</span> == <span class="tk-num">0</span>)
+    <span class="tk-name">cpu_bus</span>   = <span class="tk-name">running</span> ? <span class="tk-name">pid</span> : <span class="tk-num">1'bz</span>
+}</pre>
+  </div>
+
+  <p>对一遍零件与来路：三种端口 <code>in</code> / <code>out</code> / <code>both</code>（"端口"那节）、类型（"类型"节）、<code>match</code> 与三元（"表达式"节）、<code>if</code> / <code>switch</code> 与 <code>on clock</code>（"时序"节）、<code>fsm</code> 转移表（"状态机"节）、<code>@schedule</code>（"调度层"节）——全在这六十行里。跑起来——激励表 10 列输入 + 4 列期望，每一行都是手算的：</p>
+
+<div class="code">
+    <div class="code-header">
+      <span class="code-lang">prism</span>
+      <span class="code-file">proc_switch.prism · run 段</span>
+    </div>
+<pre><span class="tk-decl">run</span> <span class="tk-name">proc_check</span> <span class="tk-rw">of</span> <span class="tk-name">proc_switch_top</span> {
     <span class="tk-rf">stim</span> : {
-        <span class="tk-name">en</span>, <span class="tk-name">clr</span>, [<span class="tk-name">q</span>, <span class="tk-name">full</span>, <span class="tk-name">state</span>] <span class="tk-op">=</span> {
-            <span class="tk-num">1</span>, <span class="tk-num">0</span>, [ <span class="tk-num">0</span>, <span class="tk-num">0</span>, <span class="tk-num">1</span>],
-            <span class="tk-num">1</span>, <span class="tk-num">0</span>, [ <span class="tk-num">1</span>, <span class="tk-num">0</span>, <span class="tk-num">1</span>],
-            <span class="tk-com">…  （中间 13 拍逐拍 +1，略）</span>
-            <span class="tk-num">1</span>, <span class="tk-num">0</span>, [<span class="tk-num">15</span>, <span class="tk-num">1</span>, <span class="tk-num">1</span>],   <span class="tk-com">// 饱和点：full 起效</span>
-            <span class="tk-num">1</span>, <span class="tk-num">0</span>, [<span class="tk-num">15</span>, <span class="tk-num">1</span>, <span class="tk-num">2</span>],   <span class="tk-com">// 再一拍，FSM 进 TOP</span>
-            <span class="tk-num">0</span>, <span class="tk-num">0</span>, [<span class="tk-num">15</span>, <span class="tk-num">1</span>, <span class="tk-num">2</span>],   <span class="tk-com">// en 拉低也保持</span>
-            <span class="tk-num">0</span>, <span class="tk-num">1</span>, [ <span class="tk-num">0</span>, <span class="tk-num">0</span>, <span class="tk-num">0</span>],   <span class="tk-com">// clr：回 IDLE、count 归零</span>
-            <span class="tk-num">1</span>, <span class="tk-num">0</span>, [ <span class="tk-num">0</span>, <span class="tk-num">0</span>, <span class="tk-num">1</span>],   <span class="tk-com">// 重新开跑</span>
-            <span class="tk-num">1</span>, <span class="tk-num">0</span>, [ <span class="tk-num">1</span>, <span class="tk-num">0</span>, <span class="tk-num">1</span>],
+        <span class="tk-name">admit</span>, <span class="tk-name">dispatch</span>, <span class="tk-name">preempt</span>, <span class="tk-name">yield</span>, <span class="tk-name">io_req</span>, <span class="tk-name">io_done</span>, <span class="tk-name">fin</span>, <span class="tk-name">pid</span>, <span class="tk-name">prio</span>, <span class="tk-name">clr</span>, [<span class="tk-name">state</span>, <span class="tk-name">on_cpu</span>, <span class="tk-name">cpu_time</span>, <span class="tk-name">slice_end</span>] <span class="tk-op">=</span> {
+            <span class="tk-num">1</span>, <span class="tk-num">0</span>, <span class="tk-num">0</span>, <span class="tk-num">0</span>, <span class="tk-num">0</span>, <span class="tk-num">0</span>, <span class="tk-num">0</span>, <span class="tk-num">7</span>, <span class="tk-num">0</span>, <span class="tk-num">0</span>, [<span class="tk-num">1</span>, <span class="tk-num">0</span>,  <span class="tk-num">0</span>, <span class="tk-num">0</span>],   <span class="tk-com">// admit：进就绪队列</span>
+            <span class="tk-num">0</span>, <span class="tk-num">1</span>, <span class="tk-num">0</span>, <span class="tk-num">0</span>, <span class="tk-num">0</span>, <span class="tk-num">0</span>, <span class="tk-num">0</span>, <span class="tk-num">7</span>, <span class="tk-num">1</span>, <span class="tk-num">0</span>, [<span class="tk-num">2</span>, <span class="tk-num">1</span>,  <span class="tk-num">0</span>, <span class="tk-num">0</span>],   <span class="tk-com">// dispatch：时间片 4</span>
+            <span class="tk-num">0</span>, <span class="tk-num">0</span>, <span class="tk-num">0</span>, <span class="tk-num">0</span>, <span class="tk-num">0</span>, <span class="tk-num">0</span>, <span class="tk-num">0</span>, <span class="tk-num">7</span>, <span class="tk-num">0</span>, <span class="tk-num">0</span>, [<span class="tk-num">2</span>, <span class="tk-num">1</span>,  <span class="tk-num">1</span>, <span class="tk-num">0</span>],   <span class="tk-com">// 跑一拍：拍数 +1</span>
+            <span class="tk-num">0</span>, <span class="tk-num">0</span>, <span class="tk-num">0</span>, <span class="tk-num">0</span>, <span class="tk-num">0</span>, <span class="tk-num">0</span>, <span class="tk-num">0</span>, <span class="tk-num">7</span>, <span class="tk-num">0</span>, <span class="tk-num">0</span>, [<span class="tk-num">2</span>, <span class="tk-num">1</span>,  <span class="tk-num">2</span>, <span class="tk-num">0</span>],   <span class="tk-com">// 剩 2</span>
+            <span class="tk-num">0</span>, <span class="tk-num">0</span>, <span class="tk-num">0</span>, <span class="tk-num">0</span>, <span class="tk-num">0</span>, <span class="tk-num">0</span>, <span class="tk-num">0</span>, <span class="tk-num">7</span>, <span class="tk-num">0</span>, <span class="tk-num">0</span>, [<span class="tk-num">2</span>, <span class="tk-num">1</span>,  <span class="tk-num">3</span>, <span class="tk-num">0</span>],   <span class="tk-com">// 剩 1</span>
+            <span class="tk-num">0</span>, <span class="tk-num">0</span>, <span class="tk-num">0</span>, <span class="tk-num">0</span>, <span class="tk-num">0</span>, <span class="tk-num">0</span>, <span class="tk-num">0</span>, <span class="tk-num">7</span>, <span class="tk-num">0</span>, <span class="tk-num">0</span>, [<span class="tk-num">2</span>, <span class="tk-num">1</span>,  <span class="tk-num">4</span>, <span class="tk-num">1</span>],   <span class="tk-com">// slice_end 拉起</span>
+            <span class="tk-num">0</span>, <span class="tk-num">0</span>, <span class="tk-num">1</span>, <span class="tk-num">0</span>, <span class="tk-num">0</span>, <span class="tk-num">0</span>, <span class="tk-num">0</span>, <span class="tk-num">7</span>, <span class="tk-num">0</span>, <span class="tk-num">0</span>, [<span class="tk-num">1</span>, <span class="tk-num">0</span>,  <span class="tk-num">5</span>, <span class="tk-num">0</span>],   <span class="tk-com">// preempt：被换下</span>
+            <span class="tk-num">0</span>, <span class="tk-num">1</span>, <span class="tk-num">0</span>, <span class="tk-num">0</span>, <span class="tk-num">0</span>, <span class="tk-num">0</span>, <span class="tk-num">0</span>, <span class="tk-num">7</span>, <span class="tk-num">2</span>, <span class="tk-num">0</span>, [<span class="tk-num">2</span>, <span class="tk-num">1</span>,  <span class="tk-num">5</span>, <span class="tk-num">0</span>],   <span class="tk-com">// dispatch：时间片 2</span>
+            <span class="tk-num">0</span>, <span class="tk-num">0</span>, <span class="tk-num">0</span>, <span class="tk-num">0</span>, <span class="tk-num">0</span>, <span class="tk-num">0</span>, <span class="tk-num">0</span>, <span class="tk-num">7</span>, <span class="tk-num">0</span>, <span class="tk-num">0</span>, [<span class="tk-num">2</span>, <span class="tk-num">1</span>,  <span class="tk-num">6</span>, <span class="tk-num">0</span>],   <span class="tk-com">// 跑一拍</span>
+            <span class="tk-num">0</span>, <span class="tk-num">0</span>, <span class="tk-num">0</span>, <span class="tk-num">1</span>, <span class="tk-num">0</span>, <span class="tk-num">0</span>, <span class="tk-num">0</span>, <span class="tk-num">7</span>, <span class="tk-num">0</span>, <span class="tk-num">0</span>, [<span class="tk-num">1</span>, <span class="tk-num">0</span>,  <span class="tk-num">7</span>, <span class="tk-num">0</span>],   <span class="tk-com">// yield：主动让出</span>
+            <span class="tk-num">0</span>, <span class="tk-num">1</span>, <span class="tk-num">0</span>, <span class="tk-num">0</span>, <span class="tk-num">0</span>, <span class="tk-num">0</span>, <span class="tk-num">0</span>, <span class="tk-num">7</span>, <span class="tk-num">0</span>, <span class="tk-num">0</span>, [<span class="tk-num">2</span>, <span class="tk-num">1</span>,  <span class="tk-num">7</span>, <span class="tk-num">0</span>],   <span class="tk-com">// dispatch：时间片 8</span>
+            <span class="tk-num">0</span>, <span class="tk-num">0</span>, <span class="tk-num">0</span>, <span class="tk-num">0</span>, <span class="tk-num">0</span>, <span class="tk-num">0</span>, <span class="tk-num">0</span>, <span class="tk-num">7</span>, <span class="tk-num">0</span>, <span class="tk-num">0</span>, [<span class="tk-num">2</span>, <span class="tk-num">1</span>,  <span class="tk-num">8</span>, <span class="tk-num">0</span>],   <span class="tk-com">// 跑一拍</span>
+            <span class="tk-num">0</span>, <span class="tk-num">0</span>, <span class="tk-num">0</span>, <span class="tk-num">0</span>, <span class="tk-num">1</span>, <span class="tk-num">0</span>, <span class="tk-num">0</span>, <span class="tk-num">7</span>, <span class="tk-num">0</span>, <span class="tk-num">0</span>, [<span class="tk-num">3</span>, <span class="tk-num">0</span>,  <span class="tk-num">9</span>, <span class="tk-num">0</span>],   <span class="tk-com">// io_req：阻塞</span>
+            <span class="tk-num">0</span>, <span class="tk-num">0</span>, <span class="tk-num">0</span>, <span class="tk-num">0</span>, <span class="tk-num">0</span>, <span class="tk-num">0</span>, <span class="tk-num">0</span>, <span class="tk-num">7</span>, <span class="tk-num">0</span>, <span class="tk-num">0</span>, [<span class="tk-num">3</span>, <span class="tk-num">0</span>,  <span class="tk-num">9</span>, <span class="tk-num">0</span>],   <span class="tk-com">// 等 I/O</span>
+            <span class="tk-num">0</span>, <span class="tk-num">0</span>, <span class="tk-num">0</span>, <span class="tk-num">0</span>, <span class="tk-num">0</span>, <span class="tk-num">1</span>, <span class="tk-num">0</span>, <span class="tk-num">7</span>, <span class="tk-num">0</span>, <span class="tk-num">0</span>, [<span class="tk-num">1</span>, <span class="tk-num">0</span>,  <span class="tk-num">9</span>, <span class="tk-num">0</span>],   <span class="tk-com">// io_done：回就绪队列</span>
+            <span class="tk-num">0</span>, <span class="tk-num">1</span>, <span class="tk-num">0</span>, <span class="tk-num">0</span>, <span class="tk-num">0</span>, <span class="tk-num">0</span>, <span class="tk-num">0</span>, <span class="tk-num">7</span>, <span class="tk-num">0</span>, <span class="tk-num">0</span>, [<span class="tk-num">2</span>, <span class="tk-num">1</span>,  <span class="tk-num">9</span>, <span class="tk-num">0</span>],   <span class="tk-com">// dispatch：再上 CPU</span>
+            <span class="tk-num">0</span>, <span class="tk-num">0</span>, <span class="tk-num">0</span>, <span class="tk-num">0</span>, <span class="tk-num">0</span>, <span class="tk-num">0</span>, <span class="tk-num">1</span>, <span class="tk-num">7</span>, <span class="tk-num">0</span>, <span class="tk-num">0</span>, [<span class="tk-num">4</span>, <span class="tk-num">0</span>, <span class="tk-num">10</span>, <span class="tk-num">0</span>],   <span class="tk-com">// fin：退出</span>
+            <span class="tk-num">0</span>, <span class="tk-num">0</span>, <span class="tk-num">0</span>, <span class="tk-num">0</span>, <span class="tk-num">0</span>, <span class="tk-num">0</span>, <span class="tk-num">0</span>, <span class="tk-num">7</span>, <span class="tk-num">0</span>, <span class="tk-num">0</span>, [<span class="tk-num">4</span>, <span class="tk-num">0</span>, <span class="tk-num">10</span>, <span class="tk-num">0</span>],   <span class="tk-com">// 已退出：停住</span>
+            <span class="tk-num">0</span>, <span class="tk-num">0</span>, <span class="tk-num">0</span>, <span class="tk-num">0</span>, <span class="tk-num">0</span>, <span class="tk-num">0</span>, <span class="tk-num">0</span>, <span class="tk-num">7</span>, <span class="tk-num">0</span>, <span class="tk-num">1</span>, [<span class="tk-num">4</span>, <span class="tk-num">0</span>,  <span class="tk-num">0</span>, <span class="tk-num">0</span>],   <span class="tk-com">// clr：清零统计</span>
         }
     }
     <span class="tk-rf">until</span> : <span class="tk-rw">end</span> <span class="tk-rw">of</span> <span class="tk-rf">stim</span>
-    <span class="tk-rf">show</span>  : { <span class="tk-name">en</span>, <span class="tk-name">clr</span>, <span class="tk-name">q</span>, <span class="tk-name">full</span>, <span class="tk-name">state</span> }
+    <span class="tk-rf">show</span>  : { <span class="tk-name">cpu_bus</span>, <span class="tk-name">state</span>, <span class="tk-name">on_cpu</span>, <span class="tk-name">cpu_time</span>, <span class="tk-name">slice_end</span> }
 }</pre>
   </div>
 
   <div class="term">
-    <div class="term-header">▸ prism run examples/sat_counter.prism --show --util</div>
-    <div class="term-body">cycle   en   clr   q      full   state
-0       1    0     0      0      1
-<span class="term-hint">…（1–7：每拍 +1，略）</span>
-8       1    0     8      0      1
-<span class="term-hint">…（9–13：每拍 +1，略）</span>
-14      1    0     14     0      1
-15      1    0     15     1      1
-16      1    0     15     1      2      <span class="term-hint"># FSM 进 TOP，计数停住</span>
-17      0    0     15     1      2
-18      0    1     0      0      0      <span class="term-hint"># clr：回 IDLE、count 归零</span>
-19      1    0     0      0      1
-20      1    0     1      0      1
-<span class="term-ok"># expect: 21/21 拍有断言 · 3 列 · 全等 ✅</span></div>
+    <div class="term-header">▸ prism run examples/proc_switch.prism --debug</div>
+    <div class="term-body">cycle  cpu_bus  state  on_cpu  cpu_time  slice_end
+0      z        1      0       0         0
+1      7        2      1       0         0
+2      7        2      1       1         0
+3      7        2      1       2         0
+4      7        2      1       3         0
+5      7        2      1       4         1      <span class="term-hint"># 时间片归零：slice_end 拉起</span>
+6      z        1      0       5         0      <span class="term-hint"># preempt：被换下（让出总线）</span>
+7      7        2      1       5         0
+8      7        2      1       6         0
+9      z        1      0       7         0      <span class="term-hint"># yield：主动让出</span>
+10     7        2      1       7         0
+11     7        2      1       8         0
+12     z        3      0       9         0      <span class="term-hint"># io_req：阻塞等 I/O</span>
+13     z        3      0       9         0
+14     z        1      0       9         0      <span class="term-hint"># io_done：回就绪队列，还没上 CPU</span>
+15     7        2      1       9         0
+16     z        4      0       10        0      <span class="term-hint"># fin：退出（在 CPU 上的最后一拍也计上）</span>
+17     z        4      0       10        0
+18     z        4      0       0         0      <span class="term-hint"># clr：清零统计，FSM 停在 EXIT</span>
+<span class="term-ok"># expect: 19/19 拍有断言 · 4 列 · 全等 ✅</span></div>
   </div>
 
-  <p>三条通路仍然全绿：</p>
+  <p><code>cpu_bus</code> 列只观察、不判期望——高阻写不进期望表（期望列只收整数字面量），带断言的是后四列：<code>RUN</code> 的那些拍它挂出 <code>pid=7</code>，其余时候让出、读回高阻 <code>z</code>。<code>state</code> 序号 0–4 对应 <code>NEW / READY / RUN / BLOCKED / EXIT</code>，顺手还能对上那张五态图。同一份源码，另外两条腿也各跑一遍——同一份手算期望，各自过一遍：</p>
   <div class="term">
-    <div class="term-header">▸ prism run --cosim --show ・ prism tlm</div>
-    <div class="term-body"><span class="term-ok">[run --cosim] ✅ PASS: sat_counter_check golden == RTL 仿真（21 拍 × 5 列全等；golden stop: end of stim (21 cycles)）</span>
-<span class="term-ok">[tlm]         ✅ PASS: sat_counter_check SystemC/TLM == golden（21 拍 × 5 列全等）</span></div>
+    <div class="term-header">▸ prism run examples/proc_switch.prism --rtl --debug</div>
+    <div class="term-body">[run] proc_check: RTL tb 跑完，19 拍（产物 …）
+[run] proc_check: RTL 期望值比对
+<span class="term-ok"># expect: 19/19 拍有断言 · 4 列 · 全等 ✅</span></div>
+  </div>
+  <div class="term">
+    <div class="term-header">▸ prism run examples/proc_switch.prism --sim systemc --debug</div>
+    <div class="term-body">Info: /OSCI/SystemC: Simulation stopped by user.
+[run] proc_check: 19 拍 SystemC 模型直跑完成
+[run] proc_check: TLM 期望值比对
+<span class="term-ok"># expect: 19/19 拍有断言 · 4 列 · 全等 ✅</span></div>
   </div>
 </section>
 
-<section id="s5">
-  <h2>写错一次：饱和那一拍</h2>
-  <p>第一版我没写 <code>full ? count : …</code> 这个分支，直接写：</p>
+<section id="s10">
+  <h2>写错一次：I/O 完成回哪</h2>
+  <p>第一版我把 <code>io_done</code> 的箭头随手接到了 <code>RUN</code>——心里想的是"I/O 回来了，接着跑"：</p>
 
   <div class="code">
     <div class="code-header">
       <span class="code-lang">prism</span>
-      <span class="code-file">错误版本</span>
+      <span class="code-file">错误版本（只错这一行）</span>
     </div>
-<pre>count<span class="tk-op">'</span> = clr ? <span class="tk-num">0</span> : ((ctrl.<span class="tk-fn">is</span>(RUN) &amp; en) ? count + <span class="tk-num">1</span> : count)</pre>
+<pre>    RUN:     io_req   <span class="tk-op">-&gt;</span> BLOCKED
+    BLOCKED: io_done  <span class="tk-op">-&gt;</span> RUN   <span class="tk-com">// ❌ 应该回 READY：先去就绪队列，等调度</span></pre>
   </div>
 
-  <p>结果第 16 拍 <code>q</code> 不是 15——是 <strong>0</strong>。数到 15 那拍，<code>count + 1</code> 在 4 位上回绕成 0；而 FSM 的 <code>full</code> 守卫要到<strong>同一个边沿之后</strong>才知道"满了"。</p>
+  <p>编译照过、跑也照跑——直到第 14 拍对不上：<code>io_done</code> 拉着的那拍，<code>state</code> 期望 1（<code>READY</code>）实得 2（<code>RUN</code>），<code>on_cpu</code> 也提前回到 1。更隐蔽的是后面三拍：它没经调度器就私自上了 CPU，<code>cpu_time</code> 跟着漂——15 / 16 / 17 三拍全多了 1。</p>
 
   <div class="term">
     <div class="term-header">▸ 错误版输出（截取）</div>
-    <div class="term-body">15      1    0     15   1      1
-16      1    0     0    0      2      <span class="term-err"># 回绕了！</span>
-<span class="term-err">[expect] ❌ cycle 16 q: 期望 15，实得 0
-[expect] ❌ cycle 16 full: 期望 1，实得 0</span></div>
+    <div class="term-body">12     z        3      0       9         0
+13     z        3      0       9         0
+14     7        2      1       9         0      <span class="term-err"># state 应为 1、on_cpu 应为 0</span>
+15     7        2      1       10        0      <span class="term-err"># 拍数开始漂</span>
+16     z        4      0       11        0
+17     z        4      0       11        0
+18     z        4      0       0         0
+<span class="term-err">[expect] ❌ cycle 14 state: 期望 1，实得 2
+[expect] ❌ cycle 14 on_cpu: 期望 0，实得 1
+[expect] ❌ cycle 15 cpu_time: 期望 9，实得 10
+[expect] ❌ cycle 16 cpu_time: 期望 10，实得 11
+[expect] ❌ cycle 17 cpu_time: 期望 10，实得 11</span>
+# expect: 19/19 拍有断言 · 4 列 · 有不等 ❌</div>
   </div>
 
   <div class="callout warn">
-    <span class="callout-title">教训：控制管"什么时候停"，数据管"停在哪个值"</span>
-    <p style="margin:0;">FSM 决定"我该去 TOP 了"，但<strong>数据通路仍必须自己保证不越界</strong>。两件事都要做：FSM 的状态转移负责时序语义，<code>full ? count : …</code> 负责数值语义。这不是 Prism 特有的坑——任何 RTL 里"边沿上同时发生的多个条件"都要这样分开想。</p>
+    <span class="callout-title">教训：状态图就是需求——每支箭头都有原因</span>
+    <p style="margin:0;"><code>BLOCKED</code> 出去的那支箭头只回 <code>READY</code>：I/O 完成的身份是<strong>"就绪"</strong>，不是"在跑"——上不上 CPU 由调度器说了算（<code>dispatch</code> 说了算）。一支箭头指错目标态，表里连着两列、连着三拍都跟着错——所以转移表要与状态图逐支对读，别凭"接着跑"的直觉接。</p>
   </div>
 </section>
 
-<section id="s6">
-  <h2>骨架的其余零件</h2>
-  <p>上面那颗模块覆盖了最常用的一批，剩下的四件先见个面——后面写到它们时再展开：</p>
+<section id="s11">
+  <h2>还有两件：mem 与泛型</h2>
+  <p><code>mem</code> 是阵列存储——寄存器们的"排"，用下标访问：读是组合的，写是时序的。</p>
+
+  <div class="code">
+    <div class="code-header">
+      <span class="code-lang">prism</span>
+      <span class="code-file">ram_demo · 阵列</span>
+    </div>
+<pre><span class="tk-decl">module</span> <span class="tk-name">ram_demo</span> {
+    <span class="tk-dir">in</span>  <span class="tk-name">raddr</span> : <span class="tk-typ">Signal</span>&lt;<span class="tk-prim">u4</span>&gt;
+    <span class="tk-dir">in</span>  <span class="tk-name">waddr</span> : <span class="tk-typ">Signal</span>&lt;<span class="tk-prim">u4</span>&gt;
+    <span class="tk-dir">in</span>  <span class="tk-name">wdata</span> : <span class="tk-typ">Signal</span>&lt;<span class="tk-prim">u32</span>&gt;
+    <span class="tk-dir">in</span>  <span class="tk-name">wen</span>   : <span class="tk-typ">Signal</span>&lt;<span class="tk-prim">bit</span>&gt;
+    <span class="tk-dir">out</span> <span class="tk-name">rdata</span> : <span class="tk-typ">Signal</span>&lt;<span class="tk-prim">u32</span>&gt;
+
+    <span class="tk-stor">mem</span> <span class="tk-name">ram</span> : [<span class="tk-num">16</span>] <span class="tk-prim">u32</span> = [           <span class="tk-com">// 声明 + 初值预载</span>
+        <span class="tk-num">0x00000093</span>, <span class="tk-num">0x00500113</span>, <span class="tk-num">0x002080b3</span>, <span class="tk-num">0x00108093</span>
+    ]
+
+    <span class="tk-name">rdata</span> = <span class="tk-name">ram</span>[<span class="tk-name">raddr</span>]                  <span class="tk-com">// 读：组合</span>
+
+    <span class="tk-stor">on</span> <span class="tk-stor">clock</span> {
+        <span class="tk-name">ram</span><span class="tk-op">'</span>[<span class="tk-name">waddr</span>] = <span class="tk-name">wen</span> ? <span class="tk-name">wdata</span> : <span class="tk-name">ram</span>[<span class="tk-name">waddr</span>]   <span class="tk-com">// 写：时序；prime 在名后、索引前</span>
+    }
+}</pre>
+  </div>
 
   <ul>
-    <li><strong><code>mem</code> · 阵列存储</strong> — <code>mem regs : i32 [32] = 0</code> 声明 32 个字的寄存器阵列，可索引读写。第六集寄存器堆就是它。</li>
-    <li><strong>泛型 <code>&lt;T: Bits&gt;</code></strong> — <code>module counter&lt;T: Bits&gt; { out q : Signal&lt;T&gt; … }</code>，实例化时给位宽 <code>counter&lt;T = i8&gt;</code>。同一份源码长出 8 位 / 32 位 / 64 位三个版本——第八集 RV64I 靠它，不用复制粘贴。</li>
-    <li><strong>协议端口 <code>Stream&lt;T&gt;</code></strong> — 带 <code>valid</code> / <code>ready</code> 握手的三元组，用来描述有背压的流水接口。</li>
-    <li><strong>位切片与拼接</strong> — <code>x[7:0]</code> 切、<code>{a, b}</code> 拼、<code>{N{x}}</code> 复制。<code>srl()</code> / <code>ult()</code> / <code>uge()</code> 等内建函数也在这一族。</li>
+    <li><strong>初值两种写法，二选一</strong>：<code>= [v0, v1, …]</code> 数组字面量，或 <code>@init("文件")</code> 从文件装载（小端、整字）；初值随复位装载。</li>
+    <li><strong>越界读回 0、越界写丢弃</strong>；<strong>同拍同址读旧写新</strong>；<strong>单写口</strong>——一个 <code>mem</code> 只允许一条写语句，这是存储器件的物理事实。</li>
+    <li><strong>规模与映射归调度层</strong>——<code>@schedule storage</code> 决定它长成寄存器堆 / SRAM / 分布式。第六集整集都在讲它。</li>
   </ul>
+
+  <p>泛型让同一段源码长出多个位宽版本——<code>&lt;T: bits&gt;</code> 是位宽形参，实例化时代入：</p>
+
+  <div class="code">
+    <div class="code-header">
+      <span class="code-lang">prism</span>
+      <span class="code-file">adder · 泛型</span>
+    </div>
+<pre><span class="tk-decl">module</span> <span class="tk-name">adder</span>&lt;T: bits&gt; {
+    <span class="tk-dir">in</span>  <span class="tk-name">a</span>   : <span class="tk-typ">Signal</span>&lt;T&gt;
+    <span class="tk-dir">in</span>  <span class="tk-name">b</span>   : <span class="tk-typ">Signal</span>&lt;T&gt;
+    <span class="tk-dir">out</span> <span class="tk-name">sum</span> : <span class="tk-typ">Signal</span>&lt;T&gt;
+
+    <span class="tk-name">sum</span> = <span class="tk-name">a</span> + <span class="tk-name">b</span>
+}
+
+<span class="tk-decl">design</span> <span class="tk-name">adder_top</span> {
+    <span class="tk-name">dut</span> : <span class="tk-name">adder</span>&lt;T = <span class="tk-prim">i32</span>&gt;          <span class="tk-com">// 32 位版本；换 T = i64 就是 64 位</span>
+}</pre>
+  </div>
+
+  <p>第二日的 <code>pc</code> / <code>regfile</code> 都是这个形态（<code>pc&lt;T: bits&gt;</code>、<code>regfile&lt;T: bits&gt;</code>）——32 位和 64 位的机器，共用一份源码。</p>
 </section>
 
-<section id="s7">
+<section id="s12">
   <h2>小结 · 第一日的语法到此讲完</h2>
-  <p>这一集只有一件事：<strong>空气与水要分开</strong>。</p>
+  <p>这一集只做一件事：把语法骨架摆完。回头看每一件：</p>
   <ul>
-    <li><strong>算法与调度分开</strong>——<code>module</code> 说"做什么"，<code>@schedule</code> 说"怎么做"；<code>bitwidth</code> / <code>pipeline</code> 这些微架构信息只在调度层出现——存储、接口能推断，可以不写。</li>
-    <li><strong>组合与时序分开</strong>——<code>x = expr</code> 是本拍函数，<code>on clock { x' = expr }</code> 是跨拍更新；唯一的时序写法，没有阻塞/非阻塞陷阱。</li>
-    <li><strong>状态与编码分开</strong>——<code>fsm</code> 写转移表，<code>ctrl.is(S)</code> 是编码无关谓词；怎么编、编几位，归调度层。</li>
+    <li><strong>盒子</strong>——<code>module</code>：皮是端口，里是线与状态；顺带三件小事：注释一种、换行是标点、<code>__</code> 是禁地；</li>
+    <li><strong>端口</strong>——<code>in</code> / <code>out</code> / <code>both</code>，方向显式，电平与握手流两族；</li>
+    <li><strong>类型</strong>——<code>bit</code> / <code>i&lt;N&gt;</code> / <code>u&lt;N&gt;</code>；位宽由声明钉死、回绕在落位处、转换只换视角；</li>
+    <li><strong>分支</strong>——表达式级：两路三元、多路 <code>match</code>、集合 <code>in</code>；语句级：一组寄存器整体切换写 <code>if</code>/<code>else</code>、按值多路写 <code>switch</code>；</li>
+    <li><strong>时序</strong>——唯一写法 <code>on clock</code> + prime；时钟与复位由编译器生成；</li>
+    <li><strong>状态</strong>——<code>fsm</code> 写转移表（自环可省：缺省=保持），谓词编码无关，编码归调度层；</li>
+    <li><strong>分层</strong>——<code>module</code> 说"做什么"，<code>@schedule</code> 说"怎么做"——本集的名字。</li>
   </ul>
 
   <div class="verse-inline">
@@ -413,19 +930,10 @@ footer .next { display: block; margin-bottom: 12px; font-family: 'Noto Serif SC'
     <cite>—— 《创世记》 1:8</cite>
   </div>
 
-  <p><strong>第一日的语法讲完了。</strong>下一集收尾：把三颗模块用两根 <code>wire</code> 拼成一条会动的数据通路，再看零件多起来之后，语言给出的规矩与更大的零件（<code>interface</code> / <code>composer</code> / <code>import</code> / <code>blackbox</code>）。</p>
+  <p><strong>第一日的语法讲完了。</strong>下一集收尾：把三颗模块用两根 <code>wire</code> 拼成一条会动的数据通路，再把零件多起来之后的规矩与更大的零件讲开（<code>design</code> / <code>interface</code> / <code>composer</code> / <code>import</code>）。</p>
 </section>
 
-<section id="s8">
-  <h2>练习</h2>
-  <ol>
-    <li>把饱和点从 15 改成 3——改 <code>full = (count == 15) ? 1 : 0</code> 里的判等值即可，同时把 <code>stim</code> 的期望也改成"数到 3 就停"。跑一次：FSM 在第 4 拍进 TOP，之后原地保持。三次下降全绿。</li>
-    <li>删掉 <code>IDLE: _ -&gt; IDLE</code> 这条兜底边，跑 <code>prism run examples/sat_counter.prism</code>——会报 <code>fsm 'ctrl' 的态 'IDLE' 缺 `_ -&gt; &lt;态&gt;` 兜底转移（最后一条须为兜底，否则该态的 guard 集不完备 → 状态卡死）</code>。<strong>兜底不是可选项</strong>：谓词集不完备时状态机可能没有出口。</li>
-    <li>加一个第四态 <code>ERR</code>：<code>en &amp; clr</code> 同时为 1 时进 <code>ERR</code> 并停住（<code>ERR: _ -&gt; ERR</code>）。跑一次会看到一件有意思的事：<code>state</code> 走进 3 之后原地不动，但 <code>q</code> 仍然被 <code>clr</code> 清零了——<strong>清零走的是数据通路，与 FSM 无关</strong>。这正是"控制管什么时候、数据管哪个值"的又一次体现。</li>
-  </ol>
-</section>
-
-<section id="s9">
+<section id="s13">
   <h2>复现本集</h2>
   <div class="code">
     <div class="code-header">
@@ -433,14 +941,14 @@ footer .next { display: block; margin-bottom: 12px; font-family: 'Noto Serif SC'
       <span class="code-file">reproduce</span>
     </div>
 <pre>pip install prism-hdl
-brew install icarus-verilog systemc   <span class="tk-com"># macOS</span>
+prism deps --install   <span class="tk-com"># 按操作系统补齐仿真依赖（iverilog / SystemC 等）</span>
 
 git clone https://github.com/prism-hdl/seven-days
 cd seven-days
 
-prism run examples/sat_counter.prism --show --util        <span class="tk-com"># golden</span>
-prism run examples/sat_counter.prism --cosim --show --util  <span class="tk-com"># RTL</span>
-prism tlm examples/sat_counter.prism                      <span class="tk-com"># TLM</span></pre>
+prism run examples/proc_switch.prism --debug                <span class="tk-com"># golden</span>
+prism run examples/proc_switch.prism --rtl --debug          <span class="tk-com"># RTL</span>
+prism run examples/proc_switch.prism --sim systemc --debug  <span class="tk-com"># TLM</span></pre>
   </div>
 </section>
 

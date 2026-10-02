@@ -168,7 +168,7 @@ footer .next { display:block; margin-bottom:12px; font-family:'Noto Serif SC',se
 
   <p>从 <code>pc</code> 开始，因为它是四颗里<strong>唯一会自己动的</strong>。其余三颗都要等别人给输入才动——pc 不用，时钟一到它就往前走。</p>
 
-  <p>而且它不陌生——<strong>第一集那颗计数器就是 pc 的胚胎</strong>：同一个 <code>reg</code>、同一个 <code>on clock</code>；这一集只是给它长出 <code>+4</code> 与一条 <code>load</code> 岔路。</p>
+  <p>而且它不陌生——<code>reg</code> + <code>on clock</code> 你在第二集的进程调度单元上已经写过；pc 就是这两件长出的新行为：一个候选式里的 <code>+4</code> 与一条 <code>load</code> 岔路。</p>
 </section>
 
 <section id="s2">
@@ -232,7 +232,7 @@ footer .next { display:block; margin-bottom:12px; font-family:'Noto Serif SC',se
   </div>
 
   <div class="term">
-    <div class="term-header">▸ prism run examples/day2/pc.prism --show --util</div>
+    <div class="term-header">▸ prism run examples/day2/pc.prism --debug</div>
     <div class="term-body">cycle   dut_load   dut_target   dut_addr
 0       0          0            4
 1       0          0            8
@@ -248,6 +248,8 @@ footer .next { display:block; margin-bottom:12px; font-family:'Noto Serif SC',se
     <li><strong>拍 0 的 <code>addr</code> 是 4，不是 0</strong>。因为观测点在<strong>时钟边沿之后</strong>——复位后第一拍，pc 已经从 0 走到了 4。（想看"还没走"的样子，得把观测点挪到边沿之前——Prism 的 <code>run</code> 固定在边沿后取值，这一层约定在两个后端（golden / RTL）是同一份。）</li>
     <li><strong>拍 2 的 <code>addr</code> 是 100，不是 "8 再跳"</strong>。载入与自增是同一个候选式里的两条分支，不是两步；<code>load</code> 一拍就把顺序流掰断。</li>
   </ul>
+
+  <p>删掉那个选择子（改成恒为 <code>pc + 4</code>）试试：第 2 拍就对不上——期望 <code>100</code>，实得 <code>12</code>。<strong>删掉一个决策，测试必须喊</strong>——这就是最小样本。</p>
 </section>
 
 <section id="s4">
@@ -277,26 +279,17 @@ footer .next { display:block; margin-bottom:12px; font-family:'Noto Serif SC',se
   <p>下一集造<strong>记忆</strong>：短的在寄存器堆里，长的在字阵列里。</p>
 </section>
 
-<section id="s6">
-  <h2>练习</h2>
-  <ol>
-    <li>把 <code>load ? target : pc + 4</code> 里的选择子拿掉（改成恒为 <code>pc + 4</code>），跑一次——<strong>哪一拍先对不上</strong>？这就是"删掉一个决策，测试必须喊"的最小样本。</li>
-    <li>把 <code>pc + 4</code> 改成 <code>pc + 2</code>，<code>stim</code> 表的期望逐行改一遍——全绿之后想一想：如果这是真核，什么情况下会需要 +2？</li>
-    <li>给 <code>pc</code> 加一个 <code>jump</code> 输出（组合等于 <code>load</code>），接给未来 decoder 的 <code>is_branch</code>——接口会变成什么样？为什么现在不加？</li>
-  </ol>
-</section>
-
 <section id="s7">
   <h2>复现本集</h2>
   <div class="code">
     <div class="code-header"><span class="code-lang">bash</span><span class="code-file">reproduce</span></div>
 <pre>pip install prism-hdl
-brew install icarus-verilog
+prism deps --install   <span class="tk-com"># 按操作系统补齐仿真依赖（iverilog / SystemC 等）</span>
 
 git clone https://github.com/prism-hdl/seven-days
 cd seven-days
 
-prism run examples/day2/pc.prism --cosim --show --util</pre>
+prism cosim examples/day2/pc.prism --run pc_check</pre>
   </div>
 </section>
 

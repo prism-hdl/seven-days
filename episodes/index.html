@@ -275,24 +275,24 @@ footer .cols { display:flex; flex-wrap:wrap; justify-content:center; gap:24px; m
 
 <section id="start">
   <h2>快速上手</h2>
-  <p>Prism 编译器已打包为 pip 包，装好后全局命令 <code>prism</code> 即可使用。<code>run --cosim</code> 需要 iverilog。</p>
+  <p>Prism 编译器已打包为 pip 包，装好后全局命令 <code>prism</code> 即可使用。<code>cosim</code> 对撞需要 iverilog——<code>prism deps --install</code> 会按操作系统补齐。</p>
 
   <div class="code">
     <div class="code-header"><span class="code-lang">bash</span><span class="code-file">30 秒跑通第一个模块</span></div>
 <pre>pip install prism-hdl
-brew install icarus-verilog        <span class="tk-com"># macOS</span>
+prism deps --install               <span class="tk-com"># 按操作系统补齐仿真依赖（iverilog / SystemC 等）</span>
 
 git clone https://github.com/prism-hdl/seven-days
 cd seven-days
 
-prism run examples/counter.prism --cosim --show --util</pre>
+prism run examples/adder.prism --debug</pre>
   </div>
 
-  <p>输出会是一张逐拍的表，外加一条 <code># expect: 6/6 拍有断言 · 1 列 · 全等 ✅</code>——<strong>那张表里的期望值是手写进源码的，不是事后补的</strong>。</p>
+  <p>输出会是一张逐拍的表，外加一条 <code># expect: 3/3 拍有断言 · 1 列 · 全等 ✅</code>——<strong>那张表里的期望值是手写进源码的，不是事后补的</strong>。</p>
 
   <div class="callout">
     <strong>一行代码都不信，直到它在两个后端上跑出同一个数。</strong><br>
-    <code>prism run</code> 出 Python 参考模型；<code>prism run --cosim --show</code> 走 iverilog 真仿真；<code>prism tlm</code> 走 SystemC。三条通路喂同一份激励，逐拍逐列对撞。
+    <code>prism run</code> 出 Python 参考模型；<code>prism cosim</code> 把 SV 真仿真拉来逐拍对撞（iverilog）；<code>--sim systemc</code> 再拉上第三条通路。三条通路喂同一份激励，逐拍逐列对撞。
   </div>
 </section>
 
@@ -300,7 +300,7 @@ prism run examples/counter.prism --cosim --show --util</pre>
   <h2>仓库里有什么</h2>
   <div class="cards">
     <div class="card"><div class="k">episodes/</div><div class="t">每一集的正文</div><div class="b"><code>day1/</code> 四集 · <code>day2/</code> 五集 · <code>day3/</code> 连载中。每一集都是独立可读的单页 HTML。</div></div>
-    <div class="card"><div class="k">examples/</div><div class="t">每一集引用的 Prism 源码</div><div class="b"><code>counter</code> / <code>sat_counter</code> / <code>mini_cpu</code> / <code>day2/</code> 四颗器官 / <code>day3/</code> 单周期 CPU——都可独立跑。</div></div>
+    <div class="card"><div class="k">examples/</div><div class="t">每一集引用的 Prism 源码</div><div class="b"><code>adder</code> / <code>proc_switch</code> / <code>mini_cpu</code> / <code>box</code> / <code>day2/</code> 四颗器官 / <code>day3/</code> 单周期 CPU——都可独立跑。</div></div>
     <a class="card" href="outline.html" style="text-decoration:none;color:inherit"><div class="k">outline.html</div><div class="t">27 集完整大纲</div><div class="b">七日框架、每集要造什么、firmament 落在哪里。点开看全部 27 集。</div></a>
   </div>
 </section>

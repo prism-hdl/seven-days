@@ -1,0 +1,68 @@
+// =============================================================================
+// box.prism —— 第一日 · 第 3 集样例：契约、封装与穿透观测。
+//
+// 一颗累计器 acc 声称遵从契约 Accumulable（端口集合与方向由契约裁定）；
+// composer Box 把它连同盒内的线封成一颗更大的零件——`<>` 收定义、插槽
+// 例化时再放进具体的模块。design 把盒子拼到顶层，expose 穿透读盒里那颗
+// acc 的寄存器 r。展平是纯编译期的事：RTL 里没有"包装模块"这一层。
+// =============================================================================
+
+interface Accumulable {                  // 契约：一份"端口 + 方向"的清单
+    in  din : Signal<i8>
+    in  en  : Signal<u1>
+    out q   : Signal<i8>
+}
+
+module acc implements Accumulable {      // 声称遵从——端口逐项对齐
+    in  din : Signal<i8>
+    in  en  : Signal<u1>
+    out q   : Signal<i8>
+
+    reg r : i8
+
+    q = r
+
+    on clock {
+        if (en) {
+            r' = din                     // 使能那拍：din 装进 r
+        }
+    }
+}
+
+composer Box<A: Accumulable> {           // 插槽式封装：A 必须是实现了契约的模块
+    in  din : Signal<i8>
+    in  en  : Signal<u1>
+    out q   : Signal<i8>
+
+    a : A                                // 插槽：例化时放进一颗具体模块
+
+    connect din -> a.din                 // 盒内接线：外面进来 → 里边那颗
+    connect en  -> a.en
+    connect a.q -> q                     // 里边那颗 → 外面出去
+}
+
+@schedule acc {
+    bitwidth  : { data:8 }
+    pipeline  : 1 stage
+    reset     : async_low
+    clock     : 100 MHz, domain = single
+    resource  : none
+    latency   : 1 cycle
+}
+
+design box_top {
+    b : Box<A = acc>                     // 把上面那颗 acc 放进插槽
+    expose b.a.r as r_obs                // 观测穿透：读盒里那颗 acc 的 r
+}
+
+run box_check of box_top {
+    stim : {
+        b.din, b.en, [b.q, r_obs] = {
+             7,    1,    [7, 7],
+             9,    1,    [9, 9],
+             9,    0,    [9, 9],        // en 拉低：r 保持上一拍的值
+        }
+    }
+    until : end of stim
+    show  : { b.din, b.en, b.q, r_obs }
+}

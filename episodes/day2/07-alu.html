@@ -148,6 +148,7 @@ footer .next { display:block; margin-bottom:12px; font-family:'Noto Serif SC',se
 
 <section id="s1">
   <h2>四颗里唯一没有时钟的</h2>
+  <p>第一集那颗加法器——<code>sum = a + b</code>，三个端口、一句数据流——在这一集被改造成 ALU：同一段组合逻辑，长出 <code>op</code> 选路与十条路。</p>
   <p>回头看已经造好的两颗：<code>pc</code> 有 <code>reg</code> + <code>on clock</code>，<code>regfile</code> 有 <code>mem</code> + <code>on clock</code>。ALU 什么都没有——<strong>它是一段纯函数</strong>：给两个数和一条选路信号，立刻出结果，不记得上一拍发生过什么。</p>
 
   <div class="stack">
@@ -222,7 +223,7 @@ footer .next { display:block; margin-bottom:12px; font-family:'Noto Serif SC',se
   </div>
 
   <div class="term">
-    <div class="term-header">▸ prism run examples/day2/alu.prism --show --util</div>
+    <div class="term-header">▸ prism run examples/day2/alu.prism --debug</div>
     <div class="term-body">cycle   dut_a   dut_b   dut_op   dut_result
 0       5       10      0        15
 1       10      5       1        5
@@ -274,15 +275,6 @@ footer .next { display:block; margin-bottom:12px; font-family:'Noto Serif SC',se
   <p>下一集造最后一颗器官 <strong>decoder</strong>——它不算数、不记事、不走路，只做一件事：<strong>理解</strong>。</p>
 </section>
 
-<section id="s6">
-  <h2>练习</h2>
-  <ol>
-    <li>把第 8 条（SRL）外层的 <code>T(...)</code> 去掉，跑一次——哪几拍的结果变了？为什么会连累第 6 条（SRA）？（提示：类型是跟着整个 <code>match</code> 表达式走的。）</li>
-    <li>给 <code>alu</code> 加一个 <code>cmp_zero</code> 输出（<code>result == 0</code> 时为 1），用于分支判断。<code>op</code> 需要变宽吗？为什么？</li>
-    <li>把 <code>alu_op</code> 的宽度从 <code>u4</code> 改成 <code>u5</code>，<code>@schedule</code> 的 <code>bitwidth</code> 跟着改——跑一次，结果会变吗？为什么？（提示：宽度只影响能表示多少种 op，不影响已实现的那十条。）</li>
-  </ol>
-</section>
-
 <section id="s7">
   <h2>复现本集</h2>
   <div class="code">
@@ -290,7 +282,7 @@ footer .next { display:block; margin-bottom:12px; font-family:'Noto Serif SC',se
 <pre>git clone https://github.com/prism-hdl/seven-days
 cd seven-days
 
-prism run examples/day2/alu.prism --cosim --show --util</pre>
+prism cosim examples/day2/alu.prism --run alu_check</pre>
   </div>
 </section>
 

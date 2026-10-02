@@ -195,7 +195,7 @@ footer .next { display:block; margin-bottom:12px; font-family:'Noto Serif SC',se
 
 <section id="s1">
   <h2>合体，不是重写</h2>
-  <p>第二日造了四颗器官：<code>pc</code> 心跳、<code>regfile</code> 与 <code>ram</code> 记忆、<code>alu</code> 活动、<code>decoder</code> 理解世界。每一颗都有自己的 <code>run</code> 块、自己的手算期望、自己的 <code>--cosim</code>。</p>
+  <p>第二日造了四颗器官：<code>pc</code> 心跳、<code>regfile</code> 与 <code>ram</code> 记忆、<code>alu</code> 活动、<code>decoder</code> 理解世界。每一颗都有自己的 <code>run</code> 块、自己的手算期望、自己的 <code>cosim</code> 对撞。</p>
 
   <p>今天的活是把它们<strong>放进同一具身体</strong>。注意是<strong>放</strong>，不是<strong>改</strong>——第二日的五颗模块（<code>pc</code> / <code>regfile</code> / <code>alu</code> / <code>ram</code> / <code>decoder</code>）原样搬进 <code>iu.prism</code>，几乎一字未动。唯一的例外只有一处：</p>
 
@@ -264,7 +264,7 @@ footer .next { display:block; margin-bottom:12px; font-family:'Noto Serif SC',se
     </table>
   </div>
 
-  <p>六颗实例、一份 <code>design</code>、一百二十来行——<code>prism gen-rtl examples/day3/cpu.prism</code> 出来的可综合 SystemVerilog 是 <strong>471 行、7 个模块</strong>（六颗器官各一个，加顶层）。</p>
+  <p>六颗实例、一份 <code>design</code>、一百二十来行——<code>prism gen-rtl examples/day3/cpu.prism</code> 出来的可综合 SystemVerilog 是 <strong>475 行、7 个模块</strong>（六颗器官各一个，加顶层）。</p>
 </section>
 
 <section id="s3">
@@ -398,6 +398,8 @@ footer .next { display:block; margin-bottom:12px; font-family:'Noto Serif SC',se
   </div>
 
   <p><code>x1</code> 最后是 <strong>5 + 4 + 3 + 2 + 1 = 15</strong>。<code>jal x0, 0</code> 里的 <code>x0</code> 是故意的：返回地址算出来了，但写进 <code>x0</code> 会被寄存器堆丢弃——这是第 6 集那两道硬连线的第一次实战。</p>
+
+  <p>想让程序跑久一点：把 <code>addi x2, x0, 5</code> 的立即数改成 <code>10</code>（编码 <code>0x00a00113</code>），同样的六条指令，<code>x1</code> 的终值就是 <code>55</code>——<code>until</code> 放宽到 30 拍，就能看到 <code>x1</code> 停在 <code>55</code>、<code>x2</code> 归零。<strong>手算和机器对一次，就知道自己真读懂了这段程序。</strong></p>
 </section>
 
 <section id="s5">
@@ -413,7 +415,7 @@ footer .next { display:block; margin-bottom:12px; font-family:'Noto Serif SC',se
   </div>
 
   <div class="term">
-    <div class="term-header">▸ prism run examples/day3/cpu.prism --show --util</div>
+    <div class="term-header">▸ prism run examples/day3/cpu.prism --debug</div>
     <div class="term-body">[run] cpu_check: 24 拍 golden 直跑完成
 # run: cpu_check  design: cpu_top  stop: for 24 cycles
 cycle	pcv	x1	x2
@@ -456,14 +458,14 @@ cycle	pcv	x1	x2
 
   <div class="term">
     <div class="term-header">▸ 三次下降，逐拍对撞</div>
-    <div class="term-body"><span class="term-dim">$</span> prism run examples/day3/cpu.prism --cosim --show --util
+    <div class="term-body"><span class="term-dim">$</span> prism cosim examples/day3/cpu.prism --run cpu_check
 <span class="term-ok">[run --cosim] ✅ PASS: cpu_check golden == RTL 仿真（24 拍 × 3 列全等；golden stop: for 24 cycles）</span>
 
-<span class="term-dim">$</span> prism tlm examples/day3/cpu.prism
-<span class="term-ok">[tlm] ✅ PASS: cpu_check SystemC/TLM == golden（24 拍 × 3 列全等）</span></div>
+<span class="term-dim">$</span> prism cosim examples/day3/cpu.prism --run cpu_check --sim systemc
+<span class="term-ok">[cosim] ✅ PASS: cpu_check SystemC/TLM == golden（24 拍 × 3 列全等；产物 …）</span></div>
   </div>
 
-  <p>第一日的承诺在这里第一次兑现到"一颗 CPU"的尺度：<strong>同一份 386 行的源码</strong>（<code>iu.prism</code> 259 行 + <code>cpu.prism</code> 127 行），Python 参考模型、SystemVerilog、SystemC 三条通路给出逐拍相同的 24 × 3 个数字。</p>
+  <p>第一日的承诺在这里第一次兑现到"一颗 CPU"的尺度：<strong>同一份 374 行的源码</strong>（<code>iu.prism</code> 249 行 + <code>cpu.prism</code> 125 行），Python 参考模型、SystemVerilog、SystemC 三条通路给出逐拍相同的 24 × 3 个数字。</p>
 </section>
 
 <section id="s6">
@@ -483,7 +485,7 @@ cycle	pcv	x1	x2
   <p>这不是 bug，是<strong>32 位机器的物理事实</strong>：PC 加到头就回绕。真正的白虹工程把这件事办得更干净——数据通路放在 64 位上，RV32 模式下的回绕交给<strong>显式声明的截断</strong>去管：回绕不是错误，是设计者选定的事实。Prism 对截断的态度始终是<strong>不猜</strong>——按你声明的宽度截断：真正装不下的绝不静默；写明了的物理事实，不唠叨。截断在语言规范里是明文合法的行为。</p>
 
   <h3>② 一层今天不承重的门</h3>
-  <p><code>rf_wen_eff = ctl.reg_wen &amp; legal</code> 这条线写着"非法指令不许写寄存器"。但如果把 <code>&amp; legal</code> 删掉，<code>--cosim</code> <strong>照样全绿</strong>——我试过了。</p>
+  <p><code>rf_wen_eff = ctl.reg_wen &amp; legal</code> 这条线写着"非法指令不许写寄存器"。但如果把 <code>&amp; legal</code> 删掉，<code>cosim</code> <strong>照样全绿</strong>——我试过了。</p>
 
   <p>为什么？因为 <code>decoder</code> 的 <code>is_illegal</code> 只看 opcode。opcode 不认识时，所有 <code>is_*</code> 全为 0，<code>reg_wen</code> / <code>mem_wen</code> 本来就是 0——这一层是<strong>重复的</strong>。</p>
 
@@ -506,8 +508,8 @@ cycle	pcv	x1	x2
 
   <div class="stack">
     <div class="stk"><div class="k">零件</div><div class="t">5 颗器官 + 1 颗 ROM</div><div class="d">五颗从第二日原样搬来，只补了 6 行分支分派</div></div>
-    <div class="stk"><div class="k">接线</div><div class="t">386 行源码</div><div class="d">顶层只有合流：3 个 mux + 1 张 funct3 表</div></div>
-    <div class="stk"><div class="k">产物</div><div class="t">471 行 SystemVerilog</div><div class="d">7 个模块，可综合、过了 yosys</div></div>
+    <div class="stk"><div class="k">接线</div><div class="t">374 行源码</div><div class="d">顶层只有合流：3 个 mux + 1 张 funct3 表</div></div>
+    <div class="stk"><div class="k">产物</div><div class="t">475 行 SystemVerilog</div><div class="d">7 个模块，可综合、过了 yosys</div></div>
     <div class="stk"><div class="k">验证</div><div class="t">三方逐拍全等</div><div class="d">golden / RTL / TLM，24 拍 × 3 列</div></div>
   </div>
 
@@ -518,16 +520,8 @@ cycle	pcv	x1	x2
 
   <p><strong>旱地至此露出。</strong>四颗器官此刻不是四颗躺在桌上的零件，而是一具能跑程序的身体——虽然这段程序只有六条指令。</p>
   <p>下一集把程序换长：写一段真的算法（Fibonacci、冒泡、memcpy），看看这具身体跑起来的时候，<code>pc</code> 与寄存器的波形长什么样；再下一集，对它做第 9 集做过的事——<strong>把它弄坏，看测试会不会喊</strong>。</p>
-</section>
 
-<section id="s8">
-  <h2>练习</h2>
-  <ol>
-    <li><strong>让它跑更多轮。</strong>把 <code>addi x2, x0, 5</code> 的编码改成 <code>0x00a00113</code>（<code>x2 = 10</code>），<code>until : for 24 cycles</code> 改成 <code>for 34 cycles</code>。手算 <code>x1</code> 应该是多少？跑一遍对答案。</li>
-    <li><strong>拆掉停机。</strong>把 <code>pc_load</code> 里的 <code>ctl.is_jal</code> 删掉。<code>jal</code> 变成"什么都不做"，<code>pc</code> 一拍 +4 走出那六条指令的范围（<code>20 → 24 → 28 → 32 → …</code>）。这条注入<strong>会被逮到</strong>，差异从拍 17 的 <code>pcv</code> 开始。顺手把 <code>instr</code> 加进 <code>show</code>——<code>im</code> 的阵列声明了 64 个字、只初始化了 6 个，越过去读出来的是<strong>零</strong>（opcode 0 = 谁都不认识），所以 CPU 不会跑飞，只是一拍一拍往前挪。</li>
-    <li><strong>找一条逮不到的注入。</strong>把 <code>wb_data</code> 里的 <code>is_link ? (pc.addr + 4) :</code> 删掉，让 jal 的写回直接取 ALU 结果。跑 <code>--cosim</code>——<strong>全绿</strong>。为什么？（提示：这段程序里唯一的 <code>jal</code> 写向 <code>x0</code>，写进去也被丢。要让它响，把编码 <code>0x0000006f</code> 换成 <code>0x000000ef</code>（<code>jal x1, 0</code>）——<code>x1</code> 已经在 <code>show</code> 里：正确的返回地址是 24，被改坏的版本给出 0。）</li>
-  </ol>
-  <p>第 3 题是这一集最值钱的一道：<strong>有些注入不响，不是测试写错了，是这段程序没走到那个分岔点上。</strong>第十二集会把这件事做成一道系统的工序。</p>
+  <p>预告一下"弄坏"的味道——两条注入，一响一哑：把 <code>pc_load</code> 里的 <code>ctl.is_jal</code> 删掉，<code>jal</code> 变成"什么都不做"，<code>pc</code> 一拍 +4 走出六条指令的范围（<code>20 → 24 → 28 → 32 → …</code>）——<strong>这条会被逮到</strong>，差异从拍 17 的 <code>pcv</code> 开始（<code>im</code> 声明 64 个字只初始化 6 个，越界读出来是 0 = 无人认识的 opcode，所以 CPU 不跑飞，只是一拍一拍往前挪）。而把 <code>wb_data</code> 里的 <code>is_link ? (pc.addr + 4) :</code> 删掉——<strong>全绿</strong>：这段程序里唯一的 <code>jal</code> 写向 <code>x0</code>，写进去也被丢；把停机编码从 <code>0x0000006f</code> 换成 <code>0x000000ef</code>（<code>jal x1, 0</code>）它才响。<strong>有些注入不响，不是测试写错了，是程序没走到那个分岔点上</strong>——第十二集会把这件事做成一道系统的工序。</p>
 </section>
 
 <section id="s9">
@@ -538,10 +532,10 @@ cycle	pcv	x1	x2
 cd seven-days
 
 <span class="tk-com"># 三路对撞：Python 参考 / SystemVerilog / SystemC</span>
-prism run examples/day3/cpu.prism --cosim --show --util
-prism tlm examples/day3/cpu.prism
+prism cosim examples/day3/cpu.prism --run cpu_check
+prism cosim examples/day3/cpu.prism --run cpu_check --sim systemc
 
-<span class="tk-com"># 出可综合的 SystemVerilog（471 行、7 个模块）</span>
+<span class="tk-com"># 出可综合的 SystemVerilog（475 行、7 个模块）</span>
 prism gen-rtl examples/day3/cpu.prism -o out/cpu_top.sv
 yosys -p "read_verilog -sv out/cpu_top.sv; hierarchy -top cpu_top_top; proc; opt; stat"</pre>
   </div>

@@ -103,28 +103,28 @@ footer a { color:var(--prism); text-decoration:none; }
       <div class="no">EP 1</div>
       <div>
         <div class="t"><a href="day1/01-why-prism.html">一道裂缝：为什么要有 Prism</a></div>
-        <div class="d">RTL 与 TLM 两条路各写一遍的痛（结构层），加上"语言本身不像在想电路"（表达层）。Prism 的答案：一束光、三道棱面。最小示例是一颗 8 位计数器——它会在第 5 集长成 <code>pc</code>；20 分钟三下降全绿。</div>
+        <div class="d">RTL 与 TLM 两条路各写一遍的痛（结构层），加上"语言本身不像在想电路"（表达层）。Prism 的答案：一束光、三道棱面。最小示例是一颗加法器——它会在第 7 集改造成 <code>ALU</code>；20 分钟三下降全绿。</div>
       </div>
     </div>
     <div class="ep written">
       <div class="no">EP 2</div>
       <div>
         <div class="t"><a href="day1/02-layered.html">分层与语法骨架</a></div>
-        <div class="d"><code>module</code> 只写"做什么"，<code>@schedule</code> 才补"怎么做"。一颗带 <code>fsm</code> 的饱和计数器把语法骨架一次摆完——组合、时序、状态、协议端口、行级期望全在一颗小模块里。</div>
+        <div class="d"><code>module</code> 只写"做什么"，<code>@schedule</code> 才补"怎么做"。这一集从一只盒子讲起（端口 / 线 / 状态），把语法面一次讲全：端口 <code>in</code>/<code>out</code>/<code>both</code>、类型、四种分支、<code>on clock</code>、<code>fsm</code>——一颗进程调度单元（进程五态 + 时间片）把骨架装起来。</div>
       </div>
     </div>
     <div class="ep written">
       <div class="no">EP 3</div>
       <div>
         <div class="t"><a href="day1/03-cpu-top.html">聚在一处：组装与抽象</a></div>
-        <div class="d"><code>design</code> + <code>connect</code> + <code>wire</code> + <code>expose</code> 把子模块拼成一条数据通路；看生成的网表；再铺开 <code>interface</code> / <code>composer</code> / <code>import</code> / <code>blackbox</code> 四件抽象手段。全篇按"遇到什么麻烦、于是有什么手段"的因果写法展开——第一日不出现整机。</div>
+        <div class="d"><code>design</code> 的装配规矩展开（<code>connect</code> / <code>wire</code> / <code>expose</code> + 顶层端口推导）；再把零件多起来之后的 <code>interface</code>（契约）/ <code>composer</code>（封装，展平透明）/ <code>import</code>（分文件）逐一展开。全篇按"遇到什么麻烦、于是有什么手段"的因果写法展开——第一日不出现整机。</div>
       </div>
     </div>
     <div class="ep written">
       <div class="no">EP 4</div>
       <div>
         <div class="t"><a href="day1/04-let-there-be-light.html">让光打出去：工具箱全开</a></div>
-        <div class="d">不写新代码，把 prism CLI 九件工具一次走完——位宽检查、82 行 AST、154 行可综合 SV、三路逐拍对撞、依赖与保留字自检；全跑在第三集的 <code>mini_cpu</code> 上。工具这半边到此为止。</div>
+        <div class="d">不写新代码，把 prism CLI 九件工具一次走完——位宽检查、76 行 AST、154 行可综合 SV、三路逐拍对撞、依赖与保留字自检；全跑在第三集的 <code>mini_cpu</code> 上。工具这半边到此为止。</div>
       </div>
     </div>
   </div>
@@ -158,7 +158,7 @@ footer a { color:var(--prism); text-decoration:none; }
       <div class="no">EP 7</div>
       <div>
         <div class="t"><a href="day2/07-alu.html">ALU — 活动</a></div>
-        <div class="d">十条路一张 <code>match</code> 表——写起来是表，长出来是十个并列运算加一个多路选择器。三条边界：不掩移位量、不产生标志位、不做多周期的事。</div>
+        <div class="d">第一集那颗加法器在这里成年——十条路一张 <code>match</code> 表，写起来是表，长出来是十个并列运算加一个多路选择器。三条边界：不掩移位量、不产生标志位、不做多周期的事。</div>
       </div>
     </div>
     <div class="ep written">
@@ -182,8 +182,8 @@ footer a { color:var(--prism); text-decoration:none; }
         <div class="d">五颗器官原样搬来（只补了 6 行分支分派）；顶层 <code>wire</code> / <code>connect</code> 合流；一段六条指令的真循环，24 拍跑出 <code>x1 = 15</code>，golden / RTL / TLM 三方逐拍全等。<strong>原料至此合体。</strong></div>
       </div>
     </div>
-    <div class="ep"><div class="no">EP 11</div><div><div class="t">跑一段冒泡排序</div><div class="d">手写一段冒泡排序的 RV64I 机器码装进 <code>im</code>；<code>--cosim</code> 逐拍看 <code>pc</code> 与 <code>x</code> 寄存器演化、<code>dm</code> 里数组一格一格换位；行级期望把排好序的数组钉死。</div></div></div>
-    <div class="ep"><div class="no">EP 12</div><div><div class="t">反证 · 变异扫描</div><div class="d">手动改坏三处（x0 硬连线、sb 字节掩码、分支符号扩展），<code>--cosim</code> 必须逮到，且差异必须落在可见样本上。<strong>一个不会反证的验证等于没验证。</strong></div></div></div>
+    <div class="ep"><div class="no">EP 11</div><div><div class="t">跑一段冒泡排序</div><div class="d">手写一段冒泡排序的 RV64I 机器码装进 <code>im</code>；<code>cosim</code> 逐拍看 <code>pc</code> 与 <code>x</code> 寄存器演化、<code>dm</code> 里数组一格一格换位；行级期望把排好序的数组钉死。</div></div></div>
+    <div class="ep"><div class="no">EP 12</div><div><div class="t">反证 · 变异扫描</div><div class="d">手动改坏三处（x0 硬连线、sb 字节掩码、分支符号扩展），<code>cosim</code> 必须逮到，且差异必须落在可见样本上。<strong>一个不会反证的验证等于没验证。</strong></div></div></div>
   </div>
 </section>
 
@@ -244,8 +244,8 @@ footer a { color:var(--prism); text-decoration:none; }
   <div class="eps">
     <div class="ep"><div class="no">EP 23</div><div><div class="t">治理规则：总线 / 地址映射 / ABI / 链接脚本</div><div class="d">一套地址空间规划与解码；RISC-V ABI、<code>gp</code> / <code>tp</code> 初始化、<code>.ld</code> 布局——<strong>先约好规矩，再谈管理</strong>。</div></div></div>
     <div class="ep"><div class="no">EP 24</div><div><div class="t">挂上存储器：片上 SRAM 与 BootROM</div><div class="d">SRAM 控制器、数组初始化；BootROM 上电即跳——CPU 有了<strong>长期记忆</strong>。</div></div></div>
-    <div class="ep"><div class="no">EP 25</div><div><div class="t">挂上外设：PLIC 与 UART</div><div class="d">平台级中断仲裁、多源；16550 风格 UART 收发状态机；<code>blackbox</code> 让复合总线 IP 绕过 Prism 语法直接例化。</div></div></div>
-    <div class="ep"><div class="no">EP 26</div><div><div class="t">SoC 顶层组装 · 从"能算"到"能管"</div><div class="d">把 CPU + SRAM + BootROM + PLIC + UART 一次连齐；<code>--cosim</code> 全链逐拍跑通；跑一段 hello world，串口输出。</div></div></div>
+    <div class="ep"><div class="no">EP 25</div><div><div class="t">挂上外设：PLIC 与 UART</div><div class="d">平台级中断仲裁、多源；16550 风格 UART 收发状态机。</div></div></div>
+    <div class="ep"><div class="no">EP 26</div><div><div class="t">SoC 顶层组装 · 从"能算"到"能管"</div><div class="d">把 CPU + SRAM + BootROM + PLIC + UART 一次连齐；<code>cosim</code> 全链逐拍跑通；跑一段 hello world，串口输出。</div></div></div>
   </div>
 </section>
 
@@ -259,7 +259,7 @@ footer a { color:var(--prism); text-decoration:none; }
   <p>前六日都是"作者在改代码"。第七日是<strong>作者退场</strong>：一段不属于我们的固件（OpenSBI）在 Prism 造的 CPU 上自己起来——M 态跳 S 态、串口打出 banner；从此 CPU 跑的不是我们写的激励，是别人写的操作系统。</p>
 
   <div class="eps">
-    <div class="ep"><div class="no">EP 27</div><div><div class="t">OpenSBI 移植与最小 SoC 跑通</div><div class="d">编译 OpenSBI、固件加载到 SRAM / BootROM、<code>--cosim</code> 校验上电 reset vector 与 <code>mtvec</code> 跳转；FPGA 上电、串口 banner 打出来。<strong>作者停手，机器自转。</strong></div></div></div>
+    <div class="ep"><div class="no">EP 27</div><div><div class="t">OpenSBI 移植与最小 SoC 跑通</div><div class="d">编译 OpenSBI、固件加载到 SRAM / BootROM、<code>cosim</code> 校验上电 reset vector 与 <code>mtvec</code> 跳转；FPGA 上电、串口 banner 打出来。<strong>作者停手，机器自转。</strong></div></div></div>
   </div>
 </section>
 

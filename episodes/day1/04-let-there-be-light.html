@@ -127,7 +127,7 @@ footer .next { display: block; margin-bottom: 12px; font-family: 'Noto Serif SC'
         <rect x="24" y="112" width="196" height="100" rx="12" fill="url(#src)" stroke="#a678ff" stroke-width="1.5"/>
         <text x="122" y="148" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="14" font-weight="600" fill="#e9e2ff">mini_cpu.prism</text>
         <text x="122" y="170" text-anchor="middle" font-family="Noto Serif SC, serif" font-size="11" fill="rgba(255,255,255,.55)">第三集的迷你数据通路</text>
-        <text x="122" y="190" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="10.5" fill="rgba(255,255,255,.42)">103 行 · 3 模块 + 1 design</text>
+        <text x="122" y="190" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="10.5" fill="rgba(255,255,255,.42)">97 行 · 3 模块 + 1 design</text>
 
         <!-- 入口箭头 -->
         <line x1="220" y1="162" x2="298" y2="162" stroke="#c9d6f0" stroke-width="2" marker-end="url(#a4)"/>
@@ -141,9 +141,9 @@ footer .next { display: block; margin-bottom: 12px; font-family: 'Noto Serif SC'
           <rect x="428" y="100" width="100" height="38" rx="8" fill="rgba(91,75,255,.16)" stroke="rgba(167,120,255,.35)"/><text x="478" y="124">typecheck</text>
           <rect x="540" y="100" width="100" height="38" rx="8" fill="rgba(91,75,255,.16)" stroke="rgba(167,120,255,.35)"/><text x="590" y="124">dump-ast</text>
           <rect x="316" y="146" width="100" height="38" rx="8" fill="rgba(91,75,255,.16)" stroke="rgba(167,120,255,.35)"/><text x="366" y="170">gen-rtl</text>
-          <rect x="428" y="146" width="100" height="38" rx="8" fill="rgba(91,75,255,.16)" stroke="rgba(167,120,255,.35)"/><text x="478" y="170">run</text>
-          <rect x="540" y="146" width="100" height="38" rx="8" fill="rgba(91,75,255,.16)" stroke="rgba(167,120,255,.35)"/><text x="590" y="170">cosim</text>
-          <rect x="316" y="192" width="100" height="38" rx="8" fill="rgba(91,75,255,.16)" stroke="rgba(167,120,255,.35)"/><text x="366" y="216">tlm</text>
+          <rect x="428" y="146" width="100" height="38" rx="8" fill="rgba(91,75,255,.16)" stroke="rgba(167,120,255,.35)"/><text x="478" y="170">gen-tlm</text>
+          <rect x="540" y="146" width="100" height="38" rx="8" fill="rgba(91,75,255,.16)" stroke="rgba(167,120,255,.35)"/><text x="590" y="170">run</text>
+          <rect x="316" y="192" width="100" height="38" rx="8" fill="rgba(91,75,255,.16)" stroke="rgba(167,120,255,.35)"/><text x="366" y="216">cosim</text>
           <rect x="428" y="192" width="100" height="38" rx="8" fill="rgba(91,75,255,.16)" stroke="rgba(167,120,255,.35)"/><text x="478" y="216">deps</text>
           <rect x="540" y="192" width="100" height="38" rx="8" fill="rgba(91,75,255,.16)" stroke="rgba(167,120,255,.35)"/><text x="590" y="216">keywords</text>
         </g>
@@ -155,11 +155,11 @@ footer .next { display: block; margin-bottom: 12px; font-family: 'Noto Serif SC'
         <rect x="726" y="64" width="210" height="42" rx="8" fill="url(#out)" stroke="rgba(255,180,120,.4)"/>
         <text x="831" y="90" text-anchor="middle" font-family="Noto Serif SC, serif" font-size="12.5" fill="rgba(255,255,255,.8)">位宽 7/8/1 · 编译期钉死</text>
         <rect x="726" y="114" width="210" height="42" rx="8" fill="url(#out)" stroke="rgba(255,180,120,.4)"/>
-        <text x="831" y="140" text-anchor="middle" font-family="Noto Serif SC, serif" font-size="12.5" fill="rgba(255,255,255,.8)">AST 82 行 · SV 154 行</text>
+        <text x="831" y="140" text-anchor="middle" font-family="Noto Serif SC, serif" font-size="12.5" fill="rgba(255,255,255,.8)">AST 76 行 · SV 154 行</text>
         <rect x="726" y="164" width="210" height="42" rx="8" fill="url(#out)" stroke="rgba(255,180,120,.4)"/>
         <text x="831" y="190" text-anchor="middle" font-family="Noto Serif SC, serif" font-size="12.5" fill="rgba(255,255,255,.8)">逐拍表 · 三路全等 ✅</text>
         <rect x="726" y="214" width="210" height="42" rx="8" fill="url(#out)" stroke="rgba(255,180,120,.4)"/>
-        <text x="831" y="240" text-anchor="middle" font-family="Noto Serif SC, serif" font-size="12.5" fill="rgba(255,255,255,.8)">自检全就绪 · 保留字 30</text>
+        <text x="831" y="240" text-anchor="middle" font-family="Noto Serif SC, serif" font-size="12.5" fill="rgba(255,255,255,.8)">自检全就绪 · 保留字 32</text>
 
         <text x="480" y="300" text-anchor="middle" font-family="Noto Serif SC, serif" font-size="12" fill="rgba(255,255,255,.35)">一条不跳，全部真跑——本集每个数字都是命令的输出，不是形容</text>
       </svg>
@@ -188,7 +188,7 @@ footer .next { display: block; margin-bottom: 12px; font-family: 'Noto Serif SC'
     <div class="led">
       <div class="n">EP 2</div>
       <div class="t">一颗模块</div>
-      <div class="d">分层 · 类型 · 组合 / 时序 · fsm；<code>sat_counter</code></div>
+      <div class="d">分层 · 类型 · 组合 / 时序 · fsm；<code>proc_switch</code></div>
     </div>
     <div class="led">
       <div class="n">EP 3</div>
@@ -203,7 +203,7 @@ footer .next { display: block; margin-bottom: 12px; font-family: 'Noto Serif SC'
   </div>
 
   <p>语言有了，模块有了，组装方式有了。剩下的问题只有一个：<strong>这套工具自己，经得起从头到尾用一遍吗？</strong></p>
-  <p>这一集不写新代码。我要做的是——把 prism 命令行<strong>一条不跳</strong>地走完：从最轻的 <code>check</code> 到最重的 <code>tlm</code>，全部跑在第三集那颗 <code>mini_cpu</code> 上。九件工具，九次真跑。</p>
+  <p>这一集不写新代码。我要做的是——把 prism 命令行<strong>一条不跳</strong>地走完：从最轻的 <code>check</code> 到最重的对撞，全部跑在第三集那颗 <code>mini_cpu</code> 上。九件工具，一条不跳，全部真跑。</p>
 </section>
 
 <section id="s2">
@@ -233,18 +233,25 @@ footer .next { display: block; margin-bottom: 12px; font-family: 'Noto Serif SC'
     <div class="term-header">▸ typecheck · 位宽推导（节选）</div>
     <div class="term-body">module ticker:
   level       : CYCLE_EXACT
+  has_schedule: True
   latency     : 1 cycles
   can_lower_rtl: True
   bitwidths   : cnt=7, c=7
   signedness  : cnt=u, c=u
 module doubler:
+  level       : CYCLE_EXACT
+  …
   bitwidths   : y=8
 module thresh:
+  level       : CYCLE_EXACT
+  …
   bitwidths   : hit=1
 <span class="term-hint">…（每颗模块 + 每个 specialize 后的实例各一段）</span></div>
   </div>
 
   <p><code>cnt=7</code>、<code>y=8</code>、<code>hit=1</code>——没有一个数字是跑出来的，全是<strong>编译期推出来的</strong>。这就是第二集说的类型驱动：位宽的账在编译器里就算清了，不留给仿真。</p>
+
+  <p>反过来也有课：把一颗模块的 <code>@schedule</code> 删掉（比如 <code>thresh</code>）再跑——<code>check</code> 当场给 <code>[warn] 无 @schedule —— 可下降 TLM(UNTIMED)，但【无法下降 RTL】</code>；<code>typecheck</code> 把缺的字段一件件列出来（<code>missing=['bitwidth','clock',…]</code>）。<strong>两道关的分工：一个拦、一个报账。</strong></p>
 </section>
 
 <section id="s3">
@@ -268,22 +275,24 @@ module thresh:
     assign c = cnt
   }
   …
-  design mini_cpu  @L71 {
+  design mini_cpu  @L65 {
     inst t = ticker&lt;&gt;
     inst d = doubler&lt;&gt;
     inst h = thresh&lt;&gt;
     wire step : u8 = (t.c + 1)
+    wire res : u8 = d.y
     connect __wire__.step -&gt; d.x
+    connect __wire__.res -&gt; h.x
     expose t.cnt -&gt; ticks
   }
 }</div>
   </div>
 
-  <p>整棵树 <strong>82 行</strong>，源码是 103 行——同一份东西的两种记法。源码里 <code>cnt' = en ? cnt + 1 : cnt</code> 那行，在树里就是 <code>on clock</code> 节点里的一个赋值；<code>expose t.cnt -&gt; ticks</code> 也没被吃掉，原样挂在 design 上。</p>
+  <p>整棵树 <strong>76 行</strong>，源码是 97 行——同一份东西的两种记法。源码里 <code>cnt' = en ? cnt + 1 : cnt</code> 那行，在树里就是 <code>on clock</code> 节点里的一个赋值；<code>expose t.cnt -&gt; ticks</code> 也没被吃掉，原样挂在 design 上。</p>
 </section>
 
 <section id="s4">
-  <h2>出货：从 .prism 到可综合 SV</h2>
+  <h2>出货：同一棵 AST，两份产物</h2>
   <p>检查全过、树也看过了——出货。</p>
 
   <div class="code">
@@ -292,7 +301,7 @@ module thresh:
   </div>
   <div class="term">
     <div class="term-header">▸ gen-rtl · 三颗模块全部 RTL-ready</div>
-    <div class="term-body">[gen-rtl] wrote mini_cpu.sv (3069 bytes)
+    <div class="term-body">[gen-rtl] wrote mini_cpu.sv (3097 bytes)
            ticker@t: RTL-ready, widths={'cnt': 7, 'c': 7}
            doubler@d: RTL-ready, widths={'y': 8}
            thresh@h: RTL-ready, widths={'hit': 1}</div>
@@ -309,7 +318,7 @@ module thresh:
   <span class="tk-decl">input</span>  logic rst_n,
   <span class="tk-decl">input</span>  logic [<span class="tk-num">1</span>-<span class="tk-num">1</span>:<span class="tk-num">0</span>] en,
   <span class="tk-decl">output</span> logic [<span class="tk-num">7</span>-<span class="tk-num">1</span>:<span class="tk-num">0</span>] c,
-  <span class="tk-decl">output</span> logic [<span class="tk-num">7</span>-<span class="tk-num">1</span>:<span class="tk-num">0</span>] xpose_cnt
+  <span class="tk-decl">output</span> logic [<span class="tk-num">7</span>-<span class="tk-num">1</span>:<span class="tk-num">0</span>] xpose__cnt
 );
 
   <span class="tk-com">// 时序寄存器</span>
@@ -328,12 +337,23 @@ module thresh:
   <span class="tk-kw">assign</span> c = cnt;
 
   <span class="tk-com">// expose 观测端口驱动</span>
-  <span class="tk-kw">assign</span> xpose_cnt = cnt;
+  <span class="tk-kw">assign</span> xpose__cnt = cnt;
 
 <span class="tk-decl">endmodule</span></pre>
   </div>
 
-  <p>这不是"翻译腔"的展示品——<strong>丢给 yosys，综合出 35 个门级单元</strong>：10 个 AND、11 个 XOR、7 个 D 触发器、2 个 NOT……0.77 秒。上板与整机是后面几日的事；这里只钉一件事：<strong>语言写的东西，真的能变成门</strong>。</p>
+  <p>这不是"翻译腔"的展示品——<strong>丢给 yosys，综合出 35 个门级单元</strong>：10 个 AND、11 个 XOR、7 个 D 触发器、2 个 NOT……0.99 秒。上板与整机是后面几日的事；这里只钉一件事：<strong>语言写的东西，真的能变成门</strong>。</p>
+
+  <p>同一棵 AST 上的第二份产物也顺手出了——<code>gen-tlm</code> 出 SystemC C++ 源码（它只管出源码；编译与真跑在下一节）：</p>
+
+  <div class="code">
+    <div class="code-header"><span class="code-lang">bash</span><span class="code-file">生成 SystemC 模型</span></div>
+<pre>prism gen-tlm examples/mini_cpu.prism -o mini_cpu_tlm.cpp</pre>
+  </div>
+  <div class="term">
+    <div class="term-header">▸ gen-tlm · SystemC 模型源码</div>
+    <div class="term-body">[gen-tlm] wrote mini_cpu_tlm.cpp (7043 bytes)</div>
+  </div>
 </section>
 
 <section id="s5">
@@ -343,7 +363,7 @@ module thresh:
   <h3>① golden 直跑：逐拍表 + 手算期望</h3>
   <div class="code">
     <div class="code-header"><span class="code-lang">bash</span><span class="code-file">Python 参考模型</span></div>
-<pre>prism run examples/mini_cpu.prism --show --util</pre>
+<pre>prism run examples/mini_cpu.prism --debug</pre>
   </div>
   <div class="term">
     <div class="term-header">▸ golden · 解释 AST，逐拍出表</div>
@@ -370,8 +390,8 @@ cycle   t_en    ticks   step    res     h_hit
   </div>
   <div class="term">
     <div class="term-header">▸ cosim · RTL+TB 交给 iverilog，逐拍比对</div>
-    <div class="term-body">  [TB] cyc11 h_hit=0, ticks=4 exp=0, exp=4  PASS
-  [TB] cyc15 h_hit=0, ticks=5 exp=0, exp=5  PASS
+    <div class="term-body">  [TB] cyc11 h__hit=0, ticks=4 exp=0, exp=4  PASS
+  [TB] cyc15 h__hit=0, ticks=5 exp=0, exp=5  PASS
 <span class="term-ok">===== result: PASS=16 FAIL=0 =====</span>
 <span class="term-ok">[cosim] ✅ PASS: 网表 RTL == golden（联立求解，逐拍一致），16 拍</span></div>
   </div>
@@ -379,17 +399,20 @@ cycle   t_en    ticks   step    res     h_hit
   <h3>③ TLM：SystemC 真跑</h3>
   <div class="code">
     <div class="code-header"><span class="code-lang">bash</span><span class="code-file">事务级模型</span></div>
-<pre>prism tlm examples/mini_cpu.prism</pre>
+<pre>prism cosim examples/mini_cpu.prism --run mini_cpu_check --sim systemc</pre>
   </div>
   <div class="term">
-    <div class="term-header">▸ tlm · 下降成 SystemC，编译并真跑</div>
-    <div class="term-body">cycle   t_en    ticks   step    res     h_hit
+    <div class="term-header">▸ TLM · 下降成 SystemC，编译并真跑</div>
+    <div class="term-body">Info: /OSCI/SystemC: Simulation stopped by user.
+<span class="term-ok">[cosim] ✅ PASS: mini_cpu_check SystemC/TLM == golden（10 拍 × 5 列全等；产物 …）</span>
+cycle   t_en    ticks   step    res     h_hit
 0       1       1       2       4       0
 <span class="term-hint">…（与 golden 同表，逐拍对照）</span>
-<span class="term-ok">[tlm] ✅ PASS: mini_cpu_check SystemC/TLM == golden（10 拍 × 5 列全等）</span></div>
+[run] mini_cpu_check: TLM 期望值比对
+<span class="term-ok"># expect: 10/10 拍有断言 · 4 列 · 全等 ✅</span></div>
   </div>
 
-  <p>三条通路的共同语言只有那份 <code>.prism</code>：一条解释 AST，一条生成 SV 进 iverilog，一条生成 SystemC 进 g++。逐拍对撞全绿——<strong>工具的重头，就在这里</strong>。</p>
+  <p>三条通路的共同语言只有那份 <code>.prism</code>：一条解释 AST，一条生成 SV 进 iverilog，一条生成 SystemC 进 g++。逐拍对撞全绿——<strong>工具的重头，就在这里</strong>。（把 <code>--vectors</code> 从 16 加到 256、再换个 <code>--seed</code>，结论不变——256 拍逐拍一致。）</p>
 </section>
 
 <section id="s6">
@@ -407,23 +430,25 @@ cycle   t_en    ticks   step    res     h_hit
 
   <span class="term-ok">[ok] iverilog</span>：Icarus Verilog version 13.0 (stable) (v13_0)（/opt/homebrew/bin/iverilog）
   <span class="term-ok">[ok] C++ 编译器</span>：/usr/bin/clang++
+  <span class="term-ok">[ok] verilator</span>：Verilator 5.052 2026-09-05 rev vUNKNOWN-built20260905
   <span class="term-ok">[ok] SystemC</span>：/opt/homebrew/include/systemc.h
+  <span class="term-ok">[ok] sail_riscv_sim</span>：0.14.1
 
 全部就绪。golden 直跑（prism run）本就不需要外部工具；RTL 与 TLM 两条通路可用。</div>
   </div>
-  <p>三件外部依赖全部到位。缺了也不慌：<code>prism deps --install</code> 会按操作系统把缺的补上。</p>
+  <p>五项自检全部到位。缺了也不慌：<code>prism deps --install</code> 会按操作系统把缺的补上。</p>
 
-  <h3>语法预算：保留字 30 个</h3>
+  <h3>语法预算：保留字 32 个</h3>
   <div class="code">
     <div class="code-header"><span class="code-lang">bash</span><span class="code-file">保留字登记表</span></div>
 <pre>prism keywords</pre>
   </div>
   <div class="term">
     <div class="term-header">▸ keywords · 保留字预算</div>
-    <div class="term-body">reserved=30 [attribute=2 control=2 encapsulation=1 expression=2 run_field=3 structure=14 timing=6]
+    <div class="term-body">reserved=32 [attribute=2 control=2 encapsulation=1 expression=2 run_field=3 structure=14 timing=8]
             | schedule_fields=8 | blackbox_fields=2 | …</div>
   </div>
-  <p>一门语言最容易悄悄死在自己长出来的关键字上。这里给每个保留字记账：30 个、按族分类，连 <code>@schedule</code> 的字段和 fsm 的属性都单独计。（源码安装下 <code>prism keywords --check</code> 还会扫保留字漂移；pip 安装的包里没有源码，只有这份账本。）</p>
+  <p>一门语言最容易悄悄死在自己长出来的关键字上。这里给每个保留字记账：32 个、按族分类，连 <code>@schedule</code> 的字段和 fsm 的属性都单独计。（源码安装下 <code>prism keywords --check</code> 还会扫保留字漂移；pip 安装的包里没有源码，只有这份账本。）</p>
 </section>
 
 <section id="s7">
@@ -435,7 +460,7 @@ cycle   t_en    ticks   step    res     h_hit
     <p style="margin:0;">本集从头到尾只有工具，没有整机、没有外设、没有上板。SoC 与 OpenSBI 是后面几日的事——这一集的任务，只是把"你将用来造它们的那套东西"一次看全。</p>
   </div>
 
-  <p>"看全"的意思是：出错时它拦你（check / typecheck）、你想看它陪你看（dump-ast）、要出货它出货（gen-rtl）、跑没跑对它拿三台机器对（run / cosim / tlm）、连它自己缺什么、有多少保留字都记账（deps / keywords）。</p>
+  <p>"看全"的意思是：出错时它拦你（check / typecheck）、你想看它陪你看（dump-ast）、要出货它出货（gen-rtl / gen-tlm）、跑没跑对它拿三台机器对（run / cosim / --sim systemc）、连它自己缺什么、有多少保留字都记账（deps / keywords）。</p>
 
   <table class="tbl-wrap">
     <thead><tr><th>日</th><th>造什么</th></tr></thead>
@@ -452,21 +477,12 @@ cycle   t_en    ticks   step    res     h_hit
   <p><strong>第一日之后不再讲语法</strong>——每一日只回答一个问题：下一步该造什么。从第二日起，开始造物——第一件事，给机器一颗<strong>心跳</strong>。</p>
 </section>
 
-<section id="s8">
-  <h2>练习</h2>
-  <ol>
-    <li>把 <code>thresh</code> 的 <code>@schedule</code> 删掉，再跑 <code>prism check</code> 与 <code>typecheck</code>——看可下降性检查在第几步喊、喊什么。</li>
-    <li>对 <code>examples/counter.prism</code> 跑同一套：<code>gen-rtl</code> 出来的 SV 是 56 行，mini_cpu 是 154 行——各长什么样？（提示：counter 只有一颗 <code>always_ff</code>，mini_cpu 是四颗模块拼成的 design。）</li>
-    <li>把 <code>--vectors 16</code> 加到 <code>--vectors 256</code>、再换个 <code>--seed</code>：比对表长了一截，结论不变——256 拍逐拍一致。</li>
-  </ol>
-</section>
-
 <section id="s9">
   <h2>复现本集</h2>
   <div class="code">
-    <div class="code-header"><span class="code-lang">bash</span><span class="code-file">reproduce · 九件工具</span></div>
+    <div class="code-header"><span class="code-lang">bash</span><span class="code-file">reproduce · 本集全部命令</span></div>
 <pre>pip install prism-hdl
-brew install icarus-verilog systemc   <span class="tk-com"># macOS</span>
+prism deps --install   <span class="tk-com"># 按操作系统补齐仿真依赖（iverilog / SystemC 等）</span>
 
 git clone https://github.com/prism-hdl/seven-days
 cd seven-days
@@ -475,9 +491,10 @@ prism check     examples/mini_cpu.prism
 prism typecheck examples/mini_cpu.prism
 prism dump-ast  examples/mini_cpu.prism
 prism gen-rtl   examples/mini_cpu.prism -o mini_cpu.sv
-prism run       examples/mini_cpu.prism --show --util
+prism gen-tlm   examples/mini_cpu.prism -o mini_cpu_tlm.cpp
+prism run       examples/mini_cpu.prism --debug
 prism cosim     examples/mini_cpu.prism --vectors 16
-prism tlm       examples/mini_cpu.prism
+prism cosim     examples/mini_cpu.prism --run mini_cpu_check --sim systemc
 prism deps
 prism keywords</pre>
   </div>

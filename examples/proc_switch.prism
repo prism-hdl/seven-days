@@ -1,0 +1,121 @@
+// =============================================================================
+// proc_switch.prism —— 第一日 · 第 2 集样例：一颗进程调度单元。
+//
+// 管一个进程的五态一生（NEW / READY / RUN / BLOCKED / EXIT），顺带记它在 CPU
+// 上花掉的拍数和时间片；cpu_bus 是共享三态总线——在 CPU 上时挂出 pid，否则
+// 让出（高阻）。事件全部从端口进；状态怎么转、数据怎么流，都在这一颗模块里。
+// =============================================================================
+
+module proc_switch {
+    // —— 事件（调度器与定时器给的）——
+    in  admit     : Signal<bit>       // 新进程被接纳
+    in  dispatch  : Signal<bit>       // 调度器选中它，上 CPU
+    in  preempt   : Signal<bit>       // 时间片到：被换下
+    in  yield     : Signal<bit>       // 主动让出
+    in  io_req    : Signal<bit>       // 发起 I/O → 阻塞
+    in  io_done   : Signal<bit>       // I/O 完成
+    in  fin       : Signal<bit>       // 退出
+
+    // —— 数据与观察 ——
+    in  pid       : Signal<u8>        // 进程号：上 CPU 时挂到总线
+    in  prio      : Signal<u2>        // 优先级：0 最高，用来定时间片
+    in  clr       : Signal<bit>       // 清零统计（与 FSM 无关）
+    out state     : Signal<u3>        // 五态序号（NEW..EXIT = 0..4）
+    out on_cpu    : Signal<bit>       // 本拍在不在 CPU 上
+    out cpu_time  : Signal<u16>       // 累计在 CPU 上的拍数
+    out slice_end : Signal<bit>       // 时间片用完（喂给调度器去触发 preempt）
+    both cpu_bus  : Signal<u8>        // 共享总线：在 CPU 上驱动 pid，否则高阻
+
+    fsm proc {
+        states : NEW, READY, RUN, BLOCKED, EXIT
+        reset  : NEW
+
+        NEW:     admit    -> READY
+        NEW:     _        -> NEW
+        READY:   dispatch -> RUN
+        READY:   _        -> READY
+        RUN:     io_req   -> BLOCKED
+        RUN:     preempt  -> READY
+        RUN:     yield    -> READY
+        RUN:     fin      -> EXIT
+        RUN:     _        -> RUN
+        BLOCKED: io_done  -> READY
+        BLOCKED: _        -> BLOCKED
+        EXIT:    _        -> EXIT
+    }
+
+    wire running : u1 = proc.is(RUN)          // 具名线：本拍在不在 CPU 上
+    reg  spent   : u16 = 0                    // 累计 CPU 拍数
+    reg  left    : u4  = 0                    // 本时间片剩余拍数
+
+    on clock {
+        if (clr) {
+            spent' = 0
+            left'  = 0
+        } else {
+            if (running) {
+                spent' = spent + 1            // 在 CPU 上：拍数 +1
+            }
+            if (dispatch) {
+                switch prio {                 // 按优先级装载时间片
+                    0 => { left' = 8 }
+                    1 => { left' = 4 }
+                    _ => { left' = 2 }
+                }
+            } else if (running & (left != 0)) {
+                left' = left - 1
+            }
+        }
+    }
+
+    state     = match { proc.is(NEW)     => 0,    // 组合量：随态即时变
+                        proc.is(READY)   => 1,
+                        proc.is(RUN)     => 2,
+                        proc.is(BLOCKED) => 3,
+                        _                => 4 }
+    on_cpu    = running
+    cpu_time  = spent
+    slice_end = running & (left == 0)
+    cpu_bus   = running ? pid : 1'bz
+}
+
+@schedule proc_switch {
+    bitwidth  : { data:16 }
+    pipeline  : 1 stage
+    reset     : async_low
+    clock     : 100 MHz, domain = single
+    resource  : none
+    latency   : 1 cycle
+}
+
+design proc_switch_top {
+    dut : proc_switch
+}
+
+run proc_check of proc_switch_top {
+    stim : {
+        admit, dispatch, preempt, yield, io_req, io_done, fin, pid, prio, clr, [state, on_cpu, cpu_time, slice_end] = {
+            1, 0, 0, 0, 0, 0, 0, 7, 0, 0, [1, 0,  0, 0],   // admit：进就绪队列
+            0, 1, 0, 0, 0, 0, 0, 7, 1, 0, [2, 1,  0, 0],   // dispatch：时间片 4
+            0, 0, 0, 0, 0, 0, 0, 7, 0, 0, [2, 1,  1, 0],   // 跑一拍：拍数 +1
+            0, 0, 0, 0, 0, 0, 0, 7, 0, 0, [2, 1,  2, 0],   // 剩 2
+            0, 0, 0, 0, 0, 0, 0, 7, 0, 0, [2, 1,  3, 0],   // 剩 1
+            0, 0, 0, 0, 0, 0, 0, 7, 0, 0, [2, 1,  4, 1],   // slice_end 拉起
+            0, 0, 1, 0, 0, 0, 0, 7, 0, 0, [1, 0,  5, 0],   // preempt：被换下
+            0, 1, 0, 0, 0, 0, 0, 7, 2, 0, [2, 1,  5, 0],   // dispatch：时间片 2
+            0, 0, 0, 0, 0, 0, 0, 7, 0, 0, [2, 1,  6, 0],   // 跑一拍
+            0, 0, 0, 1, 0, 0, 0, 7, 0, 0, [1, 0,  7, 0],   // yield：主动让出
+            0, 1, 0, 0, 0, 0, 0, 7, 0, 0, [2, 1,  7, 0],   // dispatch：时间片 8
+            0, 0, 0, 0, 0, 0, 0, 7, 0, 0, [2, 1,  8, 0],   // 跑一拍
+            0, 0, 0, 0, 1, 0, 0, 7, 0, 0, [3, 0,  9, 0],   // io_req：阻塞
+            0, 0, 0, 0, 0, 0, 0, 7, 0, 0, [3, 0,  9, 0],   // 等 I/O
+            0, 0, 0, 0, 0, 1, 0, 7, 0, 0, [1, 0,  9, 0],   // io_done：回就绪队列
+            0, 1, 0, 0, 0, 0, 0, 7, 0, 0, [2, 1,  9, 0],   // dispatch：再上 CPU
+            0, 0, 0, 0, 0, 0, 1, 7, 0, 0, [4, 0, 10, 0],   // fin：退出
+            0, 0, 0, 0, 0, 0, 0, 7, 0, 0, [4, 0, 10, 0],   // 已退出：停住
+            0, 0, 0, 0, 0, 0, 0, 7, 0, 1, [4, 0,  0, 0],   // clr：清零统计
+        }
+    }
+    until : end of stim
+    show  : { cpu_bus, state, on_cpu, cpu_time, slice_end }
+}

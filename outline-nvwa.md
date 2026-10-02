@@ -25,10 +25,10 @@
 
 鸡是清晨的第一声。CPU 的第一声是 `pc` 的跳动——它不识字、不算术、不记事，只是**一步一拍往前走**。第一日把工具与心跳一起立起来。
 
-- **第 1 集 · 抔土与一束光：为什么要有 Prism** — RTL 与 TLM 两条路各写一遍的痛；Prism 把一束算法折射成三道棱面（SV / TLM / Python golden）；最小示例：一颗 8 位计数器（`cnt' = cnt + 1`）+ `run --cosim`。
-- **第 2 集 · 语法的骨架** — `module` 只写"做什么"、`@schedule` 补"怎么做"；`reg` / `mem` / `fsm` / `match` / 三元 / 泛型 `<T: Bits>` / `Stream<T>` 一次摆完；一颗带 `fsm` 的饱和计数器把所有语法点各演示一次。
+- **第 1 集 · 抔土与一束光：为什么要有 Prism** — RTL 与 TLM 两条路各写一遍的痛；Prism 把一束算法折射成三道棱面（SV / TLM / Python golden）；最小示例：一颗 32 位加法器（`sum = a + b`）+ `cosim` 三路逐拍对撞。
+- **第 2 集 · 语法的骨架** — `module` 只写"做什么"、`@schedule` 补"怎么做"；`reg` / `mem` / `fsm` / `match` / 三元 / 泛型 `<T: bits>` / `Stream<T>` 一次摆完；一颗带 `fsm` 的进程调度单元把所有语法点各演示一次。
 - **第 3 集 · 会打鸣的 `pc`** — `reg pc : i32` + `on clock { pc' = mux(en, pc + 4, pc) }`；`reset` 把 `pc` 拉回 `boot_addr`；分支与跳转第一次拽开 `pc`。**CPU 有了节律。**
-- **第 4 集 · 观察心跳** — 每一颗器官独立 `run` + `stim` + `show` + `until`；`expose` 把内部 `pc` / `regs[x]` / `state` 引到顶层；`--cosim` 让 golden 与 SV 逐拍对撞；`stim` 表行尾 `[v1, v2, ...]` 手算期望钉死终态。
+- **第 4 集 · 观察心跳** — 每一颗器官独立 `run` + `stim` + `show` + `until`；`expose` 把内部 `pc` / `regs[x]` / `state` 引到顶层；`cosim` 让 golden 与 SV 逐拍对撞；`stim` 表行尾 `[v1, v2, ...]` 手算期望钉死终态。
 
 ---
 
@@ -49,7 +49,7 @@
 
 猪能吃能存。CPU 的记忆分三层：**短的在 `reg`、长的在 `mem`、外部的在 SoC 侧的 SRAM**（第六日再谈）。哈佛架构把"指令的记忆"与"数据的记忆"分成两只槽。
 
-- **第 7 集 · 寄存器堆 `regfile`** — 32 个通用寄存器 + `x0` 硬连线零；`mem regs : i32 [32] = 0` 数组初值；写屏蔽 `waddr == 0`；反证锚：删掉硬连线，看 `--cosim` 是否逮到。
+- **第 7 集 · 寄存器堆 `regfile`** — 32 个通用寄存器 + `x0` 硬连线零；`mem regs : i32 [32] = 0` 数组初值；写屏蔽 `waddr == 0`；反证锚：删掉硬连线，看 `cosim` 是否逮到。
 - **第 8 集 · 哈佛侧的 `im` / `pc`** — `im` 是独立 SRAM 实例、支持数组初始化；`pc` 与 `im` 一起构成取指通道；分支目标 `pc_target` 从下一站拽回 `pc`。
 - **第 9 集 · 数据侧的 `dm` 与 Load / Store** — 哈佛另一侧；字节 / 半字 / 字访问；`sb` / `sh` 通道写回原字的位切片合并；对齐与 `srl` 右移语义。
 
@@ -102,8 +102,8 @@
 
 - **第 21 集 · 治理规则：总线 / 地址映射 / ABI / 链接脚本** — 一套地址空间规划与解码；RISC-V ABI、`gp` / `tp` 初始化、`.ld` 布局——CPU 与外设**先约好规矩**。
 - **第 22 集 · 挂上记忆：SRAM 与 BootROM** — 片上 SRAM 控制器、数组初始化；BootROM 上电即跳——CPU 有了**长期记忆**。
-- **第 23 集 · 挂上感官：PLIC 与 UART** — 平台级中断仲裁、多源、与 CPU 中断线连接；16550 风格 UART 收发状态机；`blackbox` 让复合总线 IP（AXI / DDR）绕过 Prism 语法直接例化。
-- **第 24 集 · SoC 顶层组装 · 从"能算"到"能管"** — `design` 里把 CPU + SRAM + BootROM + PLIC + UART 五颗一次连齐；`--cosim` 全链逐拍跑通；跑一段 hello world，串口输出——CPU 第一次"管理"了外部世界。
+- **第 23 集 · 挂上感官：PLIC 与 UART** — 平台级中断仲裁、多源、与 CPU 中断线连接；16550 风格 UART 收发状态机。
+- **第 24 集 · SoC 顶层组装 · 从"能算"到"能管"** — `design` 里把 CPU + SRAM + BootROM + PLIC + UART 五颗一次连齐；`cosim` 全链逐拍跑通；跑一段 hello world，串口输出——CPU 第一次"管理"了外部世界。
 
 ---
 
@@ -114,7 +114,7 @@
 
 天有裂，女娲不再抟土——她**炼石补之**。我们的 SoC 上电、OpenSBI 起来，从此它自己走；有 bug，我们再炼石（改代码），不再手捏每一个像素。作者退场，机器自转。
 
-- **第 25 集 · OpenSBI 移植与最小 SoC 跑通** — 编译 OpenSBI、固件加载到 SRAM / BootROM、`--cosim` 校验上电 reset vector 与 `mtvec` 跳转；FPGA 上电、串口 banner 打出来；可选 Linux 起步。**从此 CPU 跑的不是我们写的 `stim`，是别人写的 OS。**
+- **第 25 集 · OpenSBI 移植与最小 SoC 跑通** — 编译 OpenSBI、固件加载到 SRAM / BootROM、`cosim` 校验上电 reset vector 与 `mtvec` 跳转；FPGA 上电、串口 banner 打出来；可选 Linux 起步。**从此 CPU 跑的不是我们写的 `stim`，是别人写的 OS。**
 
 ---
 
