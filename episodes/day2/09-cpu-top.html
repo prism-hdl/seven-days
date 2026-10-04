@@ -1,0 +1,514 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 9 集 · 四颗器官，一具身体 · 创世记 · 第二日 · 空气与水</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&family=Noto+Serif+SC:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink:#0f1420; --ink-2:#1c2333; --ink-3:#4a5468; --mute:#8892a6;
+  --line:#e5e8ef; --paper:#ffffff; --cream:#fbf9f4;
+  --prism:#5b4bff; --prism-2:#a678ff;
+  --accent:#2f6fb8; --accent-2:#8ab4f8;
+  --ok:#12a060; --warn:#d84a4a;
+  --code-bg:#10131c; --code-fg:#d6d9e0; --radius:10px;
+}
+* { box-sizing:border-box; margin:0; padding:0; }
+html { scroll-behavior:smooth; }
+body { font-family:'Inter','Noto Serif SC',-apple-system,sans-serif; color:var(--ink); background:var(--paper); line-height:1.7; font-size:17px; -webkit-font-smoothing:antialiased; }
+
+.hero { position:relative; padding:90px 24px 72px; background:radial-gradient(ellipse 820px 460px at 28% 30%, rgba(47,111,184,.30) 0%, transparent 58%), radial-gradient(ellipse 680px 400px at 78% 66%, rgba(91,75,255,.20) 0%, transparent 55%), #060910; color:#fff; overflow:hidden; }
+.hero-inner { max-width:900px; margin:0 auto; position:relative; z-index:2; }
+.hero-eyebrow { display:inline-block; padding:6px 14px; border-radius:999px; background:rgba(255,255,255,.08); backdrop-filter:blur(12px); border:1px solid rgba(255,255,255,.16); font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:.08em; margin-bottom:22px; color:#cfe2ff; }
+.hero h1 { font-family:'Noto Serif SC',serif; font-weight:700; font-size:clamp(32px,5.2vw,52px); line-height:1.2; margin-bottom:20px; letter-spacing:-0.01em; }
+.hero h1 em { font-style:normal; background:linear-gradient(120deg,#fff 0%,#cfe2ff 48%,#8ab4f8 100%); -webkit-background-clip:text; background-clip:text; color:transparent; }
+.hero .subtitle { font-size:19px; font-weight:300; color:rgba(255,255,255,.82); margin-bottom:38px; max-width:680px; line-height:1.75; }
+.hero .subtitle strong { color:#fff; font-weight:600; text-shadow:0 0 14px rgba(138,180,248,.55); }
+.hero .verse { border-left:2px solid rgba(47,111,184,.7); padding-left:16px; margin-bottom:32px; font-family:'Noto Serif SC',serif; font-style:italic; color:rgba(255,255,255,.65); font-size:16px; line-height:1.85; }
+.hero .verse cite { display:block; margin-top:6px; font-style:normal; font-size:13px; color:rgba(255,255,255,.4); }
+.hero .dp { margin-top:6px; padding:14px 10px 6px; border:1px solid rgba(255,255,255,.1); border-radius:12px; background:rgba(255,255,255,.025); }
+
+main { max-width:780px; margin:0 auto; padding:76px 24px 120px; }
+section { margin-bottom:72px; }
+h2 { font-family:'Noto Serif SC',serif; font-size:30px; font-weight:700; margin-bottom:20px; padding-top:8px; }
+h2::before { content:''; display:inline-block; width:32px; height:3px; background:linear-gradient(90deg,var(--accent),var(--accent-2)); border-radius:2px; vertical-align:middle; margin-right:12px; transform:translateY(-6px); }
+h3 { font-size:20px; font-weight:600; margin:32px 0 12px; color:var(--ink-2); }
+p { margin-bottom:16px; color:var(--ink-2); }
+p code, li code, td code { font-family:'JetBrains Mono',monospace; font-size:.93em; padding:2px 6px; background:var(--cream); border:1px solid var(--line); border-radius:4px; color:#1f5590; font-weight:500; }
+strong { color:var(--ink); font-weight:600; }
+ul, ol { margin:0 0 20px 24px; color:var(--ink-2); }
+li { margin-bottom:8px; }
+
+.verse-inline { padding:18px 22px; margin:22px 0; background:linear-gradient(90deg,#f2f7ff 0%,transparent 60%); border-left:3px solid var(--accent); border-radius:0 var(--radius) var(--radius) 0; font-family:'Noto Serif SC',serif; font-style:italic; color:var(--ink-3); }
+.verse-inline cite { display:block; margin-top:6px; font-style:normal; font-size:13px; color:var(--mute); }
+
+.stack { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:12px; margin:22px 0; }
+.stk { padding:16px 15px; border-radius:var(--radius); border:1px solid var(--line); background:linear-gradient(180deg,var(--paper),var(--cream)); }
+.stk .k { font-family:'JetBrains Mono',monospace; font-size:11px; color:#1f5590; letter-spacing:.08em; margin-bottom:4px; }
+.stk .t { font-size:15px; font-weight:600; color:var(--ink); margin-bottom:4px; }
+.stk .d { font-size:13px; color:var(--ink-3); line-height:1.55; }
+
+.code { margin:22px 0; background:var(--code-bg); border-radius:var(--radius); overflow:hidden; box-shadow:0 4px 24px rgba(15,20,32,.08); border:1px solid #1c1f2e; }
+.code-header { padding:10px 16px; background:#0a0d15; border-bottom:1px solid #1c1f2e; display:flex; align-items:center; justify-content:space-between; gap:12px; }
+.code-lang { font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.1em; color:var(--accent-2); text-transform:uppercase; font-weight:600; }
+.code-file { font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--mute); }
+.code pre { padding:20px 22px; overflow-x:auto; font-family:'JetBrains Mono',monospace; font-size:13.5px; line-height:1.65; color:var(--code-fg); }
+.code pre .hl { background:rgba(138,180,248,.12); display:inline-block; width:100%; margin:0 -22px; padding:0 22px; }
+
+.tk-kw{color:#c57bff;font-weight:500}.tk-decl{color:#e08aff;font-weight:600}.tk-name{color:#fff;font-weight:500}
+.tk-dir{color:#7ee8d8;font-weight:500}.tk-typ{color:#4ad6b4}.tk-prim{color:#79dfff}
+.tk-rf{color:#ffd479;font-weight:500}.tk-rw{color:#b8a0e0}.tk-stor{color:#4ad6b4;font-weight:600}
+.tk-sf{color:#c5b890}.tk-sv{color:#8ab4f8}.tk-op{color:#ff8a4c}.tk-num{color:#79b8ff}
+.tk-com{color:#6c7488;font-style:italic}.tk-ann{color:#ff79c6}.tk-fn{color:#4ad6b4}.tk-str{color:#ffd479}.tk-hex{color:#ffb86b}
+
+.term { margin:18px 0; background:#060810; border-radius:var(--radius); overflow:hidden; border:1px solid #1c1f2e; font-family:'JetBrains Mono',monospace; font-size:12.5px; line-height:1.7; }
+.term-header { padding:8px 14px; background:#10131c; border-bottom:1px solid #1c1f2e; color:var(--mute); font-size:11px; letter-spacing:.1em; }
+.term-body { padding:16px 20px; color:#c5cbd8; overflow-x:auto; white-space:pre; }
+.term-ok{color:#6fe8a5}.term-err{color:#ff8f8f}.term-warn{color:#ffcf8f}.term-hint{color:var(--mute);font-style:italic}.term-dim{color:#7d879b}
+
+.callout { padding:18px 22px; background:var(--cream); border-left:3px solid var(--accent); border-radius:0 var(--radius) var(--radius) 0; margin:24px 0; font-size:15.5px; }
+.callout-title { font-weight:600; color:var(--ink); margin-bottom:6px; display:block; }
+.callout.warn { border-left-color:var(--warn); background:#fdf4f4; }
+.callout.key { background:linear-gradient(90deg,#f2f7ff 0%,var(--cream) 100%); border-left-color:var(--prism); }
+
+.tbl-wrap { margin:20px 0; overflow-x:auto; border-radius:var(--radius); border:1px solid var(--line); }
+table { width:100%; border-collapse:collapse; font-size:14.5px; }
+th { background:var(--cream); text-align:left; padding:11px 15px; font-weight:600; border-bottom:2px solid var(--line); white-space:nowrap; }
+td { padding:11px 15px; border-bottom:1px solid var(--line); color:var(--ink-2); }
+tbody tr:last-child td { border-bottom:none; }
+td.mono, th.mono { font-family:'JetBrains Mono',monospace; font-size:13px; }
+td .check { color:var(--ok); font-weight:600; }
+
+.pn { display:flex; justify-content:space-between; gap:12px; padding:16px 0 32px; border-top:1px solid var(--line); border-bottom:1px solid var(--line); margin-bottom:56px; font-size:14px; color:var(--mute); }
+.pn a { color:var(--prism); text-decoration:none; font-weight:500; }
+
+footer { padding:40px 24px; background:var(--code-bg); color:var(--mute); text-align:center; font-size:14px; }
+footer a { color:var(--prism-2); text-decoration:none; }
+footer .next { display:block; margin-bottom:12px; font-family:'Noto Serif SC',serif; color:var(--code-fg); font-size:15px; }
+
+@media (max-width:640px){ main{padding:48px 20px 80px} .hero{padding:60px 20px 52px} h2{font-size:24px} }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="hero-inner">
+    <div class="hero-eyebrow">七日创造 · 第二日 · 空气与水 · 第 9 集</div>
+    <h1>水分开了<br><em>四颗器官，一具身体</em></h1>
+    <p class="subtitle">第二日造的四颗器官，各自躺在自己的测试台上。这一集不发明新语法——只用一份 <strong>design</strong>，把它们接成一颗能跑<strong>最小 RV64I 程序</strong>的单周期 CPU——64 位数据通路，指令仍按 32 位取。</p>
+
+    <div class="verse">
+      "神就造出空气，将空气以下的水、空气以上的水分开了。事就这样成了。"
+      <cite>—— 《创世记》 1:7</cite>
+    </div>
+
+    <div class="dp">
+      <svg viewBox="0 0 920 408" style="width:100%;height:auto" role="img" aria-label="单周期 CPU 数据通路：pc → im → decoder → regfile / alu → dm，控制位由 decoder 扇出，写回绕过顶部回到寄存器堆">
+        <defs>
+          <marker id="aData" viewBox="0 0 10 8" markerWidth="8" markerHeight="6.5" refX="9" refY="4" orient="auto"><path d="M0,0 L10,4 L0,8 z" fill="#8ab4f8"/></marker>
+          <marker id="aCtl" viewBox="0 0 10 8" markerWidth="8" markerHeight="6.5" refX="9" refY="4" orient="auto"><path d="M0,0 L10,4 L0,8 z" fill="#ff8a4c"/></marker>
+          <marker id="aWb" viewBox="0 0 10 8" markerWidth="8" markerHeight="6.5" refX="9" refY="4" orient="auto"><path d="M0,0 L10,4 L0,8 z" fill="#a678ff"/></marker>
+        </defs>
+
+        <!-- 数据面 -->
+        <g stroke="#8ab4f8" stroke-width="1.6" fill="none">
+          <line x1="130" y1="100" x2="184" y2="100" marker-end="url(#aData)"/>
+          <line x1="280" y1="100" x2="334" y2="100" marker-end="url(#aData)"/>
+          <line x1="430" y1="100" x2="484" y2="100" marker-end="url(#aData)"/>
+          <line x1="580" y1="100" x2="634" y2="100" marker-end="url(#aData)"/>
+          <line x1="730" y1="100" x2="784" y2="100" marker-end="url(#aData)"/>
+        </g>
+        <g font-family="'JetBrains Mono',monospace" font-size="10.5" fill="#8ab4f8" text-anchor="middle">
+          <text x="160" y="92">iaddr</text>
+          <text x="310" y="92">instr</text>
+          <text x="460" y="92">rs1 rs2</text>
+          <text x="610" y="92">rdata1/2</text>
+          <text x="760" y="92">result</text>
+        </g>
+
+        <!-- 六颗实例 -->
+        <g>
+          <rect x="40" y="70" width="90" height="60" rx="9" fill="rgba(255,255,255,.055)" stroke="rgba(255,255,255,.28)"/>
+          <rect x="190" y="70" width="90" height="60" rx="9" fill="rgba(255,255,255,.055)" stroke="rgba(255,255,255,.28)"/>
+          <rect x="340" y="70" width="90" height="60" rx="9" fill="rgba(255,255,255,.055)" stroke="rgba(255,255,255,.28)"/>
+          <rect x="490" y="70" width="90" height="60" rx="9" fill="rgba(255,255,255,.055)" stroke="rgba(255,255,255,.28)"/>
+          <rect x="640" y="70" width="90" height="60" rx="9" fill="rgba(255,255,255,.055)" stroke="rgba(255,255,255,.28)"/>
+          <rect x="790" y="70" width="90" height="60" rx="9" fill="rgba(255,255,255,.055)" stroke="rgba(255,255,255,.28)"/>
+        </g>
+        <g font-family="'JetBrains Mono',monospace" text-anchor="middle" fill="#fff">
+          <text x="85" y="97" font-size="14" font-weight="600">pc</text><text x="85" y="115" font-size="10" fill="#8892a6">下一步</text>
+          <text x="235" y="97" font-size="14" font-weight="600">im</text><text x="235" y="115" font-size="10" fill="#8892a6">指令 ROM</text>
+          <text x="385" y="97" font-size="14" font-weight="600">decoder</text><text x="385" y="115" font-size="10" fill="#8892a6">理解世界</text>
+          <text x="535" y="97" font-size="14" font-weight="600">regfile</text><text x="535" y="115" font-size="10" fill="#8892a6">记忆</text>
+          <text x="685" y="97" font-size="14" font-weight="600">alu</text><text x="685" y="115" font-size="10" fill="#8892a6">活动</text>
+          <text x="835" y="97" font-size="14" font-weight="600">dm</text><text x="835" y="115" font-size="10" fill="#8892a6">数据 SRAM</text>
+        </g>
+
+        <!-- 控制面：decoder 扇出 -->
+        <g stroke="#ff8a4c" stroke-width="1.4" fill="none" stroke-dasharray="4 3">
+          <path d="M385,130 L385,300"/>
+          <path d="M85,300 L805,300"/>
+        </g>
+        <g stroke="#ff8a4c" stroke-width="1.4" fill="none">
+          <line x1="85" y1="300" x2="85" y2="136" marker-end="url(#aCtl)"/>
+          <line x1="555" y1="300" x2="555" y2="136" marker-end="url(#aCtl)"/>
+          <line x1="655" y1="300" x2="655" y2="136" marker-end="url(#aCtl)"/>
+          <line x1="805" y1="300" x2="805" y2="136" marker-end="url(#aCtl)"/>
+        </g>
+        <g font-family="'JetBrains Mono',monospace" font-size="10" fill="#ff8a4c">
+          <text x="95" y="180">pc.load / pc.target</text>
+          <text x="565" y="180">rf.wen</text>
+          <text x="665" y="180">ex.op · ex.b 选路</text>
+          <text x="815" y="180">dm.wen / dm.ren</text>
+        </g>
+
+        <!-- 写回 -->
+        <g stroke="#a678ff" stroke-width="1.6" fill="none">
+          <path d="M845,70 L845,42 L505,42"/>
+          <line x1="505" y1="42" x2="505" y2="64" marker-end="url(#aWb)"/>
+        </g>
+        <text x="675" y="34" font-family="'JetBrains Mono',monospace" font-size="10.5" fill="#a678ff" text-anchor="middle">wb_data（三选一）</text>
+
+        <!-- 图例 -->
+        <g font-family="'JetBrains Mono',monospace" font-size="11.5">
+          <line x1="196" y1="382" x2="228" y2="382" stroke="#8ab4f8" stroke-width="2"/>
+          <text x="236" y="386" fill="#8ab4f8">数据面 · 值</text>
+          <line x1="366" y1="382" x2="398" y2="382" stroke="#ff8a4c" stroke-width="2" stroke-dasharray="4 3"/>
+          <text x="406" y="386" fill="#ff8a4c">控制面 · 控制位</text>
+          <line x1="556" y1="382" x2="588" y2="382" stroke="#a678ff" stroke-width="2"/>
+          <text x="596" y="386" fill="#a678ff">写回</text>
+        </g>
+      </svg>
+    </div>
+  </div>
+</header>
+
+<main>
+
+<div class="pn">
+  <a href="08-decoder.html">← 第 8 集 · decoder</a>
+  <a href="10-bubble-sort.html">第 10 集 · 跑一段冒泡排序 →</a>
+</div>
+
+<section id="s1">
+  <h2>合体，不是重写</h2>
+  <p>四颗器官各自跑通了自己的测试台。这一集把它们接成一具身体：<strong>器官一行都不改</strong>，全部从第 5–8 集的文件里 <code>import</code> 进来。真正新写的只有两样——两颗存储器的实例，和一张网表。</p>
+
+  <p>只有一处缺口是合体才暴露出来的：decoder 的 <code>alu_op</code> 只管算术族（<code>is_arith</code>），分支那一族它报的是 0（ADD）——因为地址通路不需要比较。"这条分支要比什么"得由顶层补上。这一处后面讲。</p>
+  <div class="code">
+    <div class="code-header"><span class="code-lang">prism</span><span class="code-file">cpu.prism · import 与实例</span></div>
+<pre><span class="tk-decl">import</span> &quot;pc.prism&quot;
+<span class="tk-decl">import</span> &quot;memory.prism&quot;
+<span class="tk-decl">import</span> &quot;alu.prism&quot;
+<span class="tk-decl">import</span> &quot;decoder.prism&quot;
+
+<span class="tk-decl">design</span> cpu_top {
+    <span class="tk-com">// ==== 六颗实例 ====</span>
+    pc  : pc
+    rf  : regfile
+    ex  : alu
+    im  : ram&lt;SIZE = <span class="tk-num">256</span>, W = <span class="tk-prim">u32</span>, A = <span class="tk-prim">u8</span>&gt;    <span class="tk-com">// 指令侧：32 位字，1KB</span>
+    dm  : ram&lt;SIZE = <span class="tk-num">256</span>, W = <span class="tk-prim">i64</span>, A = <span class="tk-prim">u8</span>&gt;    <span class="tk-com">// 数据侧：64 位字，2KB</span>
+    ctl : decoder
+
+    <span class="tk-com">// ==== 取指：pc → im（异步读，同拍出指令）====</span>
+    <span class="tk-kw">wire</span> iaddr : <span class="tk-prim">u8</span> = pc.addr[<span class="tk-num">9</span>:<span class="tk-num">2</span>] -&gt; im.addr      <span class="tk-com">// 字节地址 → 字地址</span>
+    <span class="tk-kw">wire</span> instr : <span class="tk-prim">u32</span> = im.rdata -&gt; ctl.instr
+    <span class="tk-kw">wire</span> f3    : <span class="tk-prim">u3</span>  = instr[<span class="tk-num">14</span>:<span class="tk-num">12</span>]                <span class="tk-com">// 分支形态要看的那三位</span>
+</pre>
+  </div>
+
+  <p>取指这一段有两个细节：<code>iaddr</code> 把 64 位的字节地址切成 8 位字地址（<code>pc.addr[9:2]</code>——256 个 32 位字的窗口），而 <code>instr</code> 仍然是 <code>u32</code>：<strong>这台机器数据是 64 位，指令恒是 32 位</strong>，两者不是一回事。</p>
+</section>
+
+<section id="s2">
+  <h2>身体比零件多出来的两样东西</h2>
+
+  <h3>一、两颗存储器，同一份源码</h3>
+  <p>第 6 集那句"哈佛 = 同一份源码例化两次"在这里兑现。指令侧 <code>im</code> 装 32 位字、数据侧 <code>dm</code> 装 64 位字，都是同一颗 <code>ram</code>：<code>W</code> 不同、容量与地址线一样。</p>
+
+  <p><code>im</code> 是 ROM，可 <code>ram</code> 有写口——写口不接就是"悬空"，悬空在硬件里不是"不写"，而是浮着一个不确定电平。所以顶层把它焊死：</p>
+  <div class="code">
+    <div class="code-header"><span class="code-lang">prism</span><span class="code-file">cpu.prism · 写口焊死（节选）</span></div>
+<pre>    <span class="tk-kw">wire</span> dm_index : <span class="tk-prim">u8</span> = ex.result[<span class="tk-num">10</span>:<span class="tk-num">3</span>] -&gt; dm.addr
+    <span class="tk-kw">connect</span> ctl.mem_ren -&gt; dm.ren
+    <span class="tk-kw">connect</span> <span class="tk-num">0</span> -&gt; im.wen                                   <span class="tk-com">// ROM：写口焊死</span>
+    <span class="tk-kw">connect</span> <span class="tk-num">0</span> -&gt; im.wdata
+    <span class="tk-kw">connect</span> <span class="tk-num">1</span> -&gt; im.ren
+    <span class="tk-kw">connect</span> rf.rdata2 -&gt; dm.wdata</pre>
+  </div>
+
+  <p>三根常量线：<code>0 -&gt; im.wen</code>、<code>0 -&gt; im.wdata</code>、<code>1 -&gt; im.ren</code>。这跟白虹真核的 <code>im</code> 写法一致。</p>
+
+  <h3>二、一张网表</h3>
+  <p><code>design</code> 里没有 <code>reg</code>、没有 <code>on clock</code>，只有实例、<code>wire</code>、<code>connect</code>、<code>expose</code>。行为都在器官里，这一层只负责"谁接到谁"。</p>
+</section>
+
+<section id="s3">
+  <h2>网表：数据走一遍，控制拦一道</h2>
+  <div class="code">
+    <div class="code-header"><span class="code-lang">prism</span><span class="code-file">cpu.prism · 读口与 ALU 操作数</span></div>
+<pre>    <span class="tk-com">// ==== 译码输出 → 寄存器堆读口 ====</span>
+    <span class="tk-kw">connect</span> ctl.rs1 -&gt; rf.raddr1
+    <span class="tk-kw">connect</span> ctl.rs2 -&gt; rf.raddr2
+    <span class="tk-kw">connect</span> ctl.rd  -&gt; rf.waddr
+
+    <span class="tk-com">// ==== ALU 两个操作数 ====</span>
+    <span class="tk-com">// 第二操作数三选一：立即数 / 寄存器堆读口 2；是移位时只取立即数低 6 位</span>
+    <span class="tk-com">// （imm 的其余位是 funct6 与算术标志，不是移量）。</span>
+    <span class="tk-kw">wire</span> is_shift   : <span class="tk-prim">u1</span>  = ctl.alu_op <span class="tk-kw">in</span> [<span class="tk-num">5</span>, <span class="tk-num">6</span>, <span class="tk-num">8</span>]
+    <span class="tk-kw">wire</span> alu_b_raw  : <span class="tk-prim">i64</span> = ctl.alu_src ? ctl.imm : rf.rdata2
+    <span class="tk-kw">wire</span> alu_b      : <span class="tk-prim">i64</span> = is_shift ? alu_b_raw[<span class="tk-num">5</span>:<span class="tk-num">0</span>] : alu_b_raw
+    <span class="tk-kw">connect</span> alu_b     -&gt; ex.b
+    <span class="tk-kw">connect</span> rf.rdata1 -&gt; ex.a
+
+    <span class="tk-com">// ==== 分支借 ALU 做比较 ====</span>
+    <span class="tk-com">// decoder 的 alu_op 只管算术族（is_arith），分支那一族给的是 0（ADD）——地址</span>
+    <span class="tk-com">// 通路不需要比较。所以&quot;这条分支要比什么&quot;在顶层补一列：beq/bne 借 SUB（结果</span>
+    <span class="tk-com">// 为 0 即相等），blt/bge 借 SLT，bltu/bgeu 借 SLTU。</span>
+    <span class="tk-kw">wire</span> alu_op_b : <span class="tk-prim">u4</span> = <span class="tk-kw">match</span> f3 {
+        <span class="tk-num">0</span> =&gt; <span class="tk-num">1</span>,     <span class="tk-com">// beq  → SUB</span>
+        <span class="tk-num">1</span> =&gt; <span class="tk-num">1</span>,     <span class="tk-com">// bne  → SUB</span>
+        <span class="tk-num">4</span> =&gt; <span class="tk-num">7</span>,     <span class="tk-com">// blt  → SLT</span>
+        <span class="tk-num">5</span> =&gt; <span class="tk-num">7</span>,     <span class="tk-com">// bge  → SLT</span>
+        <span class="tk-num">6</span> =&gt; <span class="tk-num">9</span>,     <span class="tk-com">// bltu → SLTU</span>
+        _ =&gt; <span class="tk-num">9</span>,     <span class="tk-com">// bgeu → SLTU</span>
+    }
+    <span class="tk-kw">wire</span> alu_f : <span class="tk-prim">u4</span> = ctl.is_branch ? alu_op_b : ctl.alu_op -&gt; ex.op
+</pre>
+  </div>
+  <div class="code">
+    <div class="code-header"><span class="code-lang">prism</span><span class="code-file">cpu.prism · W 后处理</span></div>
+<pre>    <span class="tk-com">// ==== W 型指令：结果按 32 位域解释，再符号扩展回 64 位 ====</span>
+    <span class="tk-kw">wire</span> ex_word : <span class="tk-prim">i32</span> = ex.result[<span class="tk-num">31</span>:<span class="tk-num">0</span>]
+    <span class="tk-kw">wire</span> ex_ext  : <span class="tk-prim">i64</span> = ex_word                  <span class="tk-com">// 符号扩展由类型声明负责</span>
+    <span class="tk-kw">wire</span> alu_out : <span class="tk-prim">i64</span> = ctl.is_w_op ? ex_ext : ex.result
+</pre>
+  </div>
+
+  <p>三段值得看的：</p>
+  <ul>
+    <li><strong>移量只接 <code>imm</code> 的低 6 位</strong>。移位器的级数摆在那儿，硬件上就只有 6 根控制线；<code>imm</code> 那 12 位里的高位是 <code>funct6</code> 和算术标志，不是移量。</li>
+    <li><strong>分支借 ALU</strong>：<code>alu_op_b</code> 那张小表把 beq/bne 指到 SUB、blt/bge 指到 SLT、bltu/bgeu 指到 SLTU。ALU 不知道自己在为一条件分支服务——它只是被执行了第二次。</li>
+    <li><strong>W 型指令的后处理</strong>：第 7 集说"32 位语义是指令的属性，不是运算的属性"，落地就是这两根 wire——结果截到 32 位（<code>ex.result[31:0]</code>）、声明成 <code>i32</code> 再符号扩展回 64。十条路的表一行都没多。</li>
+  </ul>
+  <div class="code">
+    <div class="code-header"><span class="code-lang">prism</span><span class="code-file">cpu.prism · 分支与 PC</span></div>
+<pre>    <span class="tk-com">// ==== 分支条件：借 ALU 的比较结果，按 funct3 选&quot;成不成立&quot; ====</span>
+    <span class="tk-kw">wire</span> br_eq : <span class="tk-prim">u1</span> = alu_out == <span class="tk-num">0</span>                <span class="tk-com">// SUB 得 0 → 相等</span>
+    <span class="tk-kw">wire</span> br_lt : <span class="tk-prim">u1</span> = alu_out == <span class="tk-num">1</span>                <span class="tk-com">// SLT / SLTU 得 1 → 小于</span>
+    <span class="tk-kw">wire</span> br_ok : <span class="tk-prim">u1</span> = <span class="tk-kw">match</span> f3 {
+        <span class="tk-num">0</span> =&gt; br_eq,                    <span class="tk-com">// beq：相等即成立</span>
+        <span class="tk-num">1</span> =&gt; br_eq == <span class="tk-num">0</span>,               <span class="tk-com">// bne：取反</span>
+        <span class="tk-num">4</span> =&gt; br_lt,                    <span class="tk-com">// blt</span>
+        <span class="tk-num">5</span> =&gt; br_lt == <span class="tk-num">0</span>,               <span class="tk-com">// bge</span>
+        <span class="tk-num">6</span> =&gt; br_lt,                    <span class="tk-com">// bltu</span>
+        _ =&gt; br_lt == <span class="tk-num">0</span>,               <span class="tk-com">// bgeu</span>
+    }
+
+    <span class="tk-com">// ==== PC 下一步：分支成立 / jal / jalr 都算&quot;载入&quot; ====</span>
+    <span class="tk-kw">wire</span> pc_load   : <span class="tk-prim">u1</span>  = (ctl.is_branch &amp; br_ok) | ctl.is_jal | ctl.is_jalr -&gt; pc.load
+    <span class="tk-kw">wire</span> pc_target : <span class="tk-prim">u64</span> = ctl.is_jalr ? (rf.rdata1 + ctl.imm) : (pc.addr + ctl.imm)
+    <span class="tk-kw">connect</span> pc_target -&gt; pc.target
+</pre>
+  </div>
+  <div class="code">
+    <div class="code-header"><span class="code-lang">prism</span><span class="code-file">cpu.prism · 访存与写回</span></div>
+<pre>    <span class="tk-com">// ==== 访存：dm 存 64 位字 ====</span>
+    <span class="tk-com">// 这一台的 dm 一颗就是 64 位字，所以访存只有双字（LD/SD）一条路：字节地址</span>
+    <span class="tk-com">// 右移 3 就是字地址，写口整字进、整字出，没有半字选择、也没有读-改-写合并。</span>
+    <span class="tk-com">// 落在半个字上的访问（addr[2]=1）这一台没有对应的电路，也不去判它。</span>
+    <span class="tk-kw">wire</span> dm_index : <span class="tk-prim">u8</span> = ex.result[<span class="tk-num">10</span>:<span class="tk-num">3</span>] -&gt; dm.addr
+    <span class="tk-kw">connect</span> ctl.mem_ren -&gt; dm.ren
+    <span class="tk-kw">connect</span> <span class="tk-num">0</span> -&gt; im.wen                                   <span class="tk-com">// ROM：写口焊死</span>
+    <span class="tk-kw">connect</span> <span class="tk-num">0</span> -&gt; im.wdata
+    <span class="tk-kw">connect</span> <span class="tk-num">1</span> -&gt; im.ren
+    <span class="tk-kw">connect</span> rf.rdata2 -&gt; dm.wdata
+
+    <span class="tk-com">// ==== 这一台不做错误处理 ====</span>
+    <span class="tk-com">// decoder 会举手报 is_illegal，但顶层不拿它当门：先让程序跑通，非法编码照样</span>
+    <span class="tk-com">// 读、照样写回。把&quot;不懂&quot;变成一次异常跳转是第五日 CSR 与陷阱那一集的事。</span>
+    <span class="tk-kw">connect</span> ctl.reg_wen -&gt; rf.wen
+    <span class="tk-kw">connect</span> ctl.mem_wen -&gt; dm.wen
+
+    <span class="tk-com">// ==== 写回三选一：load 数据 / 链接地址(pc+4) / ALU 结果 ====</span>
+    <span class="tk-kw">wire</span> is_link : <span class="tk-prim">u1</span> = ctl.is_jal | ctl.is_jalr
+    <span class="tk-kw">wire</span> wb_data : <span class="tk-prim">i64</span> = ctl.mem_ren ? dm.rdata : (is_link ? <span class="tk-prim">u64</span>(pc.addr + <span class="tk-num">4</span>) : alu_out)
+    <span class="tk-kw">connect</span> wb_data -&gt; rf.wdata</pre>
+  </div>
+
+  <p>访存这段只有一条路：<code>dm</code> 一个元素就是 64 位，所以字节地址一律右移 3 取字，整字进、整字出。落在半个字上的访问（<code>addr[2] = 1</code>）这台没有对应的电路，也不去判它——最小机器先把一条真程序跑通，宽度与对齐这些"更讲究的访存"留给 LSU 那一层。</p>
+
+  <p>写回是三选一：load 的数据 / 链接地址 <code>pc + 4</code> / ALU 的结果。两个写使能直接从 decoder 接到寄存器堆与 dm，<strong>中间不设门</strong>——decoder 那根 <code>is_illegal</code> 在这一台里没人用。</p>
+  <div class="code">
+    <div class="code-header"><span class="code-lang">prism</span><span class="code-file">cpu.prism · 观测</span></div>
+<pre>    <span class="tk-com">// ==== 观测：pc、几个寄存器、dm 的前六个字 ====</span>
+    <span class="tk-com">// 引出来的是&quot;哪一格&quot;由这颗芯片决定，看哪几格由每个 run 的 show 挑——第九集</span>
+    <span class="tk-com">// 看循环与访存那几格，第九集拿同一颗 design 换镜像，看数组的六个字。</span>
+    <span class="tk-kw">expose</span> pc.pc <span class="tk-rw">as</span> pcv
+    <span class="tk-kw">expose</span> rf.regs[<span class="tk-num">1</span>] <span class="tk-rw">as</span> x1
+    <span class="tk-kw">expose</span> rf.regs[<span class="tk-num">2</span>] <span class="tk-rw">as</span> x2
+    <span class="tk-kw">expose</span> rf.regs[<span class="tk-num">8</span>] <span class="tk-rw">as</span> x8
+    <span class="tk-kw">expose</span> rf.regs[<span class="tk-num">11</span>] <span class="tk-rw">as</span> x11
+    <span class="tk-kw">expose</span> rf.regs[<span class="tk-num">12</span>] <span class="tk-rw">as</span> x12
+    <span class="tk-kw">expose</span> rf.regs[<span class="tk-num">13</span>] <span class="tk-rw">as</span> x13
+    <span class="tk-kw">expose</span> rf.regs[<span class="tk-num">20</span>] <span class="tk-rw">as</span> x20
+    <span class="tk-kw">expose</span> dm.ram[<span class="tk-num">0</span>] <span class="tk-rw">as</span> dm0
+    <span class="tk-kw">expose</span> dm.ram[<span class="tk-num">1</span>] <span class="tk-rw">as</span> dm1
+    <span class="tk-kw">expose</span> dm.ram[<span class="tk-num">2</span>] <span class="tk-rw">as</span> dm2
+    <span class="tk-kw">expose</span> dm.ram[<span class="tk-num">3</span>] <span class="tk-rw">as</span> dm3
+    <span class="tk-kw">expose</span> dm.ram[<span class="tk-num">4</span>] <span class="tk-rw">as</span> dm4
+    <span class="tk-kw">expose</span> dm.ram[<span class="tk-num">5</span>] <span class="tk-rw">as</span> dm5</pre>
+  </div>
+
+  <p><code>expose</code> 引出来的都是跨拍状态：pc 里那个 <code>reg</code>、寄存器堆与 dm 里的那些 <code>mem</code> 格子。这一层能&ldquo;看进去&rdquo;的手段一共三种，边界各不相同——</p>
+
+  <div class="stack">
+    <div class="stk"><div class="k">端口</div><div class="t">顶层输入 / 输出</div><div class="d"><code>show</code> 里直接写名字。<strong>被 <code>connect</code> 占用的端口看不见</strong>——它已经不在顶层了。</div></div>
+    <div class="stk"><div class="k">wire</div><div class="t">具名网线</div><div class="d">design 层声明的线可以直接 <code>show</code>——&ldquo;想给这根线起个名再盯住它&rdquo;的正路。</div></div>
+    <div class="stk"><div class="k">expose</div><div class="t">实例内部状态</div><div class="d">只有 <strong>reg / mem</strong> 引得出来，组合信号不行：写 <code>expose dut.y</code> 会报 <code>&apos;y&apos; 不是 reg（origin=local）；mem 需写 &apos;inst.y[i]&apos;</code>。</div></div>
+  </div>
+
+  <p>所以要看&ldquo;那格字被写成什么样&rdquo;，只能 <code>expose dm.ram[0] as dm0</code>；要看&ldquo;这一拍往寄存器堆送的是什么&rdquo;，<code>show wb_data</code> 就够——它是 design 层的线。<strong>三种手段不是替代关系，是互补关系</strong>：端口看接口、wire 看具名中间量、expose 看状态本身。第 6 集那个 <code>x0_raw</code> 是同一件事：读口给 0 只能证明&ldquo;读不出 x0&rdquo;，&ldquo;写不进&rdquo;必须把阵列本身引出来才看得见。</p>
+</section>
+
+<section id="s4">
+  <h2>那条程序</h2>
+  <p>14 条指令：一个真循环，加上四条各自见证一件事的指令。机器码写在 run 块的 <code>image</code> 段里——<strong>镜像是测试台事实，不是芯片属性</strong>：同一颗 <code>cpu_top</code> 换个 <code>image</code> 就跑别的程序。</p>
+  <div class="code">
+    <div class="code-header"><span class="code-lang">prism</span><span class="code-file">cpu.prism · run 块</span></div>
+<pre><span class="tk-decl">run</span> cpu_check <span class="tk-rw">of</span> cpu_top {
+    <span class="tk-stor">image</span> : {
+        prog : im[<span class="tk-num">0</span>:<span class="tk-num">56</span>] = [
+            <span class="tk-num">0x00000093</span>,   <span class="tk-com">//  0: addi x1, x0, 0      和 = 0</span>
+            <span class="tk-num">0x00500113</span>,   <span class="tk-com">//  4: addi x2, x0, 5      计数 = 5</span>
+            <span class="tk-num">0x002080b3</span>,   <span class="tk-com">//  8: add  x1, x1, x2     循环体：和 += 计数</span>
+            <span class="tk-num">0xfff10113</span>,   <span class="tk-com">// 12: addi x2, x2, -1     计数 -= 1</span>
+            <span class="tk-num">0xfe011ce3</span>,   <span class="tk-com">// 16: bne  x2, x0, -8     计数 ≠ 0 就回 8</span>
+            <span class="tk-num">0x00100493</span>,   <span class="tk-com">// 20: addi x9, x0, 1      x9 = 1</span>
+            <span class="tk-num">0xfff00513</span>,   <span class="tk-com">// 24: addi x10, x0, -1    x10 = -1</span>
+            <span class="tk-num">0x00a48463</span>,   <span class="tk-com">// 28: beq  x9, x10, 8     1 ≠ -1：不许跳（借 ADD 就会跳）</span>
+            <span class="tk-num">0x00300593</span>,   <span class="tk-com">// 32: addi x11, x0, 3     走到这里才写 → x11 = 3</span>
+            <span class="tk-num">0x01f4961b</span>,   <span class="tk-com">// 36: slliw x12, x9, 31   W 型：按 32 位域算完再符号扩展</span>
+            <span class="tk-num">0x4015569b</span>,   <span class="tk-com">// 40: sraiw x13, x10, 1   移量只占低 6 位：imm 的其余位不是移量</span>
+            <span class="tk-num">0x00103023</span>,   <span class="tk-com">// 44: sd   x1, 0(x0)      和写进 dm[0]</span>
+            <span class="tk-num">0x00003403</span>,   <span class="tk-com">// 48: ld   x8, 0(x0)      整字读回 → x8 = 15</span>
+            <span class="tk-num">0x0000006f</span>    <span class="tk-com">// 52: jal  x0, 0          停机（自跳）</span>
+        ]
+    }
+    until : <span class="tk-kw">for</span> <span class="tk-num">27</span> <span class="tk-rw">cycles</span>
+    show  : { pcv, x1, x2, x11, x12, x13, x8, dm0 }
+}</pre>
+  </div>
+
+  <p>逐条手算，四条见证线各盯一处：</p>
+  <ul>
+    <li><code>x1</code> / <code>x2</code>：5+4+3+2+1 = 15，计数归零，循环与分支正确。</li>
+    <li><code>x11</code>：28 处那条 <code>beq x9, x10, 8</code> 比的是 1 与 -1。<strong>要是分支借了 ADD 这条路</strong>，1+(-1)=0 就"相等"了，程序会跳到 36 而绕开 32 那条 <code>addi</code>——<code>x11</code> 停在 0。走到 3 才算顶层那张 <code>alu_op_b</code> 表真在做事。</li>
+    <li><code>x12</code>：<code>slliw x12, x9, 31</code>——1 在 32 位域里左移 31 位就是符号位，符号扩展回 64 位得 <code>-2147483648</code>。不做后处理则是 <code>2147483648</code>。</li>
+    <li><code>x8</code> / <code>dm0</code>：<code>sd</code> 写进 dm 的那一格字，<code>ld</code> 再读回来，两列互相印证。</li>
+  </ul>
+</section>
+
+<section id="s5">
+  <h2>二十七拍</h2>
+  <div class="term">
+    <div class="term-header">▸ prism run examples/day2/cpu.prism --debug</div>
+    <div class="term-body">[run] cpu_check: 27 拍 golden 直跑完成
+<span class="term-hint"># run:</span> cpu_check  design: cpu_top  stop: for 27 cycles
+cycle pcv x1 x2 x11 x12 x13 x8 dm0
+0 4 0 0 0 0 0 0 0
+1 8 0 5 0 0 0 0 0
+2 12 5 5 0 0 0 0 0
+3 16 5 4 0 0 0 0 0
+4 8 5 4 0 0 0 0 0
+5 12 9 4 0 0 0 0 0
+6 16 9 3 0 0 0 0 0
+7 8 9 3 0 0 0 0 0
+8 12 12 3 0 0 0 0 0
+9 16 12 2 0 0 0 0 0
+10 8 12 2 0 0 0 0 0
+11 12 14 2 0 0 0 0 0
+12 16 14 1 0 0 0 0 0
+13 8 14 1 0 0 0 0 0
+14 12 15 1 0 0 0 0 0
+15 16 15 0 0 0 0 0 0
+16 20 15 0 0 0 0 0 0
+17 24 15 0 0 0 0 0 0
+18 28 15 0 0 0 0 0 0
+19 32 15 0 0 0 0 0 0
+20 36 15 0 3 0 0 0 0
+21 40 15 0 3 -2147483648 0 0 0
+22 44 15 0 3 -2147483648 -1 0 0
+23 48 15 0 3 -2147483648 -1 0 15
+24 52 15 0 3 -2147483648 -1 15 15
+25 52 15 0 3 -2147483648 -1 15 15
+26 52 15 0 3 -2147483648 -1 15 15</div>
+  </div>
+
+  <div class="term">
+    <div class="term-header">▸ 三条腿各撞一次</div>
+    <div class="term-body">$ prism cosim examples/day2/cpu.prism --run cpu_check
+[run] cpu_check: RTL tb 跑完，27 拍（产物 …）
+<span class="term-ok">[run --cosim] ✅ PASS: cpu_check golden == RTL 仿真（27 拍 × 8 列全等；
+      golden stop: for 27 cycles）</span>
+$ prism cosim examples/day2/cpu.prism --run cpu_check --sim systemc
+<span class="term-ok">[cosim] ✅ PASS: cpu_check SystemC/TLM == golden（27 拍 × 8 列全等；产物 …）</span></div>
+  </div>
+
+  <p>表里有两处值得停：<strong>拍 19 到 20，<code>x11</code> 从 0 变成 3</strong>——分支没跳；<strong>拍 21，<code>x12</code> 是负数</strong>——W 型指令的后处理在起作用。程序跑到拍 24 起 <code>pc</code> 停在 52（<code>jal x0, 0</code> 自跳），寄存器不再变。停机用定拍数：这一集的表靠逐拍手算核它，下一集的排序换了一条会自己失败的判据。</p>
+</section>
+
+<section id="s6">
+  <h2>两个值得看的细节</h2>
+
+  <h3>① 分支不占新的运算，只借现成的</h3>
+  <p>顶层那张 <code>alu_op_b</code> 表把六条分支映到三条现有运算上（SUB / SLT / SLTU）。<strong>ALU 的十条路没有为分支扩过一条</strong>——这也是第 7 集"不产生标志位"的另一面：比较结果就是一个数，谁用它谁自己解释。</p>
+
+  <h3>② 这一台不做错误处理</h3>
+  <p>decoder 会举手报 <code>is_illegal</code>，顶层不拿它当门。<strong>这不是遗漏，是先跑通</strong>：非法编码会照样读存储器、照样写回寄存器堆，机器不停。而这一位没被接走，就照第三集那条规则自己露成 <code>cpu_top</code> 的一根输出——想在表里看它，<code>show</code> 里写 <code>is_illegal</code> 就多出一列。把"不懂"变成一次异常跳转，需要 <code>mtvec</code>、需要 <code>mcause</code>、需要一条陷阱通路——那是第五日 CSR 与异常那一集的活，今天先不装这道门，也就不给它留一个恒接 1 的接口。</p>
+</section>
+
+<section id="s7">
+  <h2>小结：一具身体，六颗实例</h2>
+  <ul>
+    <li>器官一行不改，全靠 <code>import</code> + <code>wire</code> + <code>connect</code>——<strong>合体是连线，不是重写</strong>。</li>
+    <li>im / dm 是同一颗 <code>ram</code> 的两个实例，差别只在 <code>W = u32</code> 与 <code>W = i64</code>；ROM 的写口焊死在顶层。</li>
+    <li>顶层补两样器官里没有的东西：<strong>分支的运算选择</strong>、<strong>W 结果的符号扩展</strong>。非法编码这一台不设门——第五日装陷阱时才有地方处置它。</li>
+    <li>程序是测试台事实，写在 run 的 <code>image</code> 段；换程序不动这颗 design。</li>
+    <li>27 拍跑完，golden / RTL / SystemC 三条腿逐拍逐列全等。</li>
+  </ul>
+
+  <div class="verse-inline">
+    "神就造出空气，将空气以下的水、空气以上的水分开了。"
+    <cite>—— 《创世记》 1:7</cite>
+  </div>
+
+  <p>下一集给它一段真活儿：把一组数排序。</p>
+</section>
+
+<section id="s8">
+  <h2>复现本集</h2>
+  <div class="code">
+    <div class="code-header"><span class="code-lang">bash</span><span class="code-file">reproduce</span></div>
+<pre>git clone https://github.com/prism-hdl/seven-days
+cd seven-days
+
+prism run   examples/day2/cpu.prism --debug
+prism cosim examples/day2/cpu.prism --run cpu_check
+prism cosim examples/day2/cpu.prism --run cpu_check --sim systemc</pre>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <span class="next">第 10 集 · 跑一段冒泡排序</span>
+  七日创造 · 第二日 · 空气与水 · 第 9 集 · <a href="../index.html">返回首页</a>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,325 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 10 集 · 跑一段冒泡排序 · 创世记 · 第二日 · 空气与水</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&family=Noto+Serif+SC:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink:#0f1420; --ink-2:#1c2333; --ink-3:#4a5468; --mute:#8892a6;
+  --line:#e5e8ef; --paper:#ffffff; --cream:#fbf9f4;
+  --prism:#5b4bff; --prism-2:#a678ff;
+  --accent:#2f6fb8; --accent-2:#8ab4f8;
+  --ok:#12a060; --warn:#d84a4a;
+  --code-bg:#10131c; --code-fg:#d6d9e0; --radius:10px;
+}
+* { box-sizing:border-box; margin:0; padding:0; }
+html { scroll-behavior:smooth; }
+body { font-family:'Inter','Noto Serif SC',-apple-system,sans-serif; color:var(--ink); background:var(--paper); line-height:1.7; font-size:17px; -webkit-font-smoothing:antialiased; }
+
+.hero { position:relative; padding:90px 24px 72px; background:radial-gradient(ellipse 820px 460px at 28% 30%, rgba(47,111,184,.30) 0%, transparent 58%), radial-gradient(ellipse 680px 400px at 78% 66%, rgba(91,75,255,.20) 0%, transparent 55%), #060910; color:#fff; overflow:hidden; }
+.hero-inner { max-width:900px; margin:0 auto; position:relative; z-index:2; }
+.hero-eyebrow { display:inline-block; padding:6px 14px; border-radius:999px; background:rgba(255,255,255,.08); backdrop-filter:blur(12px); border:1px solid rgba(255,255,255,.16); font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:.08em; margin-bottom:22px; color:#cfe2ff; }
+.hero h1 { font-family:'Noto Serif SC',serif; font-weight:700; font-size:clamp(32px,5.2vw,52px); line-height:1.2; margin-bottom:20px; letter-spacing:-0.01em; }
+.hero h1 em { font-style:normal; background:linear-gradient(120deg,#fff 0%,#cfe2ff 48%,#8ab4f8 100%); -webkit-background-clip:text; background-clip:text; color:transparent; }
+.hero .subtitle { font-size:19px; font-weight:300; color:rgba(255,255,255,.82); margin-bottom:38px; max-width:680px; line-height:1.75; }
+.hero .subtitle strong { color:#fff; font-weight:600; text-shadow:0 0 14px rgba(138,180,248,.55); }
+.hero .verse { border-left:2px solid rgba(47,111,184,.7); padding-left:16px; margin-bottom:32px; font-family:'Noto Serif SC',serif; font-style:italic; color:rgba(255,255,255,.65); font-size:16px; line-height:1.85; }
+.hero .verse cite { display:block; margin-top:6px; font-style:normal; font-size:13px; color:rgba(255,255,255,.4); }
+.hero .dp { margin-top:6px; padding:14px 10px 6px; border:1px solid rgba(255,255,255,.1); border-radius:12px; background:rgba(255,255,255,.025); }
+
+main { max-width:780px; margin:0 auto; padding:76px 24px 120px; }
+section { margin-bottom:72px; }
+h2 { font-family:'Noto Serif SC',serif; font-size:30px; font-weight:700; margin-bottom:20px; padding-top:8px; }
+h2::before { content:''; display:inline-block; width:32px; height:3px; background:linear-gradient(90deg,var(--accent),var(--accent-2)); border-radius:2px; vertical-align:middle; margin-right:12px; transform:translateY(-6px); }
+h3 { font-size:20px; font-weight:600; margin:32px 0 12px; color:var(--ink-2); }
+p { margin-bottom:16px; color:var(--ink-2); }
+p code, li code, td code { font-family:'JetBrains Mono',monospace; font-size:.93em; padding:2px 6px; background:var(--cream); border:1px solid var(--line); border-radius:4px; color:#1f5590; font-weight:500; }
+strong { color:var(--ink); font-weight:600; }
+ul, ol { margin:0 0 20px 24px; color:var(--ink-2); }
+li { margin-bottom:8px; }
+
+.verse-inline { padding:18px 22px; margin:22px 0; background:linear-gradient(90deg,#f2f7ff 0%,transparent 60%); border-left:3px solid var(--accent); border-radius:0 var(--radius) var(--radius) 0; font-family:'Noto Serif SC',serif; font-style:italic; color:var(--ink-3); }
+.verse-inline cite { display:block; margin-top:6px; font-style:normal; font-size:13px; color:var(--mute); }
+
+.stack { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:12px; margin:22px 0; }
+.stk { padding:16px 15px; border-radius:var(--radius); border:1px solid var(--line); background:linear-gradient(180deg,var(--paper),var(--cream)); }
+.stk .k { font-family:'JetBrains Mono',monospace; font-size:11px; color:#1f5590; letter-spacing:.08em; margin-bottom:4px; }
+.stk .t { font-size:15px; font-weight:600; color:var(--ink); margin-bottom:4px; }
+.stk .d { font-size:13px; color:var(--ink-3); line-height:1.55; }
+
+.code { margin:22px 0; background:var(--code-bg); border-radius:var(--radius); overflow:hidden; box-shadow:0 4px 24px rgba(15,20,32,.08); border:1px solid #1c1f2e; }
+.code-header { padding:10px 16px; background:#0a0d15; border-bottom:1px solid #1c1f2e; display:flex; align-items:center; justify-content:space-between; gap:12px; }
+.code-lang { font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.1em; color:var(--accent-2); text-transform:uppercase; font-weight:600; }
+.code-file { font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--mute); }
+.code pre { padding:20px 22px; overflow-x:auto; font-family:'JetBrains Mono',monospace; font-size:13.5px; line-height:1.65; color:var(--code-fg); }
+.code pre .hl { background:rgba(138,180,248,.12); display:inline-block; width:100%; margin:0 -22px; padding:0 22px; }
+
+.tk-kw{color:#c57bff;font-weight:500}.tk-decl{color:#e08aff;font-weight:600}.tk-name{color:#fff;font-weight:500}
+.tk-dir{color:#7ee8d8;font-weight:500}.tk-typ{color:#4ad6b4}.tk-prim{color:#79dfff}
+.tk-rf{color:#ffd479;font-weight:500}.tk-rw{color:#b8a0e0}.tk-stor{color:#4ad6b4;font-weight:600}
+.tk-sf{color:#c5b890}.tk-sv{color:#8ab4f8}.tk-op{color:#ff8a4c}.tk-num{color:#79b8ff}
+.tk-com{color:#6c7488;font-style:italic}.tk-ann{color:#ff79c6}.tk-fn{color:#4ad6b4}.tk-str{color:#ffd479}.tk-hex{color:#ffb86b}
+
+.term { margin:18px 0; background:#060810; border-radius:var(--radius); overflow:hidden; border:1px solid #1c1f2e; font-family:'JetBrains Mono',monospace; font-size:12.5px; line-height:1.7; }
+.term-header { padding:8px 14px; background:#10131c; border-bottom:1px solid #1c1f2e; color:var(--mute); font-size:11px; letter-spacing:.1em; }
+.term-body { padding:16px 20px; color:#c5cbd8; overflow-x:auto; white-space:pre; }
+.term-ok{color:#6fe8a5}.term-err{color:#ff8f8f}.term-warn{color:#ffcf8f}.term-hint{color:var(--mute);font-style:italic}.term-dim{color:#7d879b}
+
+.callout { padding:18px 22px; background:var(--cream); border-left:3px solid var(--accent); border-radius:0 var(--radius) var(--radius) 0; margin:24px 0; font-size:15.5px; }
+.callout-title { font-weight:600; color:var(--ink); margin-bottom:6px; display:block; }
+.callout.warn { border-left-color:var(--warn); background:#fdf4f4; }
+.callout.key { background:linear-gradient(90deg,#f2f7ff 0%,var(--cream) 100%); border-left-color:var(--prism); }
+
+.tbl-wrap { margin:20px 0; overflow-x:auto; border-radius:var(--radius); border:1px solid var(--line); }
+table { width:100%; border-collapse:collapse; font-size:14.5px; }
+th { background:var(--cream); text-align:left; padding:11px 15px; font-weight:600; border-bottom:2px solid var(--line); white-space:nowrap; }
+td { padding:11px 15px; border-bottom:1px solid var(--line); color:var(--ink-2); }
+tbody tr:last-child td { border-bottom:none; }
+td.mono, th.mono { font-family:'JetBrains Mono',monospace; font-size:13px; }
+td .check { color:var(--ok); font-weight:600; }
+
+.pn { display:flex; justify-content:space-between; gap:12px; padding:16px 0 32px; border-top:1px solid var(--line); border-bottom:1px solid var(--line); margin-bottom:56px; font-size:14px; color:var(--mute); }
+.pn a { color:var(--prism); text-decoration:none; font-weight:500; }
+
+footer { padding:40px 24px; background:var(--code-bg); color:var(--mute); text-align:center; font-size:14px; }
+footer a { color:var(--prism-2); text-decoration:none; }
+footer .next { display:block; margin-bottom:12px; font-family:'Noto Serif SC',serif; color:var(--code-fg); font-size:15px; }
+
+@media (max-width:640px){ main{padding:48px 20px 80px} .hero{padding:60px 20px 52px} h2{font-size:24px} }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="hero-inner">
+    <div class="hero-eyebrow">七日创造 · 第二日 · 空气与水 · 第 10 集</div>
+    <h1>跑一段真程序<br><em>冒泡排序</em></h1>
+    <p class="subtitle">第九集那颗 <code style="background:none;border:none;color:#a678ff">cpu_top</code> 一行都不改——只把另一份镜像灌进去，让它把六个数排好，再让它自己验一遍。</p>
+    <div class="verse">
+      "有晚上，有早晨，是第二日。"
+      <cite>—— 《创世记》 1:8</cite>
+    </div>
+  </div>
+</header>
+
+<main>
+
+<div class="pn">
+  <a href="09-cpu-top.html">← 第 9 集 · 一具身体</a>
+  <a href="../index.html#day2">第二日完 · 下一日 · 旱地与植物 →</a>
+</div>
+
+<section id="s1">
+  <h2>这一集不写新的芯片</h2>
+  <p>前九集造完的这颗单周期核，取指、译码、算绪、访存、写回都会做了，但它只跑过一件事：从 5 加到 1。这一集给它一段有结果的活儿——把 <code>9, 7, 5, 3, 2, 1</code> 排成升序。</p>
+
+  <p>做法只有一行：<strong>在 <code>cpu.prism</code> 里再加一个 run 块</strong>。design 不动、器官不动、<code>@schedule</code> 不动。镜像是测试台事实——</p>
+
+  <div class="stack">
+    <div class="stk"><div class="k">第九集</div><div class="t">cpu_check</div><div class="d">六条指令的累加循环，27 拍</div></div>
+    <div class="stk"><div class="k">本集</div><div class="t">bubble_sort</div><div class="d">32 条指令的排序 + 自检，417 拍</div></div>
+    <div class="stk"><div class="k">同一颗</div><div class="t">cpu_top</div><div class="d">换的是镜像，不是芯片</div></div>
+  </div>
+</section>
+
+<section id="s2">
+  <h2>那段程序</h2>
+  <p>冒泡排序不用乘除法：扫一遍相邻两格，逆序就换；有一趟一个都没换，就说明排好了。地址乘法用 <code>slli</code>（<code>j*8</code>——dm 一个字 8 字节），比较用 <code>slt</code>，跳转用 <code>beq</code> / <code>bne</code> / <code>blt</code>，取数放数用 <code>ld</code> / <code>sd</code>。全是第九集已经接通的路。</p>
+  <p>机器码不是手算的：先写 <code>.s</code> 交给 <code>llvm-mc</code> 汇编，再用 <code>llvm-objdump</code> 反着打一遍，地址与编码对上才抄进镜像表——<strong>第三方汇编器做裁判</strong>，Prism 这边只负责跑它。</p>
+
+  <div class="code">
+    <div class="code-header"><span class="code-lang">riscv64</span><span class="code-file">程序清单（机器码经 llvm-mc 汇编核对）</span></div>
+<pre>
+   0  0x00600293  addi x5, x0, 6        <span class="tk-com">n = 6</span>
+   4  0x00000313  addi x6, x0, 0        <span class="tk-com">swapped = 0</span>
+   8  0x00000393  addi x7, x0, 0        <span class="tk-com">j = 0</span>
+  12  0x00339e13  slli x28, x7, 3       <span class="tk-com">&amp;a[j] = j*8</span>
+  16  0x00138e93  addi x29, x7, 1       <span class="tk-com">j + 1</span>
+  20  0x003e9f13  slli x30, x29, 3      <span class="tk-com">&amp;a[j+1]</span>
+  24  0x000e3503  ld x10, 0(x28)        <span class="tk-com">a[j]</span>
+  28  0x000f3583  ld x11, 0(x30)        <span class="tk-com">a[j+1]</span>
+  32  0x00a5a633  slt x12, x11, x10     <span class="tk-com">a[j+1] 比 a[j] 小？</span>
+  36  0x00060863  beq x12, x0, 16       <span class="tk-com">没逆序 → 跳到 52</span>
+  40  0x00be3023  sd x11, 0(x28)        <span class="tk-com">换：小的进来</span>
+  44  0x00af3023  sd x10, 0(x30)        <span class="tk-com">换：大的出去</span>
+  48  0x00130313  addi x6, x6, 1        <span class="tk-com">swapped++</span>
+  52  0x00138393  addi x7, x7, 1        <span class="tk-com">j++</span>
+  56  0xfff28693  addi x13, x5, -1      <span class="tk-com">n - 1</span>
+  60  0xfcd3c8e3  blt x7, x13, -52      <span class="tk-com">j &lt; n-1 → 回 12</span>
+  64  0xfc0312e3  bne x6, x0, -60       <span class="tk-com">这趟换过 → 回 4 再扫</span>
+  68  0x00000393  addi x7, x0, 0        <span class="tk-com">自检：j = 0</span>
+  72  0xfff28693  addi x13, x5, -1      <span class="tk-com">n - 1</span>
+  76  0x00339e13  slli x28, x7, 3       <span class="tk-com">&amp;a[j]</span>
+  80  0x00138e93  addi x29, x7, 1       <span class="tk-com">j + 1</span>
+  84  0x003e9f13  slli x30, x29, 3      <span class="tk-com">&amp;a[j+1]</span>
+  88  0x000e3503  ld x10, 0(x28)        <span class="tk-com">a[j]</span>
+  92  0x000f3583  ld x11, 0(x30)        <span class="tk-com">a[j+1]</span>
+  96  0x00a5a633  slt x12, x11, x10     <span class="tk-com">还有逆序？</span>
+ 100  0x00061c63  bne x12, x0, 24       <span class="tk-com">有 → 掉进 124 那格自跳，永不通</span>
+ 104  0x00138393  addi x7, x7, 1        <span class="tk-com">j++</span>
+ 108  0xfff28693  addi x13, x5, -1      <span class="tk-com">n - 1</span>
+ 112  0xfcd3cee3  blt x7, x13, -36      <span class="tk-com">六对没比完 → 回 76</span>
+ 116  0x00100a13  addi x20, x0, 1       <span class="tk-com">完工标志：直到这里才置 1</span>
+ 120  0x0000006f  jal x0, 0             <span class="tk-com">停机（自跳）</span>
+ 124  0x0000006f  jal x0, 0             <span class="tk-com">fail：自检没过就永远停在这</span>
+</pre>
+  </div>
+
+  <p>三处值得停：</p>
+  <ul>
+    <li><strong>只用 <code>ld</code> / <code>sd</code></strong>。这台机器的 dm 一颗就是一个 64 位字，排序里搬的也就是一个字——不碰字访问、半字访问那条没建的路。</li>
+    <li><strong>地址靠移位</strong>。<code>slli x28, x7, 3</code> 把下标 <code>j</code> 变成字节地址。没有乘法器，也不该为了一个下标去要一个乘法器。</li>
+    <li><strong>末尾那八条是自检</strong>。排完之后再从头比一遍相邻两格，发现任何一次逆序就掉进 <code>124</code> 那格自跳——<code>x20</code> 永远不置起。置起 <code>x20</code> 的那条指令，是这段程序里唯一能被称为"报告"的东西。</li>
+  </ul>
+</section>
+
+<section id="s3">
+  <h2>镜像写在测试台上</h2>
+  <p>程序与数组都进 run 块的 <code>image</code> 段：一个窗口给 <code>im</code>（指令），一个给 <code>dm</code>（数据）。<code>[0:]</code> 那个窗口只写起点，长度由值侧量出来——32 个字 × 4 字节 = 128 字节，六个 64 位数据字 = 48 字节。</p>
+<span class="tk-decl">run</span> bubble_sort <span class="tk-rw">of</span> cpu_top {
+    <span class="tk-stor">image</span> : {
+        prog : im[<span class="tk-num">0</span>:] = [
+            <span class="tk-num">0x00600293</span>,   <span class="tk-com">//   0: addi x5, x0, 6         n = 6</span>
+            <span class="tk-num">0x00000313</span>,   <span class="tk-com">//   4: addi x6, x0, 0         swapped = 0</span>
+            <span class="tk-num">0x00000393</span>,   <span class="tk-com">//   8: addi x7, x0, 0         j = 0</span>
+            <span class="tk-num">0x00339e13</span>,   <span class="tk-com">//  12: slli x28, x7, 3        &amp;a[j] = j*8</span>
+            <span class="tk-num">0x00138e93</span>,   <span class="tk-com">//  16: addi x29, x7, 1        j + 1</span>
+            <span class="tk-num">0x003e9f13</span>,   <span class="tk-com">//  20: slli x30, x29, 3       &amp;a[j+1]</span>
+            <span class="tk-num">0x000e3503</span>,   <span class="tk-com">//  24: ld x10, 0(x28)         a[j]</span>
+            <span class="tk-num">0x000f3583</span>,   <span class="tk-com">//  28: ld x11, 0(x30)         a[j+1]</span>
+            <span class="tk-num">0x00a5a633</span>,   <span class="tk-com">//  32: slt x12, x11, x10      a[j+1] 比 a[j] 小？</span>
+            <span class="tk-num">0x00060863</span>,   <span class="tk-com">//  36: beq x12, x0, 16        没逆序 → 跳到 52</span>
+            <span class="tk-num">0x00be3023</span>,   <span class="tk-com">//  40: sd x11, 0(x28)         换：小的进来</span>
+            <span class="tk-num">0x00af3023</span>,   <span class="tk-com">//  44: sd x10, 0(x30)         换：大的出去</span>
+            <span class="tk-num">0x00130313</span>,   <span class="tk-com">//  48: addi x6, x6, 1         swapped++</span>
+            <span class="tk-num">0x00138393</span>,   <span class="tk-com">//  52: addi x7, x7, 1         j++</span>
+            <span class="tk-num">0xfff28693</span>,   <span class="tk-com">//  56: addi x13, x5, -1       n - 1</span>
+            <span class="tk-num">0xfcd3c8e3</span>,   <span class="tk-com">//  60: blt x7, x13, -52       j &lt; n-1 → 回 12</span>
+            <span class="tk-num">0xfc0312e3</span>,   <span class="tk-com">//  64: bne x6, x0, -60        这趟换过 → 回 4 再扫</span>
+            <span class="tk-num">0x00000393</span>,   <span class="tk-com">//  68: addi x7, x0, 0         自检：j = 0</span>
+            <span class="tk-num">0xfff28693</span>,   <span class="tk-com">//  72: addi x13, x5, -1       n - 1</span>
+            <span class="tk-num">0x00339e13</span>,   <span class="tk-com">//  76: slli x28, x7, 3        &amp;a[j]</span>
+            <span class="tk-num">0x00138e93</span>,   <span class="tk-com">//  80: addi x29, x7, 1        j + 1</span>
+            <span class="tk-num">0x003e9f13</span>,   <span class="tk-com">//  84: slli x30, x29, 3       &amp;a[j+1]</span>
+            <span class="tk-num">0x000e3503</span>,   <span class="tk-com">//  88: ld x10, 0(x28)         a[j]</span>
+            <span class="tk-num">0x000f3583</span>,   <span class="tk-com">//  92: ld x11, 0(x30)         a[j+1]</span>
+            <span class="tk-num">0x00a5a633</span>,   <span class="tk-com">//  96: slt x12, x11, x10      还有逆序？</span>
+            <span class="tk-num">0x00061c63</span>,   <span class="tk-com">// 100: bne x12, x0, 24        有 → 掉进 124 那格自跳，永不通</span>
+            <span class="tk-num">0x00138393</span>,   <span class="tk-com">// 104: addi x7, x7, 1         j++</span>
+            <span class="tk-num">0xfff28693</span>,   <span class="tk-com">// 108: addi x13, x5, -1       n - 1</span>
+            <span class="tk-num">0xfcd3cee3</span>,   <span class="tk-com">// 112: blt x7, x13, -36       六对没比完 → 回 76</span>
+            <span class="tk-num">0x00100a13</span>,   <span class="tk-com">// 116: addi x20, x0, 1        完工标志：直到这里才置 1</span>
+            <span class="tk-num">0x0000006f</span>,   <span class="tk-com">// 120: jal x0, 0              停机（自跳）</span>
+            <span class="tk-num">0x0000006f</span>    <span class="tk-com">// 124: jal x0, 0              fail：自检没过就永远停在这</span>
+        ]
+
+    }
+    until : x20 == <span class="tk-num">1</span>
+    show  : { pcv, x20, dm0, dm1, dm2, dm3, dm4, dm5 }
+}
+  <p>两句口径要记：<strong>偏移与字节数的单位是字节</strong>，零点是这块 mem 的起点；<code>别名</code>（<code>prog</code> / <code>data</code>）是命令行换镜像的把手——<code>--image prog=&lt;文件&gt;</code> 只换文件，落点与窗口仍是源码里的事实。</p>
+</section>
+
+<section id="s4">
+  <h2>417 拍</h2>
+  <div class="term">
+    <div class="term-header">▸ prism run examples/day2/cpu.prism --run bubble_sort --debug</div>
+    <div class="term-body">[run] bubble_sort: 417 拍 golden 直跑完成
+# run: bubble_sort  design: cpu_top  stop: until true at cycle 416
+cycle  pcv  x20  dm0  dm1  dm2  dm3  dm4  dm5
+0        4    0    9    7    5    3    2    1
+1        8    0    9    7    5    3    2    1
+2       12    0    9    7    5    3    2    1
+3       16    0    9    7    5    3    2    1
+4       20    0    9    7    5    3    2    1
+5       24    0    9    7    5    3    2    1
+6       28    0    9    7    5    3    2    1
+7       32    0    9    7    5    3    2    1
+8       36    0    9    7    5    3    2    1
+9       40    0    9    7    5    3    2    1
+10      44    0    7    7    5    3    2    1   <span class="term-hint"># 第一条 sd 落地：低格换成 7</span>
+11      48    0    7    9    5    3    2    1   <span class="term-hint"># 第二条 sd：高格换成 9</span>
+12      52    0    7    9    5    3    2    1
+13      56    0    7    9    5    3    2    1
+14      60    0    7    9    5    3    2    1
+15      12    0    7    9    5    3    2    1
+<span class="term-hint">…（16 – 263 略：一共换了 15 次，每次两格）</span>
+264     44    0    1    1    3    5    7    9   <span class="term-hint"># 最后一次换位：1 顶到最前</span>
+265     48    0    1    2    3    5    7    9
+266     52    0    1    2    3    5    7    9
+267     56    0    1    2    3    5    7    9
+268     60    0    1    2    3    5    7    9
+269     12    0    1    2    3    5    7    9
+<span class="term-hint">…（268 – 411 略：再扫一趟一格没换，进自检）</span>
+412    104    0    1    2    3    5    7    9
+413    108    0    1    2    3    5    7    9
+414    112    0    1    2    3    5    7    9
+415    116    0    1    2    3    5    7    9
+416    120    1    1    2    3    5    7    9   <span class="term-hint"># x20 = 1：自检六对全过 → until 成立</span>
+<span class="term-ok"># stop: until true at cycle 416</span></div>
+  </div>
+
+  <div class="term">
+    <div class="term-header">▸ prism cosim examples/day2/cpu.prism --run bubble_sort</div>
+    <div class="term-body">[run] bubble_sort: RTL tb 跑完，417 拍（产物 …）
+<span class="term-ok">[run --cosim] ✅ PASS: bubble_sort golden == RTL 仿真（417 拍 × 8 列全等；
+      golden stop: until true at cycle 416）</span></div>
+  </div>
+
+  <p>几处值得看：</p>
+  <ul>
+    <li><strong>拍 0 就已经是 <code>9 7 5 3 2 1</code></strong>。装载发生在复位释放之后、第一个被采样的拍之前——第一拍看到的是灌完的数组。</li>
+    <li><strong>一次换位改两格，分两拍看见</strong>。拍 10 低格从 9 变 7、拍 11 高格才从 7 变 9；中间那一拍的数组是 <code>7 7 5 …</code>——两个 <code>sd</code> 之间本来就有一个半完成态，这不是 bug，是这两条指令本来就要分开落两个边沿。</li>
+    <li><strong>最后一次变化在拍 265</strong>（<code>1</code> 顶到最前），可判据要到拍 416 才成立。中间那一百多拍是"再扫一趟确认没换 + 六对自检"。<strong>排完</strong>比<strong>验完</strong>早，这中间的差就是判据的价值。</li>
+  </ul>
+</section>
+
+<section id="s5">
+  <h2>这条判据会不会骗你</h2>
+  <p>把 <code>32</code> 那条比较的两个源操作数对调——<code>slt x12, x11, x10</code>（a[j+1] 比 a[j] 小？）写成 <code>slt x12, x10, x11</code>（编码 <code>0x00b52633</code>，同样由 llvm-mc 核对）。程序照常跑，数组照常动，<code>x20</code> 却再也不会置起：</p>
+  <div class="term">
+    <div class="term-header">▸ 注入后的输出</div>
+    <div class="term-body"><span class="term-err">[run] ❌ [run bubble_sort] until 判据在 10000 拍内从不成立——停机不可达</span>
+<span class="term-hint">（报错退出而非无限跑；要有界看一眼就加 --time &lt;时长&gt;）</span></div>
+  </div>
+  <p>判据要能失败才算判据。这里它失败的方式很干净：机器不停下来，工具就不替你假装跑完了。</p>
+  <p>自检那八条的作用也不在"让排序更对"——带 <code>swapped</code> 标志的冒泡本身已经能排好；它的作用是<strong>让判据独立于排序过程</strong>：用同一批 <code>ld</code> / <code>slt</code> 从头部再比一遍，判的是结果，不是过程自称完成。<em>报告的资格，来自它检查的东西不是它自己。</em></p>
+  <p>一条腿要交代清楚：这一集的 run 用了 <code>until</code> 引用 <code>expose</code> 出来的 <code>x20</code>，TLM 后端目前在这条路上还生成不出合法代码（<code>error: no member named 'read' in 'V4'</code>）。所以这一段撞的是 golden 与 RTL 两条腿，SystemC 那条腿等后端补上再撞。</p>
+</section>
+
+<section id="s6">
+  <h2>小结</h2>
+  <ul>
+    <li>同一颗 <code>cpu_top</code>，第二个 run 块换一份镜像——<strong>换程序不动芯片</strong>。</li>
+    <li>只用这台已有的能力：双字访存、移位算地址、<code>slt</code> 比较、三条分支。没有为排序加一根线。</li>
+    <li>417 拍把 <code>9 7 5 3 2 1</code> 排成 <code>1 2 3 5 7 9</code>，golden 与 RTL 逐拍逐列全等。</li>
+    <li>停机判据是程序自己写出的完工位 <code>x20</code>；注入一发反向比较，它就从不成立——<strong>判据能失败，才算它在看</strong>。</li>
+  </ul>
+  <p>第二日到这一集收束。这台机器已经会做事了——它接下来要学的不是更多电路，是<strong>更快的节拍</strong>与<strong>会疼</strong>。</p>
+</section>
+
+<section id="s7">
+  <h2>复现本集</h2>
+  <div class="code">
+    <div class="code-header"><span class="code-lang">bash</span><span class="code-file">reproduce</span></div>
+<pre>git clone https://github.com/prism-hdl/seven-days
+cd seven-days
+
+prism run   examples/day2/cpu.prism --run bubble_sort --debug
+prism cosim examples/day2/cpu.prism --run bubble_sort</pre>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <span class="next">第二日 · 空气与水 · 完 —— 第 5 集到第 10 集，从一颗 <code>pc</code> 到一段真程序</span>
+  七日创造 · 第二日 · 空气与水 · 第 10 集 · <a href="../index.html">返回首页</a>
+</footer>
+
+</body>
+</html>

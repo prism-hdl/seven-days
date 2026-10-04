@@ -150,7 +150,7 @@ footer .next { display:block; margin-bottom:12px; font-family:'Noto Serif SC',se
 
 <div class="pn">
   <a href="07-alu.html">← 第 7 集 · ALU</a>
-  <a href="09-observe.html">第 9 集 · 观察它们的心跳 →</a>
+  <a href="09-cpu-top.html">第 9 集 · 一具身体 →</a>
 </div>
 
 <section id="s1">
@@ -176,6 +176,7 @@ footer .next { display:block; margin-bottom:12px; font-family:'Noto Serif SC',se
     opcode = instr[<span class="tk-num">6</span>:<span class="tk-num">0</span>]
     funct3 = instr[<span class="tk-num">14</span>:<span class="tk-num">12</span>]
     funct7 = instr[<span class="tk-num">31</span>:<span class="tk-num">25</span>]
+    funct6 = instr[<span class="tk-num">31</span>:<span class="tk-num">26</span>]     <span class="tk-com">// RV64 的 shamt 有 6 位，所以移位看 funct6 而不是 funct7</span>
 
     rd_raw = instr[<span class="tk-num">11</span>:<span class="tk-num">7</span>]
     rs1    = instr[<span class="tk-num">19</span>:<span class="tk-num">15</span>]
@@ -183,37 +184,64 @@ footer .next { display:block; margin-bottom:12px; font-family:'Noto Serif SC',se
   </div>
 
   <p><code>[hi:lo]</code> 是位切片。注意 <code>opcode</code> / <code>funct3</code> / <code>funct7</code> 都在<strong>所有指令格式里位置相同</strong>——这是 ISA 设计时刻意留的：解码器可以<strong>先看 opcode 判大类、再看 funct3/funct7 判细分</strong>，而不必先知道整条指令长什么样。</p>
+
+  <p>多出来的一根 <code>funct6</code> 是 RV64 的事：64 位机器的移位量要 6 位（0..63），指令里那一格就不够再放一个完整的 funct7 了——所以移位族用 <code>instr[31:26]</code> 做区分字段，剩下那一位当移量的第 6 位。<strong>同一份指令编码，宽度口径变了，字段的切法就得跟着变</strong>。</p>
 </section>
 
 <section id="s3">
   <h2>第二步：立即数的五种拼法</h2>
-  <p>立即数（指令里内嵌的常量）是最麻烦的部分——<strong>五种指令格式，五种把位数重新排列的方式</strong>。RISC-V 这么做是为了让所有格式里"该固定的字段固定"：</p>
+  <p>立即数（指令里内嵌的常量）是最麻烦的部分——<strong>五种指令格式，五种把位数重新排列的方式</strong>。RISC-V 这么做是为了让所有格式里"该固定的字段固定"。分工两步：先用一张 <code>opcode → 形态</code> 表判格式，再按形态把位拼回来。</p>
+
+  <div class="code">
+    <div class="code-header"><span class="code-lang">prism</span><span class="code-file">decoder.prism · 判格式（节选）</span></div>
+<pre>    <span class="tk-com">// ---- 立即数：五种格式 + &quot;无立即数&quot;，先判格式，再按格式拼 ----</span>
+    itype = <span class="tk-kw">match</span> opcode {
+        <span class="tk-num">0x33</span> =&gt; <span class="tk-num">5</span>,     <span class="tk-com">// R ：没有立即数</span>
+        <span class="tk-num">0x3b</span> =&gt; <span class="tk-num">5</span>,     <span class="tk-com">// R ：W 型同形</span>
+        <span class="tk-num">0x13</span> =&gt; <span class="tk-num">0</span>,     <span class="tk-com">// I ：addi / lw / jalr</span>
+        <span class="tk-num">0x1b</span> =&gt; <span class="tk-num">0</span>,     <span class="tk-com">// I ：addiw / slliw …</span>
+        <span class="tk-num">0x03</span> =&gt; <span class="tk-num">0</span>,     <span class="tk-com">// I ：load</span>
+        <span class="tk-num">0x67</span> =&gt; <span class="tk-num">0</span>,     <span class="tk-com">// I ：jalr</span>
+        <span class="tk-num">0x23</span> =&gt; <span class="tk-num">1</span>,     <span class="tk-com">// S ：store</span>
+        <span class="tk-num">0x37</span> =&gt; <span class="tk-num">2</span>,     <span class="tk-com">// U ：lui</span>
+        <span class="tk-num">0x17</span> =&gt; <span class="tk-num">2</span>,     <span class="tk-com">// U ：auipc</span>
+        <span class="tk-num">0x63</span> =&gt; <span class="tk-num">3</span>,     <span class="tk-com">// B ：branch</span>
+        <span class="tk-num">0x6f</span> =&gt; <span class="tk-num">4</span>,     <span class="tk-com">// J ：jal</span>
+        _    =&gt; <span class="tk-num">5</span>,     <span class="tk-com">// 不认识：不给立即数</span>
+    }</pre>
+  </div>
+
+  <p>拼位这件事本身没有诀窍，逐个字段搬就行。真正要选的是<strong>符号扩展怎么做</strong>——这一版把它交给类型声明：</p>
 
   <div class="code">
     <div class="code-header"><span class="code-lang">prism</span><span class="code-file">decoder.prism · 立即数（节选）</span></div>
-<pre>    <span class="tk-com">// I-type：取高 12 位，再手工符号扩展</span>
-    i_raw = instr &gt;&gt; <span class="tk-num">20</span>
-    i_imm = i_raw &gt;= <span class="tk-num">0x800</span> ? i_raw - <span class="tk-num">0x1000</span> : i_raw
+<pre>    <span class="tk-com">// 符号扩展不靠减法技巧，靠【类型声明】：把位形声明成有符号线网（i12 / i13 /</span>
+    <span class="tk-com">// i21 / i32），赋进 64 位端口时由类型系统扩上去。golden 按声明回绕、RTL 发</span>
+    <span class="tk-com">// `logic signed`，两侧同一条规则。</span>
+    u_raw  : <span class="tk-prim">u32</span> = {instr[<span class="tk-num">31</span>:<span class="tk-num">12</span>], {<span class="tk-num">12</span>{<span class="tk-num">0</span>}}}
+    i_sext : <span class="tk-prim">i12</span> = instr[<span class="tk-num">31</span>:<span class="tk-num">20</span>]
+    s_sext : <span class="tk-prim">i12</span> = {instr[<span class="tk-num">31</span>:<span class="tk-num">25</span>], instr[<span class="tk-num">11</span>:<span class="tk-num">7</span>]}
+    u_sext : <span class="tk-prim">i32</span> = u_raw[<span class="tk-num">31</span>:<span class="tk-num">0</span>]       <span class="tk-com">// LUI/AUIPC 在 RV64 也按 bit 31 扩展（spec 2.5）</span>
+    b_sext : <span class="tk-prim">i13</span> = {instr[<span class="tk-num">31</span>:<span class="tk-num">31</span>], instr[<span class="tk-num">7</span>:<span class="tk-num">7</span>], instr[<span class="tk-num">30</span>:<span class="tk-num">25</span>], instr[<span class="tk-num">11</span>:<span class="tk-num">8</span>], <span class="tk-num">0</span>}
+    j_sext : <span class="tk-prim">i21</span> = {instr[<span class="tk-num">31</span>:<span class="tk-num">31</span>], instr[<span class="tk-num">19</span>:<span class="tk-num">12</span>], instr[<span class="tk-num">20</span>:<span class="tk-num">20</span>], instr[<span class="tk-num">30</span>:<span class="tk-num">21</span>], <span class="tk-num">0</span>}
 
-    <span class="tk-com">// S-type：高 7 位 &lt;&lt; 5，接低 5 位；再手工符号扩展</span>
-    s_raw  = (((instr &gt;&gt; <span class="tk-num">25</span>) &amp; <span class="tk-num">0x7f</span>) &lt;&lt; <span class="tk-num">5</span>) | ((instr &gt;&gt; <span class="tk-num">7</span>) &amp; <span class="tk-num">0x1f</span>)
-    s_imm  = s_raw &gt;= <span class="tk-num">0x800</span> ? s_raw - <span class="tk-num">0x1000</span> : s_raw
-
-    <span class="tk-com">// B-type：imm[12|11|10:5|4:1|0] —— 位被拆成四段重新拼</span>
-    b12    = (instr &gt;&gt; <span class="tk-num">31</span>) &amp; <span class="tk-num">0x1</span>
-    b11    = (instr &gt;&gt; <span class="tk-num">7</span>)  &amp; <span class="tk-num">0x1</span>
-    b10_5  = (instr &gt;&gt; <span class="tk-num">25</span>) &amp; <span class="tk-num">0x3f</span>
-    b4_1   = (instr &gt;&gt; <span class="tk-num">8</span>)  &amp; <span class="tk-num">0xf</span>
-    b_raw  = (b12 &lt;&lt; <span class="tk-num">12</span>) | (b11 &lt;&lt; <span class="tk-num">11</span>) | (b10_5 &lt;&lt; <span class="tk-num">5</span>) | (b4_1 &lt;&lt; <span class="tk-num">1</span>)
-    b_imm  = b_raw &gt;= <span class="tk-num">0x1000</span> ? b_raw - <span class="tk-num">0x2000</span> : b_raw</pre>
+    imm = <span class="tk-kw">match</span> itype {
+        <span class="tk-num">0</span> =&gt; i_sext,
+        <span class="tk-num">1</span> =&gt; s_sext,
+        <span class="tk-num">2</span> =&gt; u_sext,
+        <span class="tk-num">3</span> =&gt; b_sext,
+        <span class="tk-num">4</span> =&gt; j_sext,
+        _ =&gt; <span class="tk-num">0</span>,                      <span class="tk-com">// R 型与未知：无立即数</span>
+    }</pre>
   </div>
 
   <div class="callout warn">
     <span class="callout-title">这一版我写错过一次——而且测试没喊</span>
     <p>第一版 <code>i_imm</code> 我只写了一行：<code>i_imm = instr &gt;&gt; 20</code>。看起来和第 7 集 ALU 的逻辑右移一样干净。向量跑完 <strong>9/9 全等 ✅</strong>。</p>
-    <p style="margin:10px 0 0;">然后我加了一条 <code>addi x11, x0, -8</code>（编码 <code>0xff800593</code>）——立刻红：<strong>期望 -8，实得 4088</strong>。</p>
-    <p style="margin:10px 0 0;">原因：<code>instr</code> 是无符号的 <code>Signal&lt;u32&gt;</code>，<code>&gt;&gt;</code> 是<strong>逻辑右移</strong>，不会替我们补符号位。之前 9 条向量的立即数全是正数——正数的符号扩展和零扩展结果一样，所以<strong>测试全绿，但代码是错的</strong>。</p>
-    <p style="margin:10px 0 0;">修法是显式判"够不够半个范围再减回去"，S / B / J 三型本来就这么写的——只有 I 型因为"看起来能偷懒"而漏了。这就是那条老规矩：<strong>一个测试从没失败过，说明它还没被测到。</strong></p>
+    <p style="margin:10px 0 0;">然后我加了一条负立即数（<code>0xff800593</code>）——立刻红：<strong>期望 -8，实得 4088</strong>。原因：<code>instr</code> 是无符号的 <code>Signal&lt;u32&gt;</code>，<code>&gt;&gt;</code> 是<strong>逻辑右移</strong>，不会替我们补符号位。之前那 9 条向量的立即数全是正数——正数的符号扩展和零扩展结果一样，所以<strong>测试全绿，但代码是错的</strong>。</p>
+    <p style="margin:10px 0 0;">当年的修法是每个形态都显式判"够不够半个范围再减回去"。这一版换了做法：<strong>位形声明成 <code>i12</code> / <code>i13</code> / <code>i21</code>，符号扩展由类型系统负责</strong>——白虹真核的立即数生成器也是这么写的。今天再把它改回零扩展视角试一次，那拍照样红，只是红得更早、更响：</p>
+    <pre style="margin:10px 0 0;font-family:'JetBrains Mono',monospace;font-size:12.5px;color:#d6d9e0;white-space:pre">[expect] ❌ cycle 6 imm: 期望 -8，实得 4088</pre>
+    <p style="margin:8px 0 0;">而写成 <code>i12(instr &gt;&gt; 20)</code> 想强扭类型，编译器直接拦住并给出改法：<code>类型转换 i12(x) 要求位宽相等（目标 12 位，操作数 32 位）——截断写 x[11:0]，扩位写 {k{0}} 拼接</code>。<strong>一条老规矩仍然成立：一个测试从没失败过，说明它还没被测到。</strong></p>
   </div>
 </section>
 
@@ -222,21 +250,11 @@ footer .next { display:block; margin-bottom:12px; font-family:'Noto Serif SC',se
 
   <div class="code">
     <div class="code-header"><span class="code-lang">prism</span><span class="code-file">decoder.prism · 分派（节选）</span></div>
-<pre>    <span class="tk-com">// R 型与 I 型共用同一张 funct3 表；funct7 == 0x20 是"算术变体"标志</span>
-    alu_op_r = <span class="tk-kw">match</span> funct3 {
-        <span class="tk-num">0</span> =&gt; (funct7 == <span class="tk-num">0x20</span>) ? <span class="tk-num">1</span> : <span class="tk-num">0</span>,   <span class="tk-com">// SUB / ADD</span>
-        <span class="tk-num">1</span> =&gt; <span class="tk-num">5</span>,                          <span class="tk-com">// SLL</span>
-        <span class="tk-num">2</span> =&gt; <span class="tk-num">7</span>,                          <span class="tk-com">// SLT</span>
-        <span class="tk-num">3</span> =&gt; <span class="tk-num">9</span>,                          <span class="tk-com">// SLTU</span>
-        <span class="tk-num">4</span> =&gt; <span class="tk-num">4</span>,                          <span class="tk-com">// XOR</span>
-        <span class="tk-num">5</span> =&gt; (funct7 == <span class="tk-num">0x20</span>) ? <span class="tk-num">6</span> : <span class="tk-num">8</span>,   <span class="tk-com">// SRA / SRL</span>
-        <span class="tk-num">6</span> =&gt; <span class="tk-num">3</span>,                          <span class="tk-com">// OR</span>
-        _ =&gt; <span class="tk-num">2</span>,                          <span class="tk-com">// AND</span>
-    }
-
-    <span class="tk-com">// ---- opcode 分派：一次判完"这是什么指令" ----</span>
+<pre>    <span class="tk-com">// ---- opcode 分派：一次判完&quot;这是什么指令&quot; ----</span>
     is_r      = (opcode == <span class="tk-num">0x33</span>)
+    is_op32   = (opcode == <span class="tk-num">0x3b</span>)      <span class="tk-com">// OP-32：addw / subw / sllw / srlw / sraw</span>
     is_i_alu  = (opcode == <span class="tk-num">0x13</span>)
+    is_imm32  = (opcode == <span class="tk-num">0x1b</span>)      <span class="tk-com">// OP-IMM-32：addiw / slliw / srliw / sraiw</span>
     is_load   = (opcode == <span class="tk-num">0x03</span>)
     is_store  = (opcode == <span class="tk-num">0x23</span>)
     is_lui    = (opcode == <span class="tk-num">0x37</span>)
@@ -245,15 +263,80 @@ footer .next { display:block; margin-bottom:12px; font-family:'Noto Serif SC',se
     is_j      = (opcode == <span class="tk-num">0x6f</span>)
     is_jr     = (opcode == <span class="tk-num">0x67</span>)
 
-    reg_wen   = is_r | is_i_alu | is_load | is_lui | is_auipc | is_j | is_jr
+    <span class="tk-com">// 算术族：ALU 选路与写回许可都来自这四条 opcode</span>
+    is_arith  = is_r | is_i_alu | is_op32 | is_imm32
+
+    reg_wen   = is_arith | is_load | is_lui | is_auipc | is_j | is_jr
     mem_ren   = is_load
     mem_wen   = is_store
     is_branch = is_b
     is_jal    = is_j
-    is_jalr   = is_jr</pre>
+    is_jalr   = is_jr
+    is_w_op   = is_op32 | is_imm32</pre>
   </div>
 
-  <p>到这里，"理解"就写完了。每条控制位都是几条布尔式的<strong>与或拼接</strong>——没有循环、没有状态、没有时序。</p>
+  <p>每条控制位都是几条布尔式的<strong>与或拼接</strong>——没有循环、没有状态、没有时序。RV64I 相比 RV32I 在这一层只多了两样东西：<strong>两个 opcode 家族</strong>（<code>0x3b</code> OP-32、<code>0x1b</code> OP-IMM-32）和<strong>一根 <code>is_w_op</code></strong>。第 7 集说过，W 型指令不加长 ALU 那张表——它在这里落地成一根线。</p>
+
+  <h3>运算选择：一张表管三族</h3>
+
+  <div class="code">
+    <div class="code-header"><span class="code-lang">prism</span><span class="code-file">decoder.prism · ALU 选路（节选）</span></div>
+<pre>    <span class="tk-com">// ---- ALU 运算选择：R / I / W 三族共用同一张 funct3 表 ----</span>
+    <span class="tk-com">// SUB / ADD 由 funct7 分辨（只有 R 型族看它）；SRA / SRL 由 bit 30 分辨。</span>
+    <span class="tk-com">// bit 30 这一位不能拿 funct7 == 0x20 代替：ADDI 的 imm[11:5] 恰好等于 0x20</span>
+    <span class="tk-com">// 时（比如 addi x1, x0, 1024），整条 funct7 字段就是 0x20——那是个正数立即数，</span>
+    <span class="tk-com">// 不是 SUB。</span>
+    sub_flag = (is_r | is_op32) &amp; (funct7 == <span class="tk-num">0x20</span>)
+    sra_flag = instr[<span class="tk-num">30</span>]
+
+    alu_op_r = <span class="tk-kw">match</span> funct3 {
+        <span class="tk-num">0</span> =&gt; sub_flag ? <span class="tk-num">1</span> : <span class="tk-num">0</span>,       <span class="tk-com">// SUB / ADD</span>
+        <span class="tk-num">1</span> =&gt; <span class="tk-num">5</span>,                       <span class="tk-com">// SLL</span>
+        <span class="tk-num">2</span> =&gt; <span class="tk-num">7</span>,                       <span class="tk-com">// SLT</span>
+        <span class="tk-num">3</span> =&gt; <span class="tk-num">9</span>,                       <span class="tk-com">// SLTU</span>
+        <span class="tk-num">4</span> =&gt; <span class="tk-num">4</span>,                       <span class="tk-com">// XOR</span>
+        <span class="tk-num">5</span> =&gt; sra_flag ? <span class="tk-num">6</span> : <span class="tk-num">8</span>,        <span class="tk-com">// SRA / SRL</span>
+        <span class="tk-num">6</span> =&gt; <span class="tk-num">3</span>,                       <span class="tk-com">// OR</span>
+        _ =&gt; <span class="tk-num">2</span>,                       <span class="tk-com">// AND</span>
+    }
+
+    alu_op  = is_arith ? alu_op_r : <span class="tk-num">0</span>
+    alu_src = (is_i_alu | is_imm32 | is_load | is_jr | is_store | is_lui) ? <span class="tk-num">1</span> : <span class="tk-num">0</span></pre>
+  </div>
+
+  <p><strong>同一格 <code>funct3</code> 的两条指令靠另一个字段区分</strong>，这件事在 64 位机器上有个新坑：<code>funct7 == 0x20</code> 判 SUB 只在 R 型族里成立。I 型族的 <code>instr[31:25]</code> 是立即数的高 7 位——<code>addi x1, x0, 1024</code>（<code>0x40000093</code>）的 <code>funct7</code> 字段<strong>恰好就是 0x20</strong>，照老写法它会被当成 SUB。改成先问"这是哪一族"，再看 <code>funct7</code>；算术右移的区分位换成 <code>instr[30]</code>（它在 I 型里是立即数第 10 位，在 R 型里正好是 funct7 的那一位——两种形态共用一位）。</p>
+
+  <p>把 <code>sub_flag</code> 退回老写法试一次，向量里那条 <code>addi x1, x0, 1024</code> 立刻红：<code>[expect] ❌ cycle 1 alu_op: 期望 0，实得 1</code>。</p>
+
+  <h3>认不认识：opcode 之外还要看字段</h3>
+
+  <div class="code">
+    <div class="code-header"><span class="code-lang">prism</span><span class="code-file">decoder.prism · 合法性（节选）</span></div>
+<pre>    <span class="tk-com">// ---- 认不认识：opcode 之外还要看字段 ----</span>
+    <span class="tk-com">// R 型族只认 funct7 = 0x00 / 0x20（0x01 是 M 扩展，这台不做）；</span>
+    <span class="tk-com">// 立即数移位：shamt 占低 6 位，funct6 只许是 0x00（SLLI / SRLI）或</span>
+    <span class="tk-com">// 0x10（bit 30 置起 = SRAI，仅 funct3=5）；</span>
+    <span class="tk-com">// load / store 只认双字（LD/SD）；分支只认六个已定义编码。</span>
+    r_f7_ok  = funct7 <span class="tk-kw">in</span> [<span class="tk-num">0x00</span>, <span class="tk-num">0x20</span>]
+    sh_ok    = (funct3 == <span class="tk-num">1</span>) ? (funct6 == <span class="tk-num">0x00</span>) : (funct6 <span class="tk-kw">in</span> [<span class="tk-num">0x00</span>, <span class="tk-num">0x10</span>])
+    field_ok  = <span class="tk-kw">match</span> opcode {
+        <span class="tk-num">0x33</span> =&gt; r_f7_ok,
+        <span class="tk-num">0x3b</span> =&gt; r_f7_ok &amp; (funct3 <span class="tk-kw">in</span> [<span class="tk-num">0</span>, <span class="tk-num">1</span>, <span class="tk-num">5</span>]),
+        <span class="tk-num">0x13</span> =&gt; (funct3 <span class="tk-kw">in</span> [<span class="tk-num">0</span>, <span class="tk-num">2</span>, <span class="tk-num">3</span>, <span class="tk-num">4</span>, <span class="tk-num">6</span>, <span class="tk-num">7</span>]) | ((funct3 <span class="tk-kw">in</span> [<span class="tk-num">1</span>, <span class="tk-num">5</span>]) &amp; sh_ok),
+        <span class="tk-num">0x1b</span> =&gt; (funct3 == <span class="tk-num">0</span>) | ((funct3 <span class="tk-kw">in</span> [<span class="tk-num">1</span>, <span class="tk-num">5</span>]) &amp; sh_ok),
+        <span class="tk-num">0x03</span> =&gt; funct3 == <span class="tk-num">3</span>,               <span class="tk-com">// LD（这一颗 dm 就是 64 位字）</span>
+        <span class="tk-num">0x23</span> =&gt; funct3 == <span class="tk-num">3</span>,               <span class="tk-com">// SD</span>
+        <span class="tk-num">0x63</span> =&gt; funct3 <span class="tk-kw">in</span> [<span class="tk-num">0</span>, <span class="tk-num">1</span>, <span class="tk-num">4</span>, <span class="tk-num">5</span>, <span class="tk-num">6</span>, <span class="tk-num">7</span>],
+        <span class="tk-num">0x67</span> =&gt; funct3 == <span class="tk-num">0</span>,
+        <span class="tk-num">0x37</span> =&gt; <span class="tk-num">1</span>,
+        <span class="tk-num">0x17</span> =&gt; <span class="tk-num">1</span>,
+        <span class="tk-num">0x6f</span> =&gt; <span class="tk-num">1</span>,
+        _    =&gt; <span class="tk-num">0</span>,
+    }
+    is_illegal = field_ok ? <span class="tk-num">0</span> : <span class="tk-num">1</span></pre>
+  </div>
+
+  <p>"认识的 opcode"和"这条指令的字段对不对"是两件事。<code>lb</code> 的 opcode 是认识的，但 <code>funct3=0</code> 这台不做；<code>lw</code>（<code>funct3=2</code>）也一样——dm 一颗就是 64 位字，所以 <strong>load / store 只认 <code>funct3=3</code>，即 LD 与 SD 两条</strong>。字段对不上，同样是"不理解的字符串"。<strong>理解不了就说"我不懂"，而不是猜一个动作出来。</strong></p>
 
   <div class="callout warn">
     <span class="callout-title">一个不易察觉的坑：store 的 <code>instr[11:7]</code> 不是 rd</span>
@@ -264,39 +347,88 @@ footer .next { display:block; margin-bottom:12px; font-family:'Noto Serif SC',se
 </section>
 
 <section id="s5">
-  <h2>跑起来：九条指令，九次"理解"</h2>
+  <h2>跑起来：十八拍，两个视角</h2>
+
+  <p>十八个向量，每个都手算过期望。同一个 <code>decoder</code> 摆两张表——<code>decoder_check</code> 看"这一拍<strong>算什么</strong>"，<code>decoder_perm</code> 看"这一拍<strong>允许什么</strong>"。列名与上一节的 stim 表逐行对应（拍 0 是 <code>addi x1,x0,5</code>，往下照抄那张表的顺序）。</p>
 
   <div class="term">
-    <div class="term-header">▸ prism run examples/day2/decoder.prism --debug</div>
-    <div class="term-body">cycle  dut_instr   dut_rd  dut_alu_op  dut_alu_src  dut_reg_wen  dut_mem_ren  dut_mem_wen  dut_imm    dut_is_branch  dut_is_jal  dut_is_illegal
-0      0x00500093  1       0           1            1            0            0            5          0              0           0        <span class="term-hint"># addi x1, x0, 5</span>
-1      0x002081b3  3       0           0            1            0            0            0          0              0           0        <span class="term-hint"># add  x3, x1, x2</span>
-2      0x40110233  4       1           0            1            0            0            0          0              0           0        <span class="term-hint"># sub  x4, x2, x1（funct7=0x20）</span>
-3      0x00002483  9       0           1            1            1            0            0          0              0           0        <span class="term-hint"># lw   x9, 0(x0)</span>
-4      0x00302423  0       0           1            0            0            1            8          0              0           0        <span class="term-hint"># sw   x3, 8(x0)：rd 被门成 0</span>
-5      0x123457b7  15      0           1            1            0            0            305418240  0              0           0        <span class="term-hint"># lui  x15, 0x12345</span>
-6      0x00418863  0       0           0            0            0            0            16         1              0           0        <span class="term-hint"># beq  x3, x4, +16</span>
-7      0x008000ef  1       0           0            1            0            0            8          0              1           0        <span class="term-hint"># jal  x1, +8</span>
-8      0xff800593  11      0           1            1            0            0            -8         0              0           0        <span class="term-hint"># addi x11, x0, -8 —— 负立即数</span>
-9      0x0000007f  0       0           0            0            0            0            0          0              0           1        <span class="term-hint"># 不存在的 opcode → illegal</span>
-<span class="term-ok"># expect: 10/10 拍有断言 · 8 列 · 全等 ✅</span>
-<span class="term-ok">[run --cosim] ✅ PASS: decoder_check golden == RTL 仿真（10 拍 × 11 列全等；golden stop: end of stim (10 cycles)）</span></div>
+    <div class="term-header">▸ prism run examples/day2/decoder.prism --run decoder_check --debug</div>
+    <div class="term-body">[run] decoder_check: 18 拍 golden 直跑完成
+# run: decoder_check  design: decoder_top  stop: end of stim (18 cycles)
+cycle  rd  alu_op  alu_src  is_branch  is_jal        imm  is_w_op
+0       1       0        1          0       0          5        0
+1       1       0        1          0       0       1024        0
+2       3       0        0          0       0          0        0
+3       4       1        0          0       0          0        0
+4       5       0        0          0       0          0        1
+5       6       1        0          0       0          0        1
+6       7       0        1          0       0         -8        1
+7       9       6        1          0       0       1025        1
+8      12       0        1          0       0         16        0
+9       0       0        1          0       0         24        0
+10     15       0        1          0       0  305418240        0
+11      0       0        0          1       0         16        0
+12      1       0        0          0       1          8        0
+13      1       0        1          0       0          0        0
+14      9       0        1          0       0          0        0
+15     13       0        1          0       0          0        0
+16      5       0        0          0       0          0        0
+17      0       0        0          0       0          0        0
+<span class="term-ok"># expect: 18/18 拍有断言 · 7 列 · 全等 ✅</span></div>
+  </div>
+
+  <div class="term">
+    <div class="term-header">▸ prism run examples/day2/decoder.prism --run decoder_perm --debug</div>
+    <div class="term-body">[run] decoder_perm: 18 拍 golden 直跑完成
+# run: decoder_perm  design: decoder_top  stop: end of stim (18 cycles)
+cycle  reg_wen  mem_ren  mem_wen  is_illegal
+0            1        0        0           0
+1            1        0        0           0
+2            1        0        0           0
+3            1        0        0           0
+4            1        0        0           0
+5            1        0        0           0
+6            1        0        0           0
+7            1        0        0           0
+8            1        1        0           0
+9            0        0        1           0
+10           1        0        0           0
+11           0        0        0           0
+12           1        0        0           0
+13           1        0        0           0
+14           1        1        0           1
+15           1        1        0           1
+16           1        0        0           1
+17           0        0        0           1
+<span class="term-ok"># expect: 18/18 拍有断言 · 4 列 · 全等 ✅</span></div>
+  </div>
+
+  <div class="term">
+    <div class="term-header">▸ 两条腿各撞一次</div>
+    <div class="term-body">$ prism cosim examples/day2/decoder.prism --run decoder_check
+<span class="term-ok">[run --cosim] ✅ PASS: decoder_check golden == RTL 仿真（18 拍 × 7 列全等；
+      golden stop: end of stim (18 cycles)）</span>
+$ prism cosim examples/day2/decoder.prism --run decoder_perm
+<span class="term-ok">[run --cosim] ✅ PASS: decoder_perm golden == RTL 仿真（18 拍 × 4 列全等；
+      golden stop: end of stim (18 cycles)）</span></div>
   </div>
 
   <p>逐条看几处关键：</p>
   <ul>
-    <li><strong>拍 2（sub）</strong>：<code>funct3=0</code> 和 add 一样，靠 <code>funct7 == 0x20</code> 才分出 <code>alu_op=1</code>。<strong>同一格 opcode 里的两条指令，靠另一个字段区分。</strong></li>
-    <li><strong>拍 4（sw）</strong>：<code>mem_wen=1</code>、<code>reg_wen=0</code>、<code>imm=8</code>——它是 store，不写寄存器，但立即数照样解析出来（地址偏移）。把 <code>rd = reg_wen ? rd_raw : 0</code> 的门拿掉试试：这一拍 <code>rd</code> 会露出 <code>8</code>——S 型指令借这个字段装立即数低位，那不是寄存器号；今天靠 <code>wen=0</code> 兜着不落地，但把 0 放在源头，比指望下游每一处都记得"别看它"更稳。</li>
-    <li><strong>拍 6（beq）</strong>：<code>is_branch=1</code>、<code>reg_wen=0</code>、<code>imm=16</code>——分支不带写回，但它的立即数是<strong>跳转偏移</strong>，等四颗合体时它会接到 PC 的 <code>target</code>。</li>
-    <li><strong>拍 8</strong>：<code>imm = -8</code>——负立即数。这一行是后补的，也正是它逮出了上面那个 bug。</li>
-    <li><strong>拍 9</strong>：<code>opcode=0x7f</code> 不认识 → <code>is_illegal=1</code>。<strong>理解不了就说"我不懂"</strong>，而不是猜一个动作出来。</li>
+    <li><strong>拍 1</strong>：<code>addi x1,x0,1024</code> 的 <code>alu_op=0</code>——它是 ADD，不是 SUB。这一行专门盯住上面那个字段坑。</li>
+    <li><strong>拍 4、5、6、7</strong>：<code>is_w_op=1</code> 的四条（addw / subw / addiw / sraiw）走的还是 <code>alu_op</code> 里同样的 ADD / SUB / SLL / SRA。<strong>ALU 那张表没加长，多出来的是一位"结果按 32 位解释"的标记</strong>。拍 7 的 <code>imm=1025</code>：那是原始的 12 位字段（bit 10 是算术标志，低 6 位 1 才是移量），顶层取移位量时只走低 6 位。</li>
+    <li><strong>拍 8、9</strong>：两条访存——<code>ld</code> 报 <code>mem_ren=1</code>、<code>sd</code> 报 <code>mem_wen=1</code>，立即数是字节偏移（16 / 24）。这台只有这两条：<code>lw</code> 排在拍 14，已经算不认识了。</li>
+    <li><strong>拍 11、12、13</strong>：<code>is_branch</code> / <code>is_jal</code> 各自拉起；<code>jalr</code> 两个都不拉，它靠 <code>alu_src=1</code> 把基址与 <code>imm</code> 加出来——这三位的去处是第九集那根 <code>pc_target</code> 线。</li>
+    <li><strong>拍 9、11 是 store 与 branch 的 <code>rd</code></strong>：两拍都报 <code>rd=0</code>。把 <code>rd = reg_wen ? rd_raw : 0</code> 那道门拿掉再跑，红的正是这两拍：<code>cycle 9 rd: 期望 0，实得 24</code>、<code>cycle 11 rd: 期望 0，实得 16</code>——S 型与 B 型都借这一格放立即数低位，那不是寄存器号。把 0 放在源头，比指望下游每一处都记得"别看它"更稳。</li>
+    <li><strong>拍 14、15、16</strong>：<code>lw</code>（字访问）、<code>lb</code>（字节访问）、<code>mul</code>（M 扩展）被 <code>is_illegal</code> 逮住。注意它们<strong>其他列照报</strong>——<code>lw</code> 那拍 <code>mem_ren</code> 仍是 1、<code>mul</code> 那拍 <code>rd</code> 仍是 5。<strong>decoder 只负责举手报告</strong>——第九集的顶层不拿这一位当门，报告先空着（处置它要等第五日的陷阱通路）。</li>
+    <li><strong>拍 17</strong>：opcode <code>0x7f</code> 整族都不认识，所有许可位自然为 0。</li>
   </ul>
 
   <div class="callout">
     <span class="callout-title"><code>is_illegal</code> 只是一个位，谁来用它？</span>
-    <p style="margin:0;">decoder 只负责"举手报告"，<strong>怎么处置是 CPU 顶层的事</strong>：合体成 <code>cpu_top</code> 时会把 <code>is_illegal</code> 当门，把写使能全掐掉。白虹单周期核里的写法是
-    <code>wire rf_wen_eff : i1 = dec.reg_write_eff &amp; legal -&gt; rf.wen</code>——<strong>一条线把"非法"翻译成"这一拍什么都不许落地"</strong>。第五日还会再加一层：非法指令同时触发异常，跳到 <code>mtvec</code>。</p>
-    <p style="margin:8px 0 0;">倒过来试一次：把 <code>0x63</code> 从 <code>known</code> 里删掉——<code>beq</code> 也会被判非法。"不认识这条指令"和"这条指令不该在此时出现"是两件事——后者才是异常处理的活。</p>
+    <p style="margin:0;">这一集的<em>报告</em>是完整的，<em>处置</em>还没装：第九集那颗 <code>cpu_top</code> 不拿这一位当门，非法编码照样读、照样写回，机器不停——最小机器先把真程序跑通。真核里这道门是装上的，白虹的写法是
+    <code>wire rf_wen_eff : u1 = dec.reg_wen &amp; legal -&gt; rf.wen</code>，一条线把"非法"翻译成"这一拍什么都不许落地"；再往上才是异常：<code>mtvec</code> / <code>mcause</code> 是第五日 CSR 那一集的活。</p>
+    <p style="margin:8px 0 0;">倒过来试一次：把 <code>0x63</code> 那一行的 <code>funct3</code> 允许集里删掉 <code>1</code>——<code>bne</code> 也会被判非法。"不认识这条指令"和"这条指令不该在此时出现"是两件事，后者才需要陷阱通路来处置。</p>
   </div>
 </section>
 
@@ -315,7 +447,7 @@ footer .next { display:block; margin-bottom:12px; font-family:'Noto Serif SC',se
     <cite>—— 《创世记》 1:6</cite>
   </div>
 
-  <p>下一集是第二日最后一集——<strong>观察它们的心跳</strong>。四颗器官此刻都各自活着，我们要做的最后一件事是：证明它们真的活着，而且证明"如果它们坏了，测试会喊"。</p>
+  <p>四颗器官此刻都各自活着，各自的测试台也都跑通了。下一集把它们接进同一具身体。</p>
 </section>
 
 <section id="s8">
@@ -325,14 +457,17 @@ footer .next { display:block; margin-bottom:12px; font-family:'Noto Serif SC',se
 <pre>git clone https://github.com/prism-hdl/seven-days
 cd seven-days
 
-prism cosim examples/day2/decoder.prism --run decoder_check</pre>
+prism run   examples/day2/decoder.prism --run decoder_check --debug
+prism run   examples/day2/decoder.prism --run decoder_perm  --debug
+prism cosim examples/day2/decoder.prism --run decoder_check
+prism cosim examples/day2/decoder.prism --run decoder_perm</pre>
   </div>
 </section>
 
 </main>
 
 <footer>
-  <span class="next">第 9 集 · 观察它们的心跳 —— 第二日收束</span>
+  <span class="next">第 9 集 · cpu_top：一具身体</span>
   七日创造 · 第二日 · 空气与水 · 第 8 集 · <a href="../index.html">返回首页</a>
 </footer>
 

@@ -170,7 +170,7 @@ footer .next { display: block; margin-bottom: 12px; font-family: 'Noto Serif SC'
         <rect x="726" y="164" width="210" height="42" rx="8" fill="url(#out)" stroke="rgba(255,180,120,.4)"/>
         <text x="831" y="190" text-anchor="middle" font-family="Noto Serif SC, serif" font-size="12.5" fill="rgba(255,255,255,.8)">逐拍表 · 三路全等 ✅</text>
         <rect x="726" y="214" width="210" height="42" rx="8" fill="url(#out)" stroke="rgba(255,180,120,.4)"/>
-        <text x="831" y="240" text-anchor="middle" font-family="Noto Serif SC, serif" font-size="12.5" fill="rgba(255,255,255,.8)">自检全就绪 · 保留字 32</text>
+        <text x="831" y="240" text-anchor="middle" font-family="Noto Serif SC, serif" font-size="12.5" fill="rgba(255,255,255,.8)">自检全就绪 · 保留字 36</text>
 
         <text x="480" y="300" text-anchor="middle" font-family="Noto Serif SC, serif" font-size="12" fill="rgba(255,255,255,.35)">一条不跳，全部真跑——本集每个数字都是命令的输出，不是形容</text>
       </svg>
@@ -380,19 +380,18 @@ module thresh@h:
 
   <h3><code>keywords</code> · 语言自己的账本</h3>
   <div class="code">
-    <div class="code-header"><span class="code-lang">bash</span><span class="code-file">保留字登记表（全 54 行）</span></div>
+    <div class="code-header"><span class="code-lang">bash</span><span class="code-file">保留字登记表（全 59 行）</span></div>
 <pre>prism keywords</pre>
   </div>
   <div class="term">
     <div class="term-header">▸ keywords · 全量输出</div>
-    <div class="term-body">reserved=32 [attribute=2 control=2 encapsulation=1 expression=2 run_field=3
-        | structure=14 timing=8] | schedule_fields=8 | blackbox_fields=2
-        | stream_fields=2 | fsm_props=3 | fsm_values=10 | type_names=3
-        | reserved_future=1 | internal_labels(exempt)=9
+    <div class="term-body">reserved=36 [attribute=2 control=2 encapsulation=1 expression=2 port_dir=2 run_field=4 structure=15 timing=8]
+        | schedule_fields=8 | blackbox_fields=2 | stream_fields=3 | fsm_props=3
+        | fsm_values=10 | type_names=3 | reserved_future=1 | internal_labels(exempt)=9
 
 == 核心保留字（计入预算） ==
   attribute:
-    @init
+    @load
     @schedule
   control:
     for
@@ -402,7 +401,11 @@ module thresh@h:
   expression:
     _
     match
+  port_dir:
+    both
+    out
   run_field:
+    image
     show
     stim
     until
@@ -413,6 +416,7 @@ module thresh@h:
     connect
     const
     design
+    export
     expose
     generate
     import
@@ -435,7 +439,7 @@ module thresh@h:
   schedule_fields: ['bitwidth', 'clock', 'interface', 'latency', 'pipeline', 'reset',
                    'resource', 'storage']
   blackbox_fields: ['filelist', 'verilog']
-  stream_fields:   ['data', 'valid']
+  stream_fields:   ['data', 'ready', 'valid']
   fsm_props:       ['enc', 'illegal', 'states']  (reset 复用 SCHEDULE_FIELDS)
   fsm_values:      ['binary', 'compile_error', 'gray', 'hold', 'is', 'one_hot',
                    'state', 'to_reset', 'was', 'will']
@@ -447,8 +451,8 @@ module thresh@h:
     from       import a, b from "dir" 糖（未开放）</div>
   </div>
   <ul>
-    <li>第一行是<strong>总账</strong>：<code>reserved=32</code>，按族分——attribute / control / encapsulation / expression / run_field / structure / timing。一门语言最容易悄悄死在自己长出来的关键字上，这里给每个字记账。</li>
-    <li>中间是 32 个保留字本体，按同一套族摆开：你在前两集学过的 <code>module</code> / <code>reg</code> / <code>fsm</code> / <code>match</code> / <code>stim</code>……一个不多、一个不少。</li>
+    <li>第一行是<strong>总账</strong>：<code>reserved=36</code>，按族分——attribute / control / encapsulation / expression / port_dir / run_field / structure / timing。一门语言最容易悄悄死在自己长出来的关键字上，这里给每个字记账。</li>
+    <li>中间是 36 个保留字本体，按同一套族摆开：你在前两集学过的 <code>module</code> / <code>reg</code> / <code>fsm</code> / <code>match</code> / <code>stim</code>……一个不多、一个不少。</li>
     <li>下半页是<strong>辅助集</strong>：<code>@schedule</code> 的字段、fsm 的属性与取值、类型名——它们只在上下文里是"占位词"，不计入预算；<code>internal_labels</code> 一行是编译器自己产生标签用的词（豁免）。</li>
     <li>最后是<strong>预留字</strong>：<code>from</code> 已定为语言保留、形态未开放——预支了，还没花。</li>
     <li><strong>什么时候用它</strong>：给语言加语法时对账。<code>--check</code> 会扫"登记表与实现漂移"（需要源码安装；pip 包里没有源码，只有这份账本）。</li>
@@ -593,7 +597,7 @@ module thresh@h:
     <span class="tk-kw">if</span> (!rst_n) <span class="tk-kw">begin</span>
       cnt &lt;= '<span class="tk-num">0</span>;
     <span class="tk-kw">end</span> <span class="tk-kw">else</span> <span class="tk-kw">begin</span>
-      cnt &lt;= (en ? (cnt + <span class="tk-num">1</span>) : cnt);   <span class="tk-com">// cnt' = ...</span>
+      cnt &lt;= (en ? <span class="tk-num">8'</span>((cnt + <span class="tk-num">1</span>)) : <span class="tk-num">8'</span>(cnt));   <span class="tk-com">// cnt' = ...</span>
     <span class="tk-kw">end</span>
   <span class="tk-kw">end</span>
 
@@ -661,7 +665,7 @@ module thresh@h:
   <span class="tk-kw">end</span>
 
   <span class="tk-com">// 组合输出 / 局部 wire 赋值</span>
-  <span class="tk-kw">assign</span> hit = ($signed({<span class="tk-num">31'b0</span>, (x &gt;= <span class="tk-num">16</span>)}) ? <span class="tk-num">1</span> : <span class="tk-num">0</span>);
+  <span class="tk-kw">assign</span> hit = ($signed({<span class="tk-num">31'b0</span>, (x &gt;= <span class="tk-num">16</span>)}) ? <span class="tk-num">1'</span>(<span class="tk-num">1</span>) : <span class="tk-num">1'</span>(<span class="tk-num">0</span>));
 
 <span class="tk-decl">endmodule</span>
 
@@ -716,7 +720,7 @@ module thresh@h:
   <span class="tk-kw">assign</span> step = (w__t__c + <span class="tk-num">1</span>);
   <span class="tk-kw">assign</span> res = w__d__y;
 
-  <span class="tk-com">// 观测 assign（expose，走子模块输出端口）</span>
+  <span class="tk-com">// 观测 assign（expose：子模块输出口 / design wire）</span>
   <span class="tk-kw">assign</span> ticks = w__xpose__t__cnt;   <span class="tk-com">// expose</span>
 
 <span class="tk-decl">endmodule</span></pre>
@@ -1110,7 +1114,7 @@ cycle  t_en  ticks  step  res  h_hit
     </tbody>
   </table>
 
-  <p><strong>第一日之后不再讲语法</strong>——每一日只回答一个问题：下一步该造什么。从第二日起，开始造物——第一件事，给机器一颗<strong>心跳</strong>。</p>
+  <p><strong>第一日之后不再讲语法</strong>——每一日只回答一个问题：下一步该造什么。从第二日起，开始造物——第一件事，先定下<strong>每一步走哪儿</strong>。</p>
 </section>
 
 <section id="s9">

@@ -857,7 +857,7 @@ footer .next { display: block; margin-bottom: 12px; font-family: 'Noto Serif SC'
 
 <section id="s11">
   <h2>还有两件：mem 与泛型</h2>
-  <p><code>mem</code> 是阵列存储——寄存器们的"排"，用下标访问：读是组合的，写是时序的。</p>
+  <p><code>mem</code> 是阵列存储——寄存器们的"排"，用下标访问：读是异步的（组合路径），写是同步的（挂在时钟边沿）。</p>
 
   <div class="code">
     <div class="code-header">
@@ -878,13 +878,13 @@ footer .next { display: block; margin-bottom: 12px; font-family: 'Noto Serif SC'
     <span class="tk-name">rdata</span> = <span class="tk-name">ram</span>[<span class="tk-name">raddr</span>]                  <span class="tk-com">// 读：组合</span>
 
     <span class="tk-stor">on</span> <span class="tk-stor">clock</span> {
-        <span class="tk-name">ram</span><span class="tk-op">'</span>[<span class="tk-name">waddr</span>] = <span class="tk-name">wen</span> ? <span class="tk-name">wdata</span> : <span class="tk-name">ram</span>[<span class="tk-name">waddr</span>]   <span class="tk-com">// 写：时序；prime 在名后、索引前</span>
+        <span class="tk-name">ram</span><span class="tk-op">'</span>[<span class="tk-name">waddr</span>] = <span class="tk-name">wen</span> ? <span class="tk-name">wdata</span> : <span class="tk-name">ram</span>[<span class="tk-name">waddr</span>]   <span class="tk-com">// 写：同步；prime 在名后、索引前</span>
     }
 }</pre>
   </div>
 
   <ul>
-    <li><strong>初值两种写法，二选一</strong>：<code>= [v0, v1, …]</code> 数组字面量，或 <code>@init("文件")</code> 从文件装载（小端、整字）；初值随复位装载。</li>
+    <li><strong>初值只有数组字面量</strong>：<code>= [v0, v1, …]</code>，随复位装载——它是芯片内容。文件镜像是测试台事实，写在 run 块的 <code>image</code> 段，换程序不动这一层。</li>
     <li><strong>越界读回 0、越界写丢弃</strong>；<strong>同拍同址读旧写新</strong>；<strong>单写口</strong>——一个 <code>mem</code> 只允许一条写语句，这是存储器件的物理事实。</li>
     <li><strong>规模与映射归调度层</strong>——<code>@schedule storage</code> 决定它长成寄存器堆 / SRAM / 分布式。第六集整集都在讲它。</li>
   </ul>

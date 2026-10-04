@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>第 5 集 · PC：心跳 · 创世记 · 第二日 · 空气与水</title>
+<title>第 5 集 · PC：下一步 · 创世记 · 第二日 · 空气与水</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&family=Noto+Serif+SC:wght@400;600;700&display=swap" rel="stylesheet">
@@ -89,8 +89,8 @@ footer .next { display:block; margin-bottom:12px; font-family:'Noto Serif SC',se
 <header class="hero">
   <div class="hero-inner">
     <div class="hero-eyebrow">七日创造 · 第二日 · 空气与水 · 第 5 集</div>
-    <h1>心跳<br><em>PC</em></h1>
-    <p class="subtitle">第一日造出了语言和一台会说话的机器——那是<strong>预告片</strong>。从今日起，我们重新来一遍，而且这次要知道每一颗零件为什么长这样。第二日造四颗器官，第一颗是 <code style="background:none;border:none;color:#a678ff">pc</code>：<strong>CPU 的心跳</strong>。</p>
+    <h1>下一步<br><em>PC</em></h1>
+    <p class="subtitle">第一日造出了语言和一台会说话的机器——那是<strong>预告片</strong>。从今日起，我们重新来一遍，而且这次要知道每一颗零件为什么长这样。第二日造四颗器官，第一颗是 <code style="background:none;border:none;color:#a678ff">pc</code>：<strong>每一步走哪儿</strong>——顺序时 +4，跳转时换个地址。</p>
 
     <div class="verse">
       "神说，诸水之间要有空气，将水分为上下。"
@@ -160,7 +160,7 @@ footer .next { display:block; margin-bottom:12px; font-family:'Noto Serif SC',se
   <p>换个走法：把一台处理器拆成四颗器官，一颗一颗造。<strong>每一颗都能单独跑、单独测</strong>，四颗都在自己内部把"数据"与"控制"两条水分开一次。等四颗都活了，再把它们合进同一具身体——就在这一天的末尾。</p>
 
   <div class="stack">
-    <div class="stk"><div class="k">EP 5</div><div class="t">pc · 心跳</div><div class="d">自己会走的那一颗</div></div>
+    <div class="stk"><div class="k">EP 5</div><div class="t">pc · 下一步</div><div class="d">自己会走的那一颗</div></div>
     <div class="stk"><div class="k">EP 6</div><div class="t">记忆</div><div class="d">regfile / ram / im / dm</div></div>
     <div class="stk"><div class="k">EP 7</div><div class="t">ALU · 活动</div><div class="d">算，还有会走多步的算</div></div>
     <div class="stk"><div class="k">EP 8</div><div class="t">decoder · 理解</div><div class="d">把字符串翻译成动作</div></div>
@@ -176,12 +176,12 @@ footer .next { display:block; margin-bottom:12px; font-family:'Noto Serif SC',se
 
   <div class="code">
     <div class="code-header"><span class="code-lang">prism</span><span class="code-file">pc.prism</span></div>
-<pre><span class="tk-decl">module</span> <span class="tk-name">pc</span>&lt;T: bits&gt; {
+<pre><span class="tk-decl">module</span> <span class="tk-name">pc</span> {
     <span class="tk-dir">in</span>  <span class="tk-name">load</span>   : <span class="tk-typ">Signal</span>&lt;<span class="tk-prim">u1</span>&gt;    <span class="tk-com">// 1 = 载入 target（跳转），0 = 自增 +4</span>
-    <span class="tk-dir">in</span>  <span class="tk-name">target</span> : <span class="tk-typ">Signal</span>&lt;T&gt;     <span class="tk-com">// 跳转目标地址</span>
-    <span class="tk-dir">out</span> <span class="tk-name">addr</span>   : <span class="tk-typ">Signal</span>&lt;T&gt;     <span class="tk-com">// 当前 PC 值</span>
+    <span class="tk-dir">in</span>  <span class="tk-name">target</span> : <span class="tk-typ">Signal</span>&lt;<span class="tk-prim">u64</span>&gt;   <span class="tk-com">// 跳转目标地址</span>
+    <span class="tk-dir">out</span> <span class="tk-name">addr</span>   : <span class="tk-typ">Signal</span>&lt;<span class="tk-prim">u64</span>&gt;   <span class="tk-com">// 当前 PC 值</span>
 
-    <span class="tk-stor">reg</span> pc : T
+    <span class="tk-stor">reg</span> pc : <span class="tk-prim">u64</span>
 
     <span class="tk-stor">on</span> <span class="tk-stor">clock</span> {
         pc<span class="tk-op">'</span> = load ? target : pc + <span class="tk-num">4</span>
@@ -193,63 +193,107 @@ footer .next { display:block; margin-bottom:12px; font-family:'Noto Serif SC',se
 
   <p>全部就这些。逐行看：</p>
   <ul>
-    <li><strong><code>reg pc : T</code></strong>——一份跨拍状态。它没有初值写法，因为"上电时 PC 应该是什么"归调度层（<code>reset : async_low</code> + 复位向量 0）。</li>
+    <li><strong><code>u64</code> 钉在端口上</strong>——这台机器的地址就是 64 位，PC 和寄存器堆同口径。这里不写 <code>&lt;T: bits&gt;</code>：泛型要有第二个宽度才有意义，而这颗模块体内没有一处逻辑随宽度分岔（只有一次加法、一个二选一），加一个参数只是多备一份同一条路的样本。</li>
+    <li><strong><code>reg pc : u64</code></strong>——一份跨拍状态。它没有初值写法，因为"上电时 PC 应该是什么"归调度层（<code>reset : async_low</code> + 复位向量 0）。</li>
     <li><strong><code>on clock { pc' = … }</code></strong>——唯一的时序写法。注意右边读的是<strong>本拍</strong>的 pc，左边写的是<strong>下一拍</strong>的 pc；这就是 prime 记号的语义。</li>
     <li><strong><code>load ? target : pc + 4</code></strong>——两个候选值，一个选择子。整颗模块的全部决策就在这一个三目里。</li>
     <li><strong><code>addr = pc</code></strong>——组合输出。PC 的值一给出去，取指单元立刻能拿去查指令存储器。</li>
   </ul>
 
-  <div class="callout">
-    <span class="callout-title">为什么是 <code>+ 4</code>？</span>
-    <p style="margin:0;">RISC-V 基础指令定长 4 字节。所以"下一条指令"就是"当前地址 + 4"——PC 的步长是 ISA 规定死的，不是我们选的。（压缩指令集 RV32C 的指令是 2 字节变长，那时这条线就要另想办法——这也是为什么真核里 PC 的加法常常不是简单 +4。）</p>
+  <h3>两条候选是从指令里来的</h3>
+  <p>下面这段循环（第九集要跑的那条，这里只借它的地址）说清了 <code>pc</code> 两个候选各自的来处：</p>
+
+  <div class="code">
+    <div class="code-header"><span class="code-lang">asm</span><span class="code-file">一段真循环</span></div>
+<pre>        addi x1, x0, 0      <span class="tk-com"># 0x0000  和 = 0</span>
+        addi x2, x0, 5      <span class="tk-com"># 0x0004  计数 = 5</span>
+<span class="tk-name">loop:</span>   add  x1, x1, x2     <span class="tk-com"># 0x0008  ← 循环体</span>
+        addi x2, x2, -1     <span class="tk-com"># 0x000C  计数 -= 1</span>
+        bne  x2, x0, loop   <span class="tk-com"># 0x0010  ≠ 0 就回 loop</span>
+        …</pre>
   </div>
 
-  <div class="callout warn">
-    <span class="callout-title">为什么这里没有"冻住"？</span>
-    <p style="margin:0;">冻住（一个 <code>en</code> 端口，<code>en=0</code> 时整拍不动）是<strong>流水线的取指停顿才需要的事</strong>。单周期核每拍都要往前走，<code>en</code> 会恒接 1——那就不该有这根线。<br><br>
-    白虹的单周期核（我们对照的那份）里，<code>pc.prism</code> 就只有 <code>load</code> / <code>target</code> / <code>addr</code> 三个信号，没有 <code>en</code>。<strong>等做流水线那天，这颗模块才会为它长出一根新端口</strong>——接口是长出来的，不是提前留的。</p>
-  </div>
-</section>
+  <ul>
+    <li><strong><code>pc + 4</code>——顺行</strong>。基础指令定长 4 字节，所以"下一条"就是当前地址 +4：<code>0x0000</code> 走完是 <code>0x0004</code>，一路这样走下去。步长是 ISA 规定死的，不是我们选的。</li>
+    <li><strong><code>target</code>——跳到标号</strong>。<code>bne x2, x0, loop</code> 在 <code>0x0010</code>，它要回去的那格是 <code>loop = 0x0008</code>。<strong>这个数不在 pc 里，是指令带过来的</strong>：<code>bne</code> 的 B 型立即数是 <code>-8</code>，<code>0x0010 + (-8) = 0x0008</code>。</li>
+    <li>于是 <code>load</code> 这一位就是"这一条要不要离开顺序流"：<code>bne</code> 成立、<code>jal</code>、<code>jalr</code> 都拉高它；其余指令一律顺行。</li>
+  </ul>
+
+  <p>立即数怎么从指令里拆出来是第 8 集的事，把它加到 pc 上是第 9 集那根 <code>pc_target</code> 线。这一集只管一件事：<strong>候选式两条，选择子一位</strong>。</p>
+  </section>
 
 <section id="s3">
-  <h2>跑起来：五拍看全两种行为</h2>
+  <h2>跑起来：六拍走完那段循环的头六拍</h2>
 
   <div class="code">
     <div class="code-header"><span class="code-lang">prism</span><span class="code-file">pc.prism · run 段</span></div>
-<pre><span class="tk-decl">run</span> <span class="tk-name">pc_check</span> <span class="tk-rw">of</span> <span class="tk-name">pc_top</span> {
-    <span class="tk-rf">stim</span> : {
-        <span class="tk-name">dut.load</span>, <span class="tk-name">dut.target</span>, [<span class="tk-name">dut.addr</span>] <span class="tk-op">=</span> {
-            <span class="tk-num">0</span>,   <span class="tk-num">0</span>, [  <span class="tk-num">4</span>],
-            <span class="tk-num">0</span>,   <span class="tk-num">0</span>, [  <span class="tk-num">8</span>],
-            <span class="tk-num">1</span>, <span class="tk-num">100</span>, [<span class="tk-num">100</span>],   <span class="tk-com">// 跳转</span>
-            <span class="tk-num">0</span>,   <span class="tk-num">0</span>, [<span class="tk-num">104</span>],
-            <span class="tk-num">1</span>,   <span class="tk-num">0</span>, [  <span class="tk-num">0</span>],   <span class="tk-com">// 跳回复位向量</span>
+<pre><span class="tk-decl">run</span> pc_check <span class="tk-rw">of</span> pc_top {
+    stim : {
+        load, target, [addr] = {
+            <span class="tk-num">0</span>,  <span class="tk-num">0</span>, [  <span class="tk-num">4</span>],   <span class="tk-com">// addi x1, x0, 0    —— 顺行：0 + 4</span>
+            <span class="tk-num">0</span>,  <span class="tk-num">0</span>, [  <span class="tk-num">8</span>],   <span class="tk-com">// addi x2, x0, 5    —— 顺行：4 + 4</span>
+            <span class="tk-num">0</span>,  <span class="tk-num">0</span>, [ <span class="tk-num">12</span>],   <span class="tk-com">// add  x1, x1, x2   —— 顺行：8 + 4（这格就是 loop）</span>
+            <span class="tk-num">0</span>,  <span class="tk-num">0</span>, [ <span class="tk-num">16</span>],   <span class="tk-com">// addi x2, x2, -1   —— 顺行：12 + 4</span>
+            <span class="tk-num">1</span>,  <span class="tk-num">8</span>, [  <span class="tk-num">8</span>],   <span class="tk-com">// bne  x2, x0, -8   —— 载入：跳到 loop = 8</span>
+            <span class="tk-num">0</span>,  <span class="tk-num">0</span>, [ <span class="tk-num">12</span>],   <span class="tk-com">// add  x1, x1, x2   —— 第二轮，又顺行</span>
         }
     }
-    <span class="tk-rf">until</span> : <span class="tk-rw">end</span> <span class="tk-rw">of</span> <span class="tk-rf">stim</span>
-    <span class="tk-rf">show</span>  : { <span class="tk-name">dut.load</span>, <span class="tk-name">dut.target</span>, <span class="tk-name">dut.addr</span> }
+    until : <span class="tk-rw">end</span> <span class="tk-rw">of</span> stim
+    show  : { load, target, addr }
 }</pre>
   </div>
 
   <div class="term">
     <div class="term-header">▸ prism run examples/day2/pc.prism --debug</div>
-    <div class="term-body">cycle   dut_load   dut_target   dut_addr
-0       0          0            4
-1       0          0            8
-2       1          100          100        <span class="term-hint"># 跳转：addr 直接变成 target</span>
-3       0          0            104
-4       1          0            0
-<span class="term-ok"># expect: 5/5 拍有断言 · 1 列 · 全等 ✅</span>
-<span class="term-ok">[run --cosim] ✅ PASS: pc_check golden == RTL 仿真（5 拍 × 3 列全等；golden stop: end of stim (5 cycles)）</span></div>
+    <div class="term-body">[run] pc_check: 6 拍 golden 直跑完成
+# run: pc_check  design: pc_top  stop: end of stim (6 cycles)
+cycle  load  target  addr
+0         0       0     4
+1         0       0     8
+2         0       0    12
+3         0       0    16
+4         1       8     8        <span class="term-hint"># 载入：跳到 loop</span>
+5         0       0    12
+<span class="term-ok"># expect: 6/6 拍有断言 · 1 列 · 全等 ✅</span></div>
+  </div>
+
+  <p>这是 golden 一个人报的"我对"。把 RTL 那条腿拉进来逐拍撞一次：</p>
+
+  <div class="term">
+    <div class="term-header">▸ prism cosim examples/day2/pc.prism --run pc_check</div>
+    <div class="term-body">[run] pc_check: RTL tb 跑完，6 拍（产物 …）
+<span class="term-ok">[run --cosim] ✅ PASS: pc_check golden == RTL 仿真（6 拍 × 3 列全等；
+      golden stop: end of stim (6 cycles)）</span>
+# run: pc_check  design: pc_top
+cycle  load  target  addr
+0         0       0     4
+1         0       0     8
+2         0       0    12
+3         0       0    16
+4         1       8     8
+5         0       0    12
+# stop: end of stim (6 cycles)
+<span class="term-ok"># expect: 6/6 拍有断言 · 1 列 · 全等 ✅</span></div>
   </div>
 
   <p>两点值得看：</p>
   <ul>
-    <li><strong>拍 0 的 <code>addr</code> 是 4，不是 0</strong>。因为观测点在<strong>时钟边沿之后</strong>——复位后第一拍，pc 已经从 0 走到了 4。（想看"还没走"的样子，得把观测点挪到边沿之前——Prism 的 <code>run</code> 固定在边沿后取值，这一层约定在两个后端（golden / RTL）是同一份。）</li>
-    <li><strong>拍 2 的 <code>addr</code> 是 100，不是 "8 再跳"</strong>。载入与自增是同一个候选式里的两条分支，不是两步；<code>load</code> 一拍就把顺序流掰断。</li>
+    <li><strong>拍 0 的 <code>addr</code> 是 4，不是 0</strong>。观测点在<strong>时钟边沿之后</strong>——复位后第一拍，pc 已经从 0 走到了 4。（想看"还没走"的样子，得把观测点挪到边沿之前；Prism 的 <code>run</code> 固定在边沿后取值，这一层约定在两条腿上同一份。）</li>
+    <li><strong>拍 4 之后 <code>addr</code> 回到 8</strong>，接着拍 5 又是 12——顺序流被掰断了一拍，然后从 <code>loop</code> 那格重新顺行。载入与自增是同一个候选式里的两条分支，不是两步。</li>
   </ul>
 
-  <p>删掉那个选择子（改成恒为 <code>pc + 4</code>）试试：第 2 拍就对不上——期望 <code>100</code>，实得 <code>12</code>。<strong>删掉一个决策，测试必须喊</strong>——这就是最小样本。</p>
+  <p>删掉那个选择子（改成恒为 <code>pc + 4</code>）再跑：跳不动了，<code>addr</code> 自顾自往下走。</p>
+
+  <div class="term">
+    <div class="term-header">▸ 注入后的输出（截取）</div>
+    <div class="term-body">4         1       8    20        <span class="term-err"># 本该跳回 loop，却走到 20</span>
+5         0       0    24
+<span class="term-err">[expect] ❌ cycle 4 addr: 期望 8，实得 20</span>
+<span class="term-err">[expect] ❌ cycle 5 addr: 期望 12，实得 24</span>
+<span class="term-err"># expect: 6/6 拍有断言 · 1 列 · 有不等 ❌</span></div>
+  </div>
+
+  <p><strong>删掉一个决策，测试必须喊</strong>——这就是最小样本。</p>
 </section>
 
 <section id="s4">
@@ -289,6 +333,7 @@ prism deps --install   <span class="tk-com"># 按操作系统补齐仿真依赖�
 git clone https://github.com/prism-hdl/seven-days
 cd seven-days
 
+prism run   examples/day2/pc.prism --debug
 prism cosim examples/day2/pc.prism --run pc_check</pre>
   </div>
 </section>

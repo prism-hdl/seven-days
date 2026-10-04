@@ -165,11 +165,11 @@ footer .next { display:block; margin-bottom:12px; font-family:'Noto Serif SC',se
 
   <div class="code">
     <div class="code-header"><span class="code-lang">prism</span><span class="code-file">alu.prism</span></div>
-<pre><span class="tk-decl">module</span> <span class="tk-name">alu</span>&lt;T: bits&gt; {
-    <span class="tk-dir">in</span>  <span class="tk-name">a</span>      : <span class="tk-typ">Signal</span>&lt;T&gt;      <span class="tk-com">// 操作数 1</span>
-    <span class="tk-dir">in</span>  <span class="tk-name">b</span>      : <span class="tk-typ">Signal</span>&lt;T&gt;      <span class="tk-com">// 操作数 2（调用方已做好移位量掩码）</span>
+<pre><span class="tk-decl">module</span> <span class="tk-name">alu</span> {
+    <span class="tk-dir">in</span>  <span class="tk-name">a</span>      : <span class="tk-typ">Signal</span>&lt;<span class="tk-prim">i64</span>&gt;    <span class="tk-com">// 操作数 1</span>
+    <span class="tk-dir">in</span>  <span class="tk-name">b</span>      : <span class="tk-typ">Signal</span>&lt;<span class="tk-prim">i64</span>&gt;    <span class="tk-com">// 操作数 2（调用方已做好移位量掩码）</span>
     <span class="tk-dir">in</span>  <span class="tk-name">op</span>     : <span class="tk-typ">Signal</span>&lt;<span class="tk-prim">u4</span>&gt;     <span class="tk-com">// 运算选择 0..9</span>
-    <span class="tk-dir">out</span> <span class="tk-name">result</span> : <span class="tk-typ">Signal</span>&lt;T&gt;
+    <span class="tk-dir">out</span> <span class="tk-name">result</span> : <span class="tk-typ">Signal</span>&lt;<span class="tk-prim">i64</span>&gt;
 
     result = <span class="tk-kw">match</span> op {
         <span class="tk-num">0</span> =&gt; a + b,              <span class="tk-com">// ADD</span>
@@ -177,10 +177,10 @@ footer .next { display:block; margin-bottom:12px; font-family:'Noto Serif SC',se
         <span class="tk-num">2</span> =&gt; a &amp; b,              <span class="tk-com">// AND</span>
         <span class="tk-num">3</span> =&gt; a | b,              <span class="tk-com">// OR</span>
         <span class="tk-num">4</span> =&gt; a ^ b,              <span class="tk-com">// XOR</span>
-        <span class="tk-num">5</span> =&gt; a &lt;&lt; b,             <span class="tk-com">// SLL（逻辑左移）</span>
+        <span class="tk-num">5</span> =&gt; a &lt;&lt; b,             <span class="tk-com">// SLL（逻辑左移，b 已掩码）</span>
         <span class="tk-num">6</span> =&gt; a &gt;&gt; b,             <span class="tk-com">// SRA（算术右移，保号）</span>
         <span class="tk-num">7</span> =&gt; a &lt; b,              <span class="tk-com">// SLT（有符号比较）</span>
-        <span class="tk-num">8</span> =&gt; T(u(a) &gt;&gt; b),       <span class="tk-com">// SRL：先按无符号移，再用 T() 收回有符号</span>
+        <span class="tk-num">8</span> =&gt; i64(u(a) &gt;&gt; b),     <span class="tk-com">// SRL：换无符号视角移，补 0</span>
         <span class="tk-num">9</span> =&gt; u(a) &lt; u(b),        <span class="tk-com">// SLTU（无符号比较）</span>
         _ =&gt; <span class="tk-num">0</span>,                  <span class="tk-com">// 防御：op 越界给 0</span>
     }
@@ -192,12 +192,12 @@ footer .next { display:block; margin-bottom:12px; font-family:'Noto Serif SC',se
   <div class="callout">
     <span class="callout-title">两处值得停下来看的地方</span>
     <ul style="margin:6px 0 0 24px;">
-      <li><strong>第 6 条与第 8 条的区别</strong>：同一个 <code>&gt;&gt;</code>，<code>a</code> 是有符号时是算术右移（补符号位），<code>u(a)</code> 转成无符号后就是逻辑右移（补 0）。<code>-8 &gt;&gt; 1 = -4</code>、<code>u(-8) &gt;&gt; 1 = 2147483644</code>——同一条指令字段，两种语义。</li>
-      <li><strong>第 8 条外面那层 <code>T(...)</code></strong>：无符号移完如果不收回来，整条 <code>match</code> 的类型会被"污染"成无符号，第 6 条（算术右移）也一起变形。<strong>类型是跟着整个表达式走的，不是逐行看的。</strong></li>
+      <li><strong>第 6 条与第 8 条的区别</strong>：同一个 <code>&gt;&gt;</code>，操作数是有符号时就算术右移（补符号位），<code>u(a)</code> 换成无符号视角就逻辑右移（补 0）。<code>-2 &gt;&gt; 33 = -1</code>，<code>u(-2) &gt;&gt; 33 = 2147483647</code>——同一对输入，两种语义，全靠 <code>op</code> 选。</li>
+      <li><strong>第 8 条外面那层 <code>i64(...)</code></strong>：无符号移完如果不换回有符号视角，整条 <code>match</code> 的类型会被带成无符号，第 6 条（算术右移）跟着变形。<strong>类型是跟着整个表达式走的，不是逐行看的。</strong></li>
     </ul>
   </div>
 
-  <p>还有一条：<strong>移位量不由 ALU 自己掩码</strong>。<code>b</code> 传进来之前，由调用方按 XLEN 掩好（RV32 取低 5 位、RV64 取低 6 位）。为什么？因为 ALU 是<strong>泛型</strong>的——它不知道自己是 32 位还是 64 位。把"几位的移位量合法"这个决定交给知道 XLEN 的那一层，ALU 才能保持纯粹。</p>
+  <p>还有一条：<strong>移位量不由 ALU 自己掩码</strong>。<code>b</code> 传进来之前，调用方已经取好低 6 位（0..63）。这件事归调用方，不是因为 ALU 宽度未知，而是因为"移量该读指令的哪几个位、超过 63 怎么办"属于<strong>这条指令的字段怎么解释</strong>——那是译码层的事实，塞进 ALU 就等于让运算单元去替译码做决定。</p>
 </section>
 
 <section id="s3">
@@ -205,56 +205,67 @@ footer .next { display:block; margin-bottom:12px; font-family:'Noto Serif SC',se
 
   <div class="code">
     <div class="code-header"><span class="code-lang">prism</span><span class="code-file">alu.prism · run 段</span></div>
-<pre><span class="tk-rf">stim</span> : {
-    <span class="tk-name">dut.a</span>, <span class="tk-name">dut.b</span>, <span class="tk-name">dut.op</span>, [<span class="tk-name">dut.result</span>] <span class="tk-op">=</span> {
-                <span class="tk-num">5</span>,         <span class="tk-num">10</span>, <span class="tk-num">0</span>, [          <span class="tk-num">15</span>],   <span class="tk-com">// ADD</span>
-               <span class="tk-num">10</span>,          <span class="tk-num">5</span>, <span class="tk-num">1</span>, [           <span class="tk-num">5</span>],   <span class="tk-com">// SUB</span>
-               <span class="tk-num">12</span>,         <span class="tk-num">10</span>, <span class="tk-num">2</span>, [           <span class="tk-num">8</span>],   <span class="tk-com">// AND</span>
-               <span class="tk-num">12</span>,         <span class="tk-num">10</span>, <span class="tk-num">3</span>, [          <span class="tk-num">14</span>],   <span class="tk-com">// OR</span>
-               <span class="tk-num">12</span>,         <span class="tk-num">10</span>, <span class="tk-num">4</span>, [           <span class="tk-num">6</span>],   <span class="tk-com">// XOR</span>
-                <span class="tk-num">3</span>,          <span class="tk-num">4</span>, <span class="tk-num">5</span>, [          <span class="tk-num">48</span>],   <span class="tk-com">// SLL</span>
-              <span class="tk-num">-8</span>,          <span class="tk-num">1</span>, <span class="tk-num">6</span>, [          <span class="tk-num">-4</span>],   <span class="tk-com">// SRA 保号</span>
-              <span class="tk-num">-8</span>,          <span class="tk-num">1</span>, <span class="tk-num">7</span>, [           <span class="tk-num">1</span>],   <span class="tk-com">// SLT：-8 &lt; 1</span>
-              <span class="tk-num">-8</span>,          <span class="tk-num">1</span>, <span class="tk-num">8</span>, [  <span class="tk-num">2147483644</span>],   <span class="tk-com">// SRL 无符号</span>
-              <span class="tk-num">-8</span>,          <span class="tk-num">1</span>, <span class="tk-num">9</span>, [           <span class="tk-num">0</span>],   <span class="tk-com">// SLTU：4294967288 &lt; 1 为假</span>
-                <span class="tk-num">7</span>,          <span class="tk-num">7</span>, <span class="tk-num">15</span>, [          <span class="tk-num">0</span>],   <span class="tk-com">// op 越界 → 0</span>
-    }
-}</pre>
+<pre>    <span class="tk-rf">stim</span> : {
+        <span class="tk-name">a</span>, <span class="tk-name">b</span>, <span class="tk-name">op</span>, [<span class="tk-name">result</span>] <span class="tk-op">=</span> {
+              <span class="tk-num">5</span>,    <span class="tk-num">10</span>,  <span class="tk-num">0</span>, [            <span class="tk-num">15</span>],   <span class="tk-com">// ADD</span>
+             <span class="tk-num">10</span>,     <span class="tk-num">5</span>,  <span class="tk-num">1</span>, [             <span class="tk-num">5</span>],   <span class="tk-com">// SUB</span>
+             <span class="tk-num">12</span>,    <span class="tk-num">10</span>,  <span class="tk-num">2</span>, [             <span class="tk-num">8</span>],   <span class="tk-com">// AND</span>
+             <span class="tk-num">12</span>,    <span class="tk-num">10</span>,  <span class="tk-num">3</span>, [            <span class="tk-num">14</span>],   <span class="tk-com">// OR</span>
+             <span class="tk-num">12</span>,    <span class="tk-num">10</span>,  <span class="tk-num">4</span>, [             <span class="tk-num">6</span>],   <span class="tk-com">// XOR</span>
+              <span class="tk-num">3</span>,     <span class="tk-num">4</span>,  <span class="tk-num">5</span>, [            <span class="tk-num">48</span>],   <span class="tk-com">// SLL</span>
+             <span class="tk-num">-2</span>,    <span class="tk-num">33</span>,  <span class="tk-num">6</span>, [            <span class="tk-num">-1</span>],   <span class="tk-com">// SRA 保号</span>
+             <span class="tk-num">-2</span>,    <span class="tk-num">33</span>,  <span class="tk-num">8</span>, [    <span class="tk-num">2147483647</span>],   <span class="tk-com">// SRL 补 0</span>
+              <span class="tk-num">1</span>,    <span class="tk-num">40</span>,  <span class="tk-num">5</span>, [ <span class="tk-num">1099511627776</span>],   <span class="tk-com">// SLL 2^40：32 位放不下</span>
+             <span class="tk-num">-8</span>,     <span class="tk-num">1</span>,  <span class="tk-num">7</span>, [             <span class="tk-num">1</span>],   <span class="tk-com">// SLT：-8 &lt; 1</span>
+             <span class="tk-num">-8</span>,     <span class="tk-num">1</span>,  <span class="tk-num">9</span>, [             <span class="tk-num">0</span>],   <span class="tk-com">// SLTU：补全 1 的 -8 当成大数</span>
+              <span class="tk-num">7</span>,     <span class="tk-num">7</span>, <span class="tk-num">15</span>, [             <span class="tk-num">0</span>],   <span class="tk-com">// op 越界 → 0</span>
+        }
+    }</pre>
   </div>
 
   <div class="term">
     <div class="term-header">▸ prism run examples/day2/alu.prism --debug</div>
-    <div class="term-body">cycle   dut_a   dut_b   dut_op   dut_result
-0       5       10      0        15
-1       10      5       1        5
-2       12      10      2        8
-3       12      10      3        14
-4       12      10      4        6
-5       3       4       5        48
-6       -8      1       6        -4            <span class="term-hint"># SRA 保号</span>
-7       -8      1       7        1
-8       -8      1       8        2147483644    <span class="term-hint"># SRL 补 0</span>
-9       -8      1       9        0
-10      7       7       15       0             <span class="term-hint"># 越界防御</span>
-<span class="term-ok"># expect: 11/11 拍有断言 · 1 列 · 全等 ✅</span>
-<span class="term-ok">[run --cosim] ✅ PASS: alu_check golden == RTL 仿真（11 拍 × 4 列全等；golden stop: end of stim (11 cycles)）</span></div>
+    <div class="term-body">[run] alu_check: 12 拍 golden 直跑完成
+# run: alu_check  design: alu_top  stop: end of stim (12 cycles)
+cycle    a    b   op          result
+0        5   10    0              15
+1       10    5    1               5
+2       12   10    2               8
+3       12   10    3              14
+4       12   10    4               6
+5        3    4    5              48
+6       -2   33    6              -1   <span class="term-hint"># SRA 保号</span>
+7       -2   33    8      2147483647   <span class="term-hint"># SRL 补 0</span>
+8        1   40    5   1099511627776   <span class="term-hint"># 2^40：32 位放不下</span>
+9       -8    1    7               1
+10      -8    1    9               0
+11       7    7   15               0   <span class="term-hint"># 越界防御</span>
+<span class="term-ok"># expect: 12/12 拍有断言 · 1 列 · 全等 ✅</span></div>
   </div>
 
-  <p>第 7、8 两行放在一起看：<strong>同样的 <code>a=-8, b=1</code>，只换了 <code>op</code>，结果从 -4 变成 2147483644</strong>。这不是"算错了"，这是两种不同的右移。<em>符号性不是装饰，它决定电路怎么接。</em></p>
+  <div class="term">
+    <div class="term-header">▸ prism cosim examples/day2/alu.prism --run alu_check</div>
+    <div class="term-body">[run] alu_check: RTL tb 跑完，12 拍（产物 …）
+<span class="term-ok">[run --cosim] ✅ PASS: alu_check golden == RTL 仿真（12 拍 × 4 列全等；
+      golden stop: end of stim (12 cycles)）</span></div>
+  </div>
+
+  <p>第 6、7 两行放在一起看：<strong>同样的 <code>a=-2, b=33</code>，只换了 <code>op</code>，结果从 -1 变成 2147483647</strong>。这不是"算错了"，这是两种不同的右移。<em>符号性不是装饰，它决定电路怎么接。</em>第 8 行则只有 64 位通路才给得出来：<code>1 &lt;&lt; 40</code> 在 32 位机器上会把 40 当成 8（移量只有 5 位），这里 6 位移量原样生效。</p>
 </section>
 
 
 <section id="s4">
   <h2>ALU 不管的那些事</h2>
-  <p>一颗模块的边界，往往比它的内容更能说明设计取向。ALU 有三件事<strong>刻意不管</strong>：</p>
+  <p>一颗模块的边界，往往比它的内容更能说明设计取向。ALU 有四件事<strong>刻意不管</strong>：</p>
 
   <ul>
-    <li><strong>它不掩移位量</strong>。<code>b</code> 传进来之前，调用方已经按 XLEN 掩好（RV32 取低 5 位、RV64 取低 6 位）。ALU 是泛型的，<strong>它不知道自己是 32 位还是 64 位</strong>——"几位的移位量合法"这个决定，只有知道 XLEN 的那一层才有资格做。</li>
+    <li><strong>它不掩移位量</strong>。<code>b</code> 传进来之前，调用方已经取好低 6 位。"移量读指令的哪几个位"是译码层的事实，不是运算层的事实。</li>
+    <li><strong>它不管 32 位域运算</strong>。RISC-V 的 W 型指令（<code>addw</code> / <code>subw</code> / <code>sllw</code> / <code>srlw</code> / <code>sraw</code>）走的还是上面这十条路——同一条加法、同一条移位，只是结果要截到 32 位再符号扩展回 64。这一手不加长 ALU 的表：<strong>32 位语义是这条指令的属性，不是这个运算的属性</strong>。于是 decoder 多报一根 <code>is_w_op</code>，顶层拿到结果后按它做一次符号扩展——第九集合体时那根线就在那里。</li>
     <li><strong>它不产生标志位</strong>。没有 zero flag、carry flag、overflow flag。RISC-V 与 x86 在这里分道扬镳：x86 的 <code>cmp</code> 去写 EFLAGS，之后的分支读那一堆状态位；RISC-V 的 <code>slt</code> / <code>beq</code> <strong>直接比两个寄存器</strong>——比较的结果要么落进一个寄存器，要么当场决定跳不跳，不在 CPU 里挂一个"全局状态寄存器"。这是精简指令集最典型的一刀。</li>
     <li><strong>它不做多周期的事</strong>。除法要试商、要移位、要重复好几拍——那是另一颗模块的活。ALU 保持纯组合，谁都能在任何一拍把它插进数据通路，不用担心"它正忙"。</li>
   </ul>
 
-  <p>第三条的代价是：CPU 里要有一颗额外的多周期单元，以及一套"什么时候可以来取结果"的握手。<strong>但那是第五日的话题</strong>——那时先有流水线，才有地方容纳"停几拍"。</p>
+  <p>最后一条的代价是：CPU 里要有一颗额外的多周期单元，以及一套"什么时候可以来取结果"的握手。<strong>那是第五日（第 16 集）的话题</strong>——流水线的停顿都有了，才谈得上容纳"停几拍"。</p>
 </section>
 
 <section id="s5">
@@ -262,8 +273,9 @@ footer .next { display:block; margin-bottom:12px; font-family:'Noto Serif SC',se
   <ul>
     <li>ALU 是<strong>纯组合</strong>：没有时钟、没有状态、输入变输出立刻变。</li>
     <li>十条路写成一张 <code>match</code> 表——<strong>写起来是表，长出来是十个并列运算 + 一个多路选择器</strong>。</li>
-    <li>右移的两种语义（算术 / 逻辑）由符号性决定；<code>T(...)</code> / <code>u(...)</code> 是显式的位模式重解释。</li>
-    <li>移位量的掩码归调用方——ALU 泛型，不知道 XLEN。</li>
+    <li>右移的两种语义（算术 / 逻辑）由符号性决定；<code>i64(...)</code> / <code>u(...)</code> 是显式的位模式重解释。</li>
+    <li>移位量的掩码归调用方——那是"指令字段怎么读"的事，不属于运算。</li>
+    <li>W 型指令不加长这张表：decoder 报一根 <code>is_w_op</code>，顶层按它把结果符号扩展回 64 位。</li>
     <li>算不完的事（除法）不塞进来：ALU 保持纯组合，多周期单元日后<strong>另立一件</strong>。</li>
   </ul>
 
@@ -282,6 +294,7 @@ footer .next { display:block; margin-bottom:12px; font-family:'Noto Serif SC',se
 <pre>git clone https://github.com/prism-hdl/seven-days
 cd seven-days
 
+prism run   examples/day2/alu.prism --debug
 prism cosim examples/day2/alu.prism --run alu_check</pre>
   </div>
 </section>

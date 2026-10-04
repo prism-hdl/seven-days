@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>27 集大纲 · 七日创造</title>
+<title>25 集大纲 · 七日创造</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&family=Noto+Serif+SC:wght@400;600;700&display=swap" rel="stylesheet">
@@ -76,7 +76,7 @@ footer a { color:var(--prism); text-decoration:none; }
 <header class="hero">
   <div class="hero-inner">
     <div class="hero-eyebrow">PRISM DSL × RISC-V · 连载</div>
-    <h1>27 集大纲<br><em>七日创造</em></h1>
+    <h1>25 集大纲<br><em>七日创造</em></h1>
     <p class="lede">一个软件工程师，七天，从"发明一门语言"开始，造出能跑操作系统的 RISC-V 处理器。<strong>第一日四集讲完工具箱全景</strong>——不抠细节，只让读者看见这门语言能造芯片；从第二日起，造物。</p>
     <div class="hero-actions">
       <a class="btn btn-ghost" href="index.html">← 返回落地页</a>
@@ -134,7 +134,7 @@ footer a { color:var(--prism); text-decoration:none; }
   <div class="day-head">
     <span class="day-num">DAY 2</span>
     <span class="day-name">空气与水</span>
-    <span class="badge">8 集 · 6 集已写完</span>
+    <span class="badge">6 集 · 已写完</span>
   </div>
   <div class="verse">"神说，诸水之间要有空气，将水分为上下。"<cite>—— 《创世记》 1:6</cite></div>
   <p>一台 CPU 里流着两条水——<strong>数据</strong>（值）与<strong>控制</strong>（决定值什么时候被允许流过）。每一颗器官都在自己内部把这两条水分开一次：<code>pc</code> 分"当前值"与"下一步"，<code>regfile</code> 分"读写数据"与"写使能 / 地址"，<code>ALU</code> 分"操作数"与"选路"，<code>decoder</code> 干脆整颗就是一束控制位。这一天把<strong>最小 RV64I 处理器</strong>（64 位数据通路）的<strong>所有原料</strong>讲完——每颗各自能测；最后原料合体，跑一段<strong>冒泡排序</strong>：<strong>先有零件，再谈身体——然后让它做事。</strong></p>
@@ -143,8 +143,8 @@ footer a { color:var(--prism); text-decoration:none; }
     <div class="ep written">
       <div class="no">EP 5</div>
       <div>
-        <div class="t"><a href="day2/05-pc.html">PC — 心跳</a></div>
-        <div class="d"><code>reg</code> + <code>on clock</code>，全部决策就在 <code>load ? target : pc + 4</code> 这一个三目里。为什么是 +4、为什么没有 <code>en</code>——接口是长出来的，不是提前留的。</div>
+        <div class="t"><a href="day2/05-pc.html">PC — 下一步</a></div>
+        <div class="d"><code>reg</code> + <code>on clock</code>，全部决策就在 <code>load ? target : pc + 4</code> 这一个三目里。顺行走 +4、跳走用 <code>target</code>——用 <code>bne x2, x0, loop</code> 那段真循环讲清：-8 来自 B 型立即数，不是 pc 自己有的数。宽度钉死 64，不留泛型。</div>
       </div>
     </div>
     <div class="ep written">
@@ -171,19 +171,11 @@ footer a { color:var(--prism); text-decoration:none; }
     <div class="ep written">
       <div class="no">EP 9</div>
       <div>
-        <div class="t"><a href="day2/09-observe.html">观察它们的心跳</a></div>
-        <div class="d">三种观察手段的边界；四发反证——包括写作过程中真发生的"负立即数不符号扩展"：9 条全正数的向量全绿，却漏了一个 bug。<strong>一个测试从没失败过，说明它还没被测到。</strong></div>
+        <div class="t"><a href="day2/09-cpu-top.html">cpu_top：一具身体</a></div>
+        <div class="d">四颗器官一行不改地从 <code>examples/day2/</code> import 进来（唯一缺口是顶层要替分支补一列 <code>alu_op_b</code>）；<code>im</code> / <code>dm</code> 是同一颗 <code>ram</code> 的两个实例（<code>W = u32</code> / <code>W = i64</code>）；程序写在 run 的 <code>image</code> 段；27 跑出 <code>x1 = 15</code>，另有三列各自见证分支没跳、W 后处理、LD/SD 往返。golden / RTL / SystemC 三条腿逐拍全等。</div>
       </div>
     </div>
-    <div class="ep written">
-      <div class="no">EP 10</div>
-      <div>
-        <div class="t"><a href="day3/10-cpu-top.html">cpu_top：四颗合体</a></div>
-        <div class="d">五颗器官原样搬来（只补了 6 行分支分派）；顶层 <code>wire</code> / <code>connect</code> 合流；一段六条指令的真循环，24 拍跑出 <code>x1 = 15</code>，golden / RTL / TLM 三方逐拍全等。<strong>原料至此合体。</strong></div>
-      </div>
-    </div>
-    <div class="ep"><div class="no">EP 11</div><div><div class="t">跑一段冒泡排序</div><div class="d">手写一段冒泡排序的 RV64I 机器码装进 <code>im</code>；<code>cosim</code> 逐拍看 <code>pc</code> 与 <code>x</code> 寄存器演化、<code>dm</code> 里数组一格一格换位；行级期望把排好序的数组钉死。</div></div></div>
-    <div class="ep"><div class="no">EP 12</div><div><div class="t">反证 · 变异扫描</div><div class="d">手动改坏三处（x0 硬连线、sb 字节掩码、分支符号扩展），<code>cosim</code> 必须逮到，且差异必须落在可见样本上。<strong>一个不会反证的验证等于没验证。</strong></div></div></div>
+    <div class="ep written"><div class="no">EP 10</div><div><div class="t"><a href="day2/10-bubble-sort.html">跑一段冒泡排序</a></div><div class="d">芯片一行不改，<code>cpu.prism</code> 只多一个 run 块：<code>image</code> 把 32 条指令灌进 <code>im</code>、把 <code>9,7,5,3,2,1</code> 灌进 <code>dm</code>。417 拍排成 <code>1,2,3,5,7,9</code>；停机判据不是拍数，是程序自检通过后自己置起的完工位 <code>x20</code>——把比较方向改反，判据就永不成立。<strong>CPU 第一次做一件真事。</strong></div></div></div>
   </div>
 </section>
 
@@ -193,7 +185,7 @@ footer a { color:var(--prism); text-decoration:none; }
     <span class="day-name">（待重构）</span>
     <span class="badge">待重构</span>
   </div>
-  <p>原第三日的内容（四颗合体、跑真程序、反证扫描）已并入第二日；本日待重新规划。</p>
+  <p>原第三日的内容（四颗合体、跑真程序）已并入第二日；本日待重新规划。</p>
 </section>
 
 <section class="day">
@@ -206,11 +198,11 @@ footer a { color:var(--prism); text-decoration:none; }
   <p>第二日那台 CPU 一颗组合逻辑走完全场，CPI = 1 但频率被最长组合路径卡死。提速只有流水——一旦流水，<strong>每一颗子模块要复制五份</strong>。手写五遍会崩；这就是 <code>Composer</code> 出场的时刻。</p>
 
   <div class="eps">
-    <div class="ep"><div class="no">EP 13</div><div><div class="t">Composer：一次声明、五段生成</div><div class="d"><code>lower_composers</code> 把可复用结构展开到流水每一级；段间寄存器位宽跟字段自动对齐。<strong>抽象在此刻才有意义——不是提前，是刚好。</strong></div></div></div>
-    <div class="ep"><div class="no">EP 14</div><div><div class="t">五级流水线数据通路</div><div class="d">IF / ID / EX / MEM / WB；段间寄存器；<code>pipe5</code> 落地方案；<code>@schedule { pipeline : 5 stages }</code>。</div></div></div>
-    <div class="ep"><div class="no">EP 15</div><div><div class="t">数据冒险与前递 / 停顿</div><div class="d">RAW 路径、前递谓词、Load-Use 停顿检测；停顿靠 <code>pc</code> 与段间寄存器同步冻结——<strong>第 5 集那个被拿掉的 <code>en</code> 端口，在这里长回来</strong>。</div></div></div>
-    <div class="ep"><div class="no">EP 16</div><div><div class="t">控制冒险与分支处理</div><div class="d">分支判断位置、跳转目标、flush、简单预测；误预测的代价与恢复。</div></div></div>
-    <div class="ep"><div class="no">EP 17</div><div><div class="t">RV64I 扩展 + 整合验证</div><div class="d">32 → 64 位数据通路；<code>LWU</code> / <code>LD</code> / <code>SD</code>；寄存器堆泛型化；跑测试程序、对比 CPI。</div></div></div>
+    <div class="ep"><div class="no">EP 11</div><div><div class="t">Composer：一次声明、五段生成</div><div class="d"><code>lower_composers</code> 把可复用结构展开到流水每一级；段间寄存器位宽跟字段自动对齐。<strong>抽象在此刻才有意义——不是提前，是刚好。</strong></div></div></div>
+    <div class="ep"><div class="no">EP 12</div><div><div class="t">五级流水线数据通路</div><div class="d">IF / ID / EX / MEM / WB；段间寄存器；<code>pipe5</code> 落地方案；<code>@schedule { pipeline : 5 stages }</code>。</div></div></div>
+    <div class="ep"><div class="no">EP 13</div><div><div class="t">数据冒险与前递 / 停顿</div><div class="d">RAW 路径、前递谓词、Load-Use 停顿检测；停顿靠 <code>pc</code> 与段间寄存器同步冻结——<strong>第 5 集那个被拿掉的 <code>en</code> 端口，在这里长回来</strong>。</div></div></div>
+    <div class="ep"><div class="no">EP 14</div><div><div class="t">控制冒险与分支处理</div><div class="d">分支判断位置、跳转目标、flush、简单预测；误预测的代价与恢复。</div></div></div>
+    <div class="ep"><div class="no">EP 15</div><div><div class="t">RV64I 扩展 + 整合验证</div><div class="d">32 → 64 位数据通路；<code>LWU</code> / <code>LD</code> / <code>SD</code>；寄存器堆泛型化；跑测试程序、对比 CPI。</div></div></div>
   </div>
 </section>
 
@@ -224,11 +216,11 @@ footer a { color:var(--prism); text-decoration:none; }
   <p>流水线跑起来的 CPU 只是<strong>更快的机器</strong>。让它"活"起来的是三件事：<strong>会疼</strong>（异常）、<strong>会躲</strong>（中断与 PMP）、<strong>会做事</strong>（跑真程序，并被一位不共享前端的"外人"逐拍盯着）。</p>
 
   <div class="eps">
-    <div class="ep"><div class="no">EP 18</div><div><div class="t">RV32M 乘除法</div><div class="d"><code>mul</code> / <code>div</code> 系列挂到执行单元一侧；<code>fsm</code> 管多周期握手（第 7 集留给日后的话题，在这里兑现）；独立 oracle 逐拍对撞。</div></div></div>
-    <div class="ep"><div class="no">EP 19</div><div><div class="t">CSR 框架与异常处理</div><div class="d">M / S / U 模式；<code>mstatus</code> / <code>mie</code> / <code>mtvec</code> / <code>mepc</code> 等；WARL 掩码；非法指令、EBREAK、ECALL、访存未对齐；<code>mcause</code> / <code>mtval</code> / <code>mret</code>。<strong>CPU 会疼了。</strong></div></div></div>
-    <div class="ep"><div class="no">EP 20</div><div><div class="t">中断与 PMP</div><div class="d">软件 / 定时器 / 外部中断、使能与优先级；PMP 寄存器、地址匹配、权限检查。<strong>CPU 会躲了。</strong></div></div></div>
-    <div class="ep"><div class="no">EP 21</div><div><div class="t">模式切换与系统调用</div><div class="d"><code>ecall</code> / <code>sret</code> / <code>wfi</code>；U 态执行；M / S 切换；完整 RV64 跑带 syscall 的裸机程序、FPGA 上板。</div></div></div>
-    <div class="ep"><div class="no">EP 22</div><div><div class="t">独立 ISS 作第四方 · 跑一段真程序</div><div class="d">独立实现与 Prism 前端零共享代码，封住"三方从同一棵 AST 下降、前端共性 bug 互查不出"的死角。<strong>CPU 会做事，且有人从旁边盯着它做。</strong></div></div></div>
+    <div class="ep"><div class="no">EP 16</div><div><div class="t">RV32M 乘除法</div><div class="d"><code>mul</code> / <code>div</code> 系列挂到执行单元一侧；<code>fsm</code> 管多周期握手（第 7 集留给日后的话题，在这里兑现）；独立 oracle 逐拍对撞。</div></div></div>
+    <div class="ep"><div class="no">EP 17</div><div><div class="t">CSR 框架与异常处理</div><div class="d">M / S / U 模式；<code>mstatus</code> / <code>mie</code> / <code>mtvec</code> / <code>mepc</code> 等；WARL 掩码；非法指令、EBREAK、ECALL、访存未对齐；<code>mcause</code> / <code>mtval</code> / <code>mret</code>。<strong>CPU 会疼了。</strong></div></div></div>
+    <div class="ep"><div class="no">EP 18</div><div><div class="t">中断与 PMP</div><div class="d">软件 / 定时器 / 外部中断、使能与优先级；PMP 寄存器、地址匹配、权限检查。<strong>CPU 会躲了。</strong></div></div></div>
+    <div class="ep"><div class="no">EP 19</div><div><div class="t">模式切换与系统调用</div><div class="d"><code>ecall</code> / <code>sret</code> / <code>wfi</code>；U 态执行；M / S 切换；完整 RV64 跑带 syscall 的裸机程序、FPGA 上板。</div></div></div>
+    <div class="ep"><div class="no">EP 20</div><div><div class="t">独立 ISS 作第四方 · 跑一段真程序</div><div class="d">独立实现与 Prism 前端零共享代码，封住"三方从同一棵 AST 下降、前端共性 bug 互查不出"的死角。<strong>CPU 会做事，且有人从旁边盯着它做。</strong></div></div></div>
   </div>
 </section>
 
@@ -242,10 +234,10 @@ footer a { color:var(--prism); text-decoration:none; }
   <p>到第五日为止，CPU 只会算数与响应中断——它还是个"孤独的生命"。第六日给它一个<strong>世界</strong>：总线、SRAM、BootROM、PLIC、UART。CPU 第一次"挂上外设、开始管理它们"。</p>
 
   <div class="eps">
-    <div class="ep"><div class="no">EP 23</div><div><div class="t">治理规则：总线 / 地址映射 / ABI / 链接脚本</div><div class="d">一套地址空间规划与解码；RISC-V ABI、<code>gp</code> / <code>tp</code> 初始化、<code>.ld</code> 布局——<strong>先约好规矩，再谈管理</strong>。</div></div></div>
-    <div class="ep"><div class="no">EP 24</div><div><div class="t">挂上存储器：片上 SRAM 与 BootROM</div><div class="d">SRAM 控制器、数组初始化；BootROM 上电即跳——CPU 有了<strong>长期记忆</strong>。</div></div></div>
-    <div class="ep"><div class="no">EP 25</div><div><div class="t">挂上外设：PLIC 与 UART</div><div class="d">平台级中断仲裁、多源；16550 风格 UART 收发状态机。</div></div></div>
-    <div class="ep"><div class="no">EP 26</div><div><div class="t">SoC 顶层组装 · 从"能算"到"能管"</div><div class="d">把 CPU + SRAM + BootROM + PLIC + UART 一次连齐；<code>cosim</code> 全链逐拍跑通；跑一段 hello world，串口输出。</div></div></div>
+    <div class="ep"><div class="no">EP 21</div><div><div class="t">治理规则：总线 / 地址映射 / ABI / 链接脚本</div><div class="d">一套地址空间规划与解码；RISC-V ABI、<code>gp</code> / <code>tp</code> 初始化、<code>.ld</code> 布局——<strong>先约好规矩，再谈管理</strong>。</div></div></div>
+    <div class="ep"><div class="no">EP 22</div><div><div class="t">挂上存储器：片上 SRAM 与 BootROM</div><div class="d">SRAM 控制器、数组初始化；BootROM 上电即跳——CPU 有了<strong>长期记忆</strong>。</div></div></div>
+    <div class="ep"><div class="no">EP 23</div><div><div class="t">挂上外设：PLIC 与 UART</div><div class="d">平台级中断仲裁、多源；16550 风格 UART 收发状态机。</div></div></div>
+    <div class="ep"><div class="no">EP 24</div><div><div class="t">SoC 顶层组装 · 从"能算"到"能管"</div><div class="d">把 CPU + SRAM + BootROM + PLIC + UART 一次连齐；<code>cosim</code> 全链逐拍跑通；跑一段 hello world，串口输出。</div></div></div>
   </div>
 </section>
 
@@ -259,7 +251,7 @@ footer a { color:var(--prism); text-decoration:none; }
   <p>前六日都是"作者在改代码"。第七日是<strong>作者退场</strong>：一段不属于我们的固件（OpenSBI）在 Prism 造的 CPU 上自己起来——M 态跳 S 态、串口打出 banner；从此 CPU 跑的不是我们写的激励，是别人写的操作系统。</p>
 
   <div class="eps">
-    <div class="ep"><div class="no">EP 27</div><div><div class="t">OpenSBI 移植与最小 SoC 跑通</div><div class="d">编译 OpenSBI、固件加载到 SRAM / BootROM、<code>cosim</code> 校验上电 reset vector 与 <code>mtvec</code> 跳转；FPGA 上电、串口 banner 打出来。<strong>作者停手，机器自转。</strong></div></div></div>
+    <div class="ep"><div class="no">EP 25</div><div><div class="t">OpenSBI 移植与最小 SoC 跑通</div><div class="d">编译 OpenSBI、固件加载到 SRAM / BootROM、<code>cosim</code> 校验上电 reset vector 与 <code>mtvec</code> 跳转；FPGA 上电、串口 banner 打出来。<strong>作者停手，机器自转。</strong></div></div></div>
   </div>
 </section>
 
@@ -267,7 +259,7 @@ footer a { color:var(--prism); text-decoration:none; }
   <h2>学习曲线</h2>
   <div class="chain">
     <strong>光</strong>（一门新语言 + 一颗 CPU + 一段跑起来的固件）<br>
-    → <strong>空气与水</strong>（所有原料：<code>pc</code> 心跳 / 记忆 / <code>ALU</code> 活动 / <code>decoder</code> 理解世界；合体后跑冒泡排序、反证变异——一台会做事的处理器）<br>
+    → <strong>空气与水</strong>（所有原料：<code>pc</code> 下一步 / 记忆 / <code>ALU</code> 活动 / <code>decoder</code> 理解世界；合体后跑冒泡排序——一台会做事的处理器）<br>
     → <strong>天上光体</strong>（<code>Composer</code> 一次声明五段生成；流水线、冒险、RV64I）<br>
     → <strong>有生命的活物</strong>（会疼：异常；会躲：中断 + PMP；会做事：独立 ISS 四方对撞）<br>
     → <strong>照着形象造人</strong>（SoC：总线 / SRAM / BootROM / PLIC / UART）<br>

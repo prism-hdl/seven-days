@@ -6,3 +6,6 @@ out/
 *.vcd
 *.sv.tmp
 *.out
+
+# 站点构建产物（node scripts/build-site.mjs 生成）
+web/

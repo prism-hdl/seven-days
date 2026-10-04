@@ -118,9 +118,9 @@ footer .cols { display:flex; flex-wrap:wrap; justify-content:center; gap:24px; m
     <h1>七日创造<br><em>从一门自造的语言，<br class="h1-br">到一颗能跑<span class="nb">操作系统</span>的处理器</em></h1>
     <p class="lede">《创世记》里神用七天造齐天地万物。这里借它讲述另一个故事：2026年国庆七天里，一名软件工程师，用软件工程师能够看得懂的思维，打开芯片设计的大门，从设计一门语言，到数字世界里的花花草草，江河湖海，最终造出能启动 OpenSBI 的 RISC-V 处理器。这大概就是程序员最快乐的节日吧。</p>
     <div class="hero-meta">
-      <span class="chip">27 集 · 七日</span>
+      <span class="chip">25 集 · 七日</span>
       <span class="chip on">第一日 已写完</span>
-      <span class="chip on">第二日 连载中 · EP 10</span>
+      <span class="chip on">第二日 已写完</span>
       <span class="chip">第三日 待重构</span>
       <span class="chip">第四日 起 待写</span>
       <span class="chip">RISC-V RV32I / RV64I</span>
@@ -128,7 +128,7 @@ footer .cols { display:flex; flex-wrap:wrap; justify-content:center; gap:24px; m
     </div>
     <div class="hero-actions">
       <a class="btn btn-primary" href="day1/01-why-prism.html">从第 1 集开始 →</a>
-      <a class="btn btn-ghost" href="outline.html">看全部 27 集大纲</a>
+      <a class="btn btn-ghost" href="outline.html">看全部 25 集大纲</a>
     </div>
   </div>
 </header>
@@ -160,21 +160,19 @@ footer .cols { display:flex; flex-wrap:wrap; justify-content:center; gap:24px; m
 
     <div class="day d2" id="day2">
       <div>
-        <div class="label">DAY 2 · 连载中</div>
+        <div class="label">DAY 2 · 已写完</div>
         <div class="name">空气与水</div>
         <div class="verse">"诸水之间要有空气，<br>将水分为上下。"</div>
       </div>
       <div class="body">
         <p class="desc">讲完最小 RV64I 处理器的所有原料：四颗器官一颗一颗造，单独能跑、单独能测；最后原料合体，跑一段冒泡排序——CPU 第一次做一件真事。</p>
         <div class="eps">
-          <a class="ep" href="day2/05-pc.html"><span class="dot"></span><span class="n">EP 5</span>pc · 心跳</a>
+          <a class="ep" href="day2/05-pc.html"><span class="dot"></span><span class="n">EP 5</span>pc · 下一步</a>
           <a class="ep" href="day2/06-memory.html"><span class="dot"></span><span class="n">EP 6</span>记忆</a>
           <a class="ep" href="day2/07-alu.html"><span class="dot"></span><span class="n">EP 7</span>ALU · 活动</a>
           <a class="ep" href="day2/08-decoder.html"><span class="dot"></span><span class="n">EP 8</span>decoder · 理解世界</a>
-          <a class="ep" href="day2/09-observe.html"><span class="dot"></span><span class="n">EP 9</span>观察它们的心跳</a>
-          <a class="ep" href="day3/10-cpu-top.html"><span class="dot"></span><span class="n">EP 10</span>cpu_top · 四颗合体</a>
-          <span class="ep todo"><span class="dot"></span><span class="n">EP 11</span>跑一段冒泡排序</span>
-          <span class="ep todo"><span class="dot"></span><span class="n">EP 12</span>反证 · 变异扫描</span>
+          <a class="ep" href="day2/09-cpu-top.html"><span class="dot"></span><span class="n">EP 9</span>cpu_top · 一具身体</a>
+          <a class="ep" href="day2/10-bubble-sort.html"><span class="dot"></span><span class="n">EP 10</span>跑一段冒泡排序</a>
         </div>
       </div>
     </div>
@@ -186,7 +184,7 @@ footer .cols { display:flex; flex-wrap:wrap; justify-content:center; gap:24px; m
         <div class="verse">"天下的水要聚在一处，<br>使旱地露出来。"</div>
       </div>
       <div class="body">
-        <p class="desc">原第三日内容（四颗合体、跑真程序、反证扫描）已并入第二日；本日待重新规划。</p>
+        <p class="desc">原第三日内容（四颗合体、跑真程序）已并入第二日；本日待重新规划。</p>
       </div>
     </div>
 
@@ -199,11 +197,11 @@ footer .cols { display:flex; flex-wrap:wrap; justify-content:center; gap:24px; m
       <div class="body">
         <p class="desc">有了节拍——时钟周期与流水段。<code>Interface</code> 与 <code>Composer</code> 在此刻出场：一次声明、五段生成；然后是冒险、前递、分支冲刷、RV64I 扩位。</p>
         <div class="eps">
-          <span class="ep todo"><span class="dot"></span><span class="n">EP 13</span>Composer · 一次声明五段生成</span>
-          <span class="ep todo"><span class="dot"></span><span class="n">EP 14</span>五级流水线数据通路</span>
-          <span class="ep todo"><span class="dot"></span><span class="n">EP 15</span>数据冒险与前递</span>
-          <span class="ep todo"><span class="dot"></span><span class="n">EP 16</span>控制冒险与分支</span>
-          <span class="ep todo"><span class="dot"></span><span class="n">EP 17</span>RV64I 与整合验证</span>
+          <span class="ep todo"><span class="dot"></span><span class="n">EP 11</span>Composer · 一次声明五段生成</span>
+          <span class="ep todo"><span class="dot"></span><span class="n">EP 12</span>五级流水线数据通路</span>
+          <span class="ep todo"><span class="dot"></span><span class="n">EP 13</span>数据冒险与前递</span>
+          <span class="ep todo"><span class="dot"></span><span class="n">EP 14</span>控制冒险与分支</span>
+          <span class="ep todo"><span class="dot"></span><span class="n">EP 15</span>RV64I 与整合验证</span>
         </div>
       </div>
     </div>
@@ -217,11 +215,11 @@ footer .cols { display:flex; flex-wrap:wrap; justify-content:center; gap:24px; m
       <div class="body">
         <p class="desc">处理器不再只会顺序执行——它开始响应外界：会疼（异常）、会躲（中断与 PMP）、会做事（跑真程序，并被一位不共享前端的"外人"逐拍盯着）。</p>
         <div class="eps">
-          <span class="ep todo"><span class="dot"></span><span class="n">EP 18</span>RV32M 乘除法</span>
-          <span class="ep todo"><span class="dot"></span><span class="n">EP 19</span>CSR 框架与异常</span>
-          <span class="ep todo"><span class="dot"></span><span class="n">EP 20</span>中断与 PMP</span>
-          <span class="ep todo"><span class="dot"></span><span class="n">EP 21</span>模式切换与上板</span>
-          <span class="ep todo"><span class="dot"></span><span class="n">EP 22</span>独立 ISS 四方对撞</span>
+          <span class="ep todo"><span class="dot"></span><span class="n">EP 16</span>RV32M 乘除法</span>
+          <span class="ep todo"><span class="dot"></span><span class="n">EP 17</span>CSR 框架与异常</span>
+          <span class="ep todo"><span class="dot"></span><span class="n">EP 18</span>中断与 PMP</span>
+          <span class="ep todo"><span class="dot"></span><span class="n">EP 19</span>模式切换与上板</span>
+          <span class="ep todo"><span class="dot"></span><span class="n">EP 20</span>独立 ISS 四方对撞</span>
         </div>
       </div>
     </div>
@@ -235,10 +233,10 @@ footer .cols { display:flex; flex-wrap:wrap; justify-content:center; gap:24px; m
       <div class="body">
         <p class="desc">CPU 挂上外设、开始"管理"它们——总线与地址映射、SRAM、BootROM、PLIC、UART，以及 ABI 与链接脚本。</p>
         <div class="eps">
-          <span class="ep todo"><span class="dot"></span><span class="n">EP 23</span>总线 / ABI / 链接脚本</span>
-          <span class="ep todo"><span class="dot"></span><span class="n">EP 24</span>SRAM 与 BootROM</span>
-          <span class="ep todo"><span class="dot"></span><span class="n">EP 25</span>PLIC 与 UART</span>
-          <span class="ep todo"><span class="dot"></span><span class="n">EP 26</span>SoC 顶层组装</span>
+          <span class="ep todo"><span class="dot"></span><span class="n">EP 21</span>总线 / ABI / 链接脚本</span>
+          <span class="ep todo"><span class="dot"></span><span class="n">EP 22</span>SRAM 与 BootROM</span>
+          <span class="ep todo"><span class="dot"></span><span class="n">EP 23</span>PLIC 与 UART</span>
+          <span class="ep todo"><span class="dot"></span><span class="n">EP 24</span>SoC 顶层组装</span>
         </div>
       </div>
     </div>
@@ -252,7 +250,7 @@ footer .cols { display:flex; flex-wrap:wrap; justify-content:center; gap:24px; m
       <div class="body">
         <p class="desc">作者退场：一段不属于我们的固件（OpenSBI）在 Prism 造的 CPU 上自己起来——M 态跳 S 态、串口打出 banner。从此 CPU 跑的不是我们写的激励，是别人写的操作系统。</p>
         <div class="eps">
-          <span class="ep todo"><span class="dot"></span><span class="n">EP 27</span>OpenSBI 移植与最小 SoC 跑通</span>
+          <span class="ep todo"><span class="dot"></span><span class="n">EP 25</span>OpenSBI 移植与最小 SoC 跑通</span>
         </div>
       </div>
     </div>
@@ -299,9 +297,9 @@ prism run examples/adder.prism --debug</pre>
 <section id="repo">
   <h2>仓库里有什么</h2>
   <div class="cards">
-    <div class="card"><div class="k">episodes/</div><div class="t">每一集的正文</div><div class="b"><code>day1/</code> 四集 · <code>day2/</code> 五集 · <code>day3/</code> 连载中。每一集都是独立可读的单页 HTML。</div></div>
-    <div class="card"><div class="k">examples/</div><div class="t">每一集引用的 Prism 源码</div><div class="b"><code>adder</code> / <code>proc_switch</code> / <code>mini_cpu</code> / <code>box</code> / <code>day2/</code> 四颗器官 / <code>day3/</code> 单周期 CPU——都可独立跑。</div></div>
-    <a class="card" href="outline.html" style="text-decoration:none;color:inherit"><div class="k">outline.html</div><div class="t">27 集完整大纲</div><div class="b">七日框架、每集要造什么、firmament 落在哪里。点开看全部 27 集。</div></a>
+    <div class="card"><div class="k">episodes/</div><div class="t">每一集的正文</div><div class="b"><code>day1/</code> 四集 · <code>day2/</code> 六集。每一集都是独立可读的单页 HTML。</div></div>
+    <div class="card"><div class="k">examples/</div><div class="t">每一集引用的 Prism 源码</div><div class="b"><code>adder</code> / <code>proc_switch</code> / <code>mini_cpu</code> / <code>box</code> / <code>day2/</code> 四颗器官与 <code>cpu</code>（单周期 RV64I）——都可独立跑。</div></div>
+    <a class="card" href="outline.html" style="text-decoration:none;color:inherit"><div class="k">outline.html</div><div class="t">25 集完整大纲</div><div class="b">七日框架、每集要造什么、firmament 落在哪里。点开看全部 25 集。</div></a>
   </div>
 </section>
 
@@ -310,13 +308,12 @@ prism run examples/adder.prism --debug</pre>
 <footer>
   <div class="cols">
     <a href="day1/01-why-prism.html">第 1 集</a>
-    <a href="day2/09-observe.html">第 9 集</a>
-    <a href="day3/10-cpu-top.html">第 10 集</a>
+    <a href="day2/10-bubble-sort.html">第 10 集</a>
     <a href="outline.html">大纲</a>
     <a href="https://github.com/prism-hdl/seven-days">GitHub</a>
   </div>
   七日创造 · 一个软件工程师与一门自造的语言<br>
-  连载写作中 · 第一日已写完 · 第二日连载中（EP 10 已写完）· 第三日待重构
+  连载写作中 · 第一日已写完 · 第二日已写完 · 第三日待重构
 </footer>
 
 </body>

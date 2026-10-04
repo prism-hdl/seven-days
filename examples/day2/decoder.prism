@@ -4,37 +4,44 @@
 // 整颗模块没有寄存器、没有状态——全是纯组合表达式 + match。
 // 它的工作只有一件：把外界进来的 32 位字符串，翻译成内部的动作。
 //
-//   输入：instr（32 位）
-//   输出：一堆控制位与地址——rd / rs1 / rs2 给寄存器堆，alu_op 给 ALU，
-//         reg_wen / mem_ren / mem_wen 决定"这一拍允许什么发生"。
+//   输入：instr（32 位——指令字永远是 32 位，数据通路 64 位也不改它）
+//   输出：rd / rs1 / rs2 给寄存器堆，alu_op 给 ALU，imm 给运算与地址，
+//         reg_wen / mem_ren / mem_wen 决定"这一拍允许什么发生"，
+//         is_w_op 告诉顶层"结果按几位解释"。
 //
 // 注意端口的两堆线（firmament 在这里最清楚）：
 //   数据面：instr、imm（值）
 //   控制面：alu_op、reg_wen、mem_ren …（决定动作）
 // 解码器不参与任何运算，它只"理解"，动作由别人做。
+//
+// 这一台认的最小 RV64I：R / I / U / B / J 六族 + W 型 + LD/SD 两条访存。
+// 乘除（M 扩展）、字与半字访存（LW/LWU/SW/LB/LBU/LH/LHU/SB/SH）、系统指令都不在
+// 字典里——字段对不上就是"不理解的字符串"，由 is_illegal 报出去。
 // =============================================================================
 
 module decoder {
-    in  instr : Signal<u32>    // 32 位指令字（位模式；符号扩展在下面手工做）
+    in  instr : Signal<u32>         // 指令字（位模式；符号扩展靠下面的类型声明）
 
-    out rd        : Signal<u5>     // 目的寄存器
-    out rs1       : Signal<u5>     // 源寄存器 1
-    out rs2       : Signal<u5>     // 源寄存器 2
-    out alu_op    : Signal<u4>     // 给 ALU 的运算选择（0..9）
-    out alu_src   : Signal<u1>     // 1 = 第二操作数取立即数
-    out imm       : Signal<i32>    // 符号扩展后的立即数
-    out reg_wen   : Signal<u1>     // 允许写回寄存器堆
-    out mem_ren   : Signal<u1>     // 允许读数据存储器
-    out mem_wen   : Signal<u1>     // 允许写数据存储器
-    out is_branch : Signal<u1>     // 条件分支
-    out is_jal    : Signal<u1>     // jal
-    out is_jalr   : Signal<u1>     // jalr
-    out is_illegal: Signal<u1>     // 不认识这条字符串
+    out rd         : Signal<u5>     // 目的寄存器
+    out rs1        : Signal<u5>     // 源寄存器 1
+    out rs2        : Signal<u5>     // 源寄存器 2
+    out alu_op     : Signal<u4>     // 给 ALU 的十条路
+    out alu_src    : Signal<u1>     // 1 = 第二操作数取立即数
+    out imm        : Signal<i64>    // 立即数，符号扩展到 64 位
+    out reg_wen    : Signal<u1>     // 允许写回寄存器堆
+    out mem_ren    : Signal<u1>     // 允许读数据存储器
+    out mem_wen    : Signal<u1>     // 允许写数据存储器
+    out is_w_op    : Signal<u1>     // 1 = W 型指令：运算结果按 32 位域解释
+    out is_branch  : Signal<u1>     // 条件分支
+    out is_jal     : Signal<u1>     // jal
+    out is_jalr    : Signal<u1>     // jalr
+    out is_illegal : Signal<u1>     // 不认识这条字符串
 
     // ---- 字段抽取 ----
     opcode = instr[6:0]
     funct3 = instr[14:12]
     funct7 = instr[31:25]
+    funct6 = instr[31:26]     // RV64 的 shamt 有 6 位，所以移位看 funct6 而不是 funct7
 
     rd_raw = instr[11:7]
     rs1    = instr[19:15]
@@ -42,67 +49,44 @@ module decoder {
 
     // ---- 立即数：五种格式 + "无立即数"，先判格式，再按格式拼 ----
     itype = match opcode {
-        0x33 => 5,     // R：没有立即数
-        0x13 => 0,     // I：addi
-        0x03 => 0,     // I：load
-        0x67 => 0,     // I：jalr
-        0x23 => 1,     // S：store
-        0x37 => 2,     // U：lui
-        0x17 => 2,     // U：auipc
-        0x63 => 3,     // B：branch
-        0x6f => 4,     // J：jal
+        0x33 => 5,     // R ：没有立即数
+        0x3b => 5,     // R ：W 型同形
+        0x13 => 0,     // I ：addi / lw / jalr
+        0x1b => 0,     // I ：addiw / slliw …
+        0x03 => 0,     // I ：load
+        0x67 => 0,     // I ：jalr
+        0x23 => 1,     // S ：store
+        0x37 => 2,     // U ：lui
+        0x17 => 2,     // U ：auipc
+        0x63 => 3,     // B ：branch
+        0x6f => 4,     // J ：jal
         _    => 5,     // 不认识：不给立即数
     }
 
-    // I-type：取高 12 位，再手工符号扩展。
-    // 注意 instr 是无符号的，`>>` 是逻辑右移——不会替我们补符号位，
-    // 所以这里必须像 S/B/J 一样显式判"够不够半个范围再减回去"。
-    i_raw = instr >> 20
-    i_imm = i_raw >= 0x800 ? i_raw - 0x1000 : i_raw
-
-    // S-type：高 7 位 << 5，接低 5 位；再手工符号扩展
-    s_raw  = (((instr >> 25) & 0x7f) << 5) | ((instr >> 7) & 0x1f)
-    s_imm  = s_raw >= 0x800 ? s_raw - 0x1000 : s_raw
-
-    b12    = (instr >> 31) & 0x1
-    b11    = (instr >> 7)  & 0x1
-    b10_5  = (instr >> 25) & 0x3f
-    b4_1   = (instr >> 8)  & 0xf
-    b_raw  = (b12 << 12) | (b11 << 11) | (b10_5 << 5) | (b4_1 << 1)
-    b_imm  = b_raw >= 0x1000 ? b_raw - 0x2000 : b_raw
-
-    j20    = (instr >> 31) & 0x1
-    j19_12 = (instr >> 12) & 0xff
-    j11    = (instr >> 20) & 0x1
-    j10_1  = (instr >> 21) & 0x3ff
-    j_raw  = (j20 << 20) | (j19_12 << 12) | (j11 << 11) | (j10_1 << 1)
-    j_imm  = j_raw >= 0x100000 ? j_raw - 0x200000 : j_raw
+    // 符号扩展不靠减法技巧，靠【类型声明】：把位形声明成有符号线网（i12 / i13 /
+    // i21 / i32），赋进 64 位端口时由类型系统扩上去。golden 按声明回绕、RTL 发
+    // `logic signed`，两侧同一条规则。
+    u_raw  : u32 = {instr[31:12], {12{0}}}
+    i_sext : i12 = instr[31:20]
+    s_sext : i12 = {instr[31:25], instr[11:7]}
+    u_sext : i32 = u_raw[31:0]       // LUI/AUIPC 在 RV64 也按 bit 31 扩展（spec 2.5）
+    b_sext : i13 = {instr[31:31], instr[7:7], instr[30:25], instr[11:8], 0}
+    j_sext : i21 = {instr[31:31], instr[19:12], instr[20:20], instr[30:21], 0}
 
     imm = match itype {
-        0 => i_imm,
-        1 => s_imm,
-        2 => (instr >> 12) << 12,   // U：高 20 位直接抬到高位，低 12 位为 0
-        3 => b_imm,
-        4 => j_imm,
+        0 => i_sext,
+        1 => s_sext,
+        2 => u_sext,
+        3 => b_sext,
+        4 => j_sext,
         _ => 0,                      // R 型与未知：无立即数
-    }
-
-    // ---- ALU 运算选择（R 型与 I 型共用同一张 funct3 表）----
-    // funct7 == 0x20 是"算术变体"标志：SUB 对 ADD、SRA 对 SRL。
-    alu_op_r = match funct3 {
-        0 => (funct7 == 0x20) ? 1 : 0,   // SUB / ADD
-        1 => 5,                          // SLL
-        2 => 7,                          // SLT
-        3 => 9,                          // SLTU
-        4 => 4,                          // XOR
-        5 => (funct7 == 0x20) ? 6 : 8,   // SRA / SRL
-        6 => 3,                          // OR
-        _ => 2,                          // AND
     }
 
     // ---- opcode 分派：一次判完"这是什么指令" ----
     is_r      = (opcode == 0x33)
+    is_op32   = (opcode == 0x3b)      // OP-32：addw / subw / sllw / srlw / sraw
     is_i_alu  = (opcode == 0x13)
+    is_imm32  = (opcode == 0x1b)      // OP-IMM-32：addiw / slliw / srliw / sraiw
     is_load   = (opcode == 0x03)
     is_store  = (opcode == 0x23)
     is_lui    = (opcode == 0x37)
@@ -111,27 +95,69 @@ module decoder {
     is_j      = (opcode == 0x6f)
     is_jr     = (opcode == 0x67)
 
-    alu_op  = (is_r | is_i_alu) ? alu_op_r : 0    // 其余形态都借用 ADD 通路（算地址 / 比较借用 SUB 见下）
-    alu_src = (is_i_alu | is_load | is_jr | is_store | is_lui) ? 1 : 0
+    // 算术族：ALU 选路与写回许可都来自这四条 opcode
+    is_arith  = is_r | is_i_alu | is_op32 | is_imm32
 
-    reg_wen   = is_r | is_i_alu | is_load | is_lui | is_auipc | is_j | is_jr
+    reg_wen   = is_arith | is_load | is_lui | is_auipc | is_j | is_jr
     mem_ren   = is_load
     mem_wen   = is_store
     is_branch = is_b
     is_jal    = is_j
     is_jalr   = is_jr
+    is_w_op   = is_op32 | is_imm32
+
+    // ---- ALU 运算选择：R / I / W 三族共用同一张 funct3 表 ----
+    // SUB / ADD 由 funct7 分辨（只有 R 型族看它）；SRA / SRL 由 bit 30 分辨。
+    // bit 30 这一位不能拿 funct7 == 0x20 代替：ADDI 的 imm[11:5] 恰好等于 0x20
+    // 时（比如 addi x1, x0, 1024），整条 funct7 字段就是 0x20——那是个正数立即数，
+    // 不是 SUB。
+    sub_flag = (is_r | is_op32) & (funct7 == 0x20)
+    sra_flag = instr[30]
+
+    alu_op_r = match funct3 {
+        0 => sub_flag ? 1 : 0,       // SUB / ADD
+        1 => 5,                       // SLL
+        2 => 7,                       // SLT
+        3 => 9,                       // SLTU
+        4 => 4,                       // XOR
+        5 => sra_flag ? 6 : 8,        // SRA / SRL
+        6 => 3,                       // OR
+        _ => 2,                       // AND
+    }
+
+    alu_op  = is_arith ? alu_op_r : 0
+    alu_src = (is_i_alu | is_imm32 | is_load | is_jr | is_store | is_lui) ? 1 : 0
 
     // 不写回时把目的寄存器报成 0：读到 x0，天然无害。
     // （S 型的 instr[11:7] 其实是 imm[4:0]，不门控就会当成 rd 报出去。）
     rd = reg_wen ? rd_raw : 0
 
-    // 认识的 opcode 全集；不在其中的就是"不理解的字符串"
-    known = opcode in [0x33, 0x13, 0x03, 0x23, 0x37, 0x17, 0x63, 0x6f, 0x67]
-    is_illegal = known ? 0 : 1
+    // ---- 认不认识：opcode 之外还要看字段 ----
+    // R 型族只认 funct7 = 0x00 / 0x20（0x01 是 M 扩展，这台不做）；
+    // 立即数移位：shamt 占低 6 位，funct6 只许是 0x00（SLLI / SRLI）或
+    // 0x10（bit 30 置起 = SRAI，仅 funct3=5）；
+    // load / store 只认双字（LD/SD）；分支只认六个已定义编码。
+    r_f7_ok  = funct7 in [0x00, 0x20]
+    sh_ok    = (funct3 == 1) ? (funct6 == 0x00) : (funct6 in [0x00, 0x10])
+    field_ok  = match opcode {
+        0x33 => r_f7_ok,
+        0x3b => r_f7_ok & (funct3 in [0, 1, 5]),
+        0x13 => (funct3 in [0, 2, 3, 4, 6, 7]) | ((funct3 in [1, 5]) & sh_ok),
+        0x1b => (funct3 == 0) | ((funct3 in [1, 5]) & sh_ok),
+        0x03 => funct3 == 3,               // LD（这一颗 dm 就是 64 位字）
+        0x23 => funct3 == 3,               // SD
+        0x63 => funct3 in [0, 1, 4, 5, 6, 7],
+        0x67 => funct3 == 0,
+        0x37 => 1,
+        0x17 => 1,
+        0x6f => 1,
+        _    => 0,
+    }
+    is_illegal = field_ok ? 0 : 1
 }
 
 @schedule decoder {
-    bitwidth  : { data:32 }
+    bitwidth  : { data:64 }
     pipeline  : 1 stage
     reset     : async_low
     clock     : 100 MHz, domain = single
@@ -143,35 +169,61 @@ design decoder_top {
     dut : decoder
 }
 
-// 逐条手算。每条指令只挑最关键的几列看：
-//   alu_op / alu_src（这一拍算什么）、reg_wen / mem_ren / mem_wen（允许什么）、
-//   imm（立即数解出来对不对）、is_illegal（认不认识）。
+// 逐条手算，两个视角各一张表（一张表只教一件事）：
+//   decoder_check —— 这一拍"算什么"：rd / alu_op / alu_src / 分支与跳转 / imm / W 标记
+//   decoder_perm  —— 这一拍"允许什么"：三个写使能 + 认不认识
+// sraiw 那拍的 imm 解出 1025：那是原始的 12 位字段（bit 10 是算术标志，低 6 位才是
+// 移量）。顶层取移位量时只走低 6 位，见第 9 集。
 run decoder_check of decoder_top {
     stim : {
-        dut.instr, [dut.rd, dut.alu_op, dut.alu_src, dut.reg_wen, dut.mem_ren, dut.mem_wen, dut.imm, dut.is_illegal] = {
-            // addi x1, x0, 5      opcode 0x13, rd=1, imm=5
-            0x00500093, [ 1, 0, 1, 1, 0, 0,          5, 0],
-            // add  x3, x1, x2     opcode 0x33, rd=3, funct3=0/funct7=0 → ADD
-            0x002081b3, [ 3, 0, 0, 1, 0, 0,          0, 0],
-            // sub  x4, x2, x1     opcode 0x33, rd=4, funct7=0x20 → SUB
-            0x40110233, [ 4, 1, 0, 1, 0, 0,          0, 0],
-            // lw   x9, 0(x0)      opcode 0x03, rd=9, mem_ren, imm=0
-            0x00002483, [ 9, 0, 1, 1, 1, 0,          0, 0],
-            // sw   x3, 8(x0)      opcode 0x23, mem_wen, imm=8
-            0x00302423, [ 0, 0, 1, 0, 0, 1,          8, 0],
-            // lui  x15, 0x12345   opcode 0x37, rd=15, imm=0x12345000
-            0x123457b7, [15, 0, 1, 1, 0, 0,  305418240, 0],
-            // beq  x3, x4, +16    opcode 0x63, is_branch, imm=16
-            0x00418863, [ 0, 0, 0, 0, 0, 0,         16, 0],
-            // jal  x1, +8         opcode 0x6f, rd=1, imm=8
-            0x008000ef, [ 1, 0, 0, 1, 0, 0,          8, 0],
-            // addi x11, x0, -8    opcode 0x13, rd=11, imm=-8（负立即数须符号扩展）
-            0xff800593, [11, 0, 1, 1, 0, 0,         -8, 0],
-            // 一条不存在的 opcode 0x7f → is_illegal
-            0x0000007f, [ 0, 0, 0, 0, 0, 0,          0, 1],
+        instr, [rd, alu_op, alu_src, is_branch, is_jal, imm, is_w_op] = {
+            0x00500093, [ 1,  0, 1, 0, 0,           5, 0],   // addi x1,x0,5
+            0x40000093, [ 1,  0, 1, 0, 0,        1024, 0],   // addi x1,x0,1024
+            0x002081b3, [ 3,  0, 0, 0, 0,           0, 0],   // add  x3,x1,x2
+            0x40110233, [ 4,  1, 0, 0, 0,           0, 0],   // sub  x4,x2,x1
+            0x002082bb, [ 5,  0, 0, 0, 0,           0, 1],   // addw x5,x1,x2
+            0x4011033b, [ 6,  1, 0, 0, 0,           0, 1],   // subw x6,x2,x1
+            0xff80039b, [ 7,  0, 1, 0, 0,          -8, 1],   // addiw x7,x0,-8
+            0x4015d49b, [ 9,  6, 1, 0, 0,        1025, 1],   // sraiw x9,x11,1
+            0x01003603, [12,  0, 1, 0, 0,          16, 0],   // ld   x12,16(x0)
+            0x00303c23, [ 0,  0, 1, 0, 0,          24, 0],   // sd   x3,24(x0)
+            0x123457b7, [15,  0, 1, 0, 0,   305418240, 0],   // lui  x15,0x12345
+            0x00418863, [ 0,  0, 0, 1, 0,          16, 0],   // beq  x3,x4,+16
+            0x008000ef, [ 1,  0, 0, 0, 1,           8, 0],   // jal  x1,+8
+            0x000280e7, [ 1,  0, 1, 0, 0,           0, 0],   // jalr x1,0(x5)
+            0x00002483, [ 9,  0, 1, 0, 0,           0, 0],   // lw   x9,0(x0) 字访问这台不做
+            0x00000683, [13,  0, 1, 0, 0,           0, 0],   // lb   x13,0(x0) 字节访问这台不做
+            0x022082b3, [ 5,  0, 0, 0, 0,           0, 0],   // mul  x5,x1,x2 M 扩展不做
+            0x0000007f, [ 0,  0, 0, 0, 0,           0, 0],   // 不存在的 opcode
         }
     }
     until : end of stim
-    show  : { dut.instr, dut.rd, dut.alu_op, dut.alu_src, dut.reg_wen,
-              dut.mem_ren, dut.mem_wen, dut.imm, dut.is_branch, dut.is_jal, dut.is_illegal }
+    show  : { rd, alu_op, alu_src, is_branch, is_jal, imm, is_w_op }
+}
+
+run decoder_perm of decoder_top {
+    stim : {
+        instr, [reg_wen, mem_ren, mem_wen, is_illegal] = {
+            0x00500093, [1, 0, 0, 0],   // addi x1,x0,5
+            0x40000093, [1, 0, 0, 0],   // addi x1,x0,1024
+            0x002081b3, [1, 0, 0, 0],   // add  x3,x1,x2
+            0x40110233, [1, 0, 0, 0],   // sub  x4,x2,x1
+            0x002082bb, [1, 0, 0, 0],   // addw x5,x1,x2
+            0x4011033b, [1, 0, 0, 0],   // subw x6,x2,x1
+            0xff80039b, [1, 0, 0, 0],   // addiw x7,x0,-8
+            0x4015d49b, [1, 0, 0, 0],   // sraiw x9,x11,1
+            0x01003603, [1, 1, 0, 0],   // ld   x12,16(x0)
+            0x00303c23, [0, 0, 1, 0],   // sd   x3,24(x0)
+            0x123457b7, [1, 0, 0, 0],   // lui  x15,0x12345
+            0x00418863, [0, 0, 0, 0],   // beq  x3,x4,+16
+            0x008000ef, [1, 0, 0, 0],   // jal  x1,+8
+            0x000280e7, [1, 0, 0, 0],   // jalr x1,0(x5)
+            0x00002483, [1, 1, 0, 1],   // lw   x9,0(x0) 字访问这台不做
+            0x00000683, [1, 1, 0, 1],   // lb   x13,0(x0) 字节访问这台不做
+            0x022082b3, [1, 0, 0, 1],   // mul  x5,x1,x2 M 扩展不做
+            0x0000007f, [0, 0, 0, 1],   // 不存在的 opcode
+        }
+    }
+    until : end of stim
+    show  : { reg_wen, mem_ren, mem_wen, is_illegal }
 }
